@@ -15,7 +15,6 @@ public class Gyro implements Component, PIDSource {
 
     public void init() {
         navx.zeroYaw();
-        // TODO Check ZeroYaw functionality
     }
 
     /**
