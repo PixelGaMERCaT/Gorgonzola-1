@@ -93,6 +93,7 @@ public class Drivetrain implements Component {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        this.setAngleSetpoint(60.0);
     }
 
     public void resetEncoders() {
@@ -106,8 +107,8 @@ public class Drivetrain implements Component {
         turnController.enable();
     }
     public void tick() {
-        magicDrive(im.getForward(), im.getTurn());
-        //driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0)
+        //magicDrive(im.getForward(), im.getTurn());
+        driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
         //driveBasic(im.getForward(), im.getTurn());
     }
 
