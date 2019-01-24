@@ -5,14 +5,20 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-public class Drivetrain implements Component {
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-    private TalonSRX frontLeft, frontRight, backLeft, backRight;
+public class Drivetrain implements Component {
+    public TalonSRX frontLeft, frontRight, backLeft, backRight;
     private InputManager im;
-    private double currentLeftPosition = 0, currentRightPosition = 0;
+    public double currentLeftPosition, currentRightPosition;
+    private Gyro gyro;
+    public double setPointLeft, setPointRight; 
+    private PIDController turnController;
 
     /**
-     * The Default constructor for Drivetrain, sets up basic movement and sensor functionality
+     * The Default constructor for Drivetrain, sets up basic movement and sensor
+     * functionality
      */
     public Drivetrain() {
         im = Globals.im;
@@ -34,7 +40,6 @@ public class Drivetrain implements Component {
         frontLeft.configNominalOutputReverse(0);
         frontLeft.configPeakOutputForward(1);
         frontLeft.configPeakOutputReverse(-1);
-
         frontRight.configNominalOutputForward(0);
         frontRight.configNominalOutputReverse(0);
         frontRight.configPeakOutputForward(1);
@@ -43,15 +48,67 @@ public class Drivetrain implements Component {
         frontRight.configNominalOutputReverse(0);
         frontRight.configPeakOutputForward(1);
         frontRight.configPeakOutputReverse(-1);
+        frontLeft.config_kP(0, 1.1);
+        frontLeft.config_kI(0, 0);
+        frontLeft.config_kD(0, 0);
+        frontLeft.config_kF(0, .3);
+        frontRight.config_kP(0, 1.1);
+        frontRight.config_kI(0, 0);
+        frontRight.config_kD(0, 0);
+        frontRight.config_kF(0, .3);
+        resetEncoders();
         // TODO Acceleration and cruise velocity
-        frontLeft.setSelectedSensorPosition(0);
-        frontRight.setSelectedSensorPosition(0);
     }
 
-    public void tick() {
+    public void init() {
+        gyro = Globals.gyro;
+        currentLeftPosition = frontLeft.getSelectedSensorPosition(0);
+        currentRightPosition = frontRight.getSelectedSensorPosition(0);
+        turnController = new PIDController(Constants.TURN_KP, Constants.TURN_KI, Constants.TURN_KD, gyro, o -> {
+        });
+        turnController.setAbsoluteTolerance(1);
+        turnController.setInputRange(-180, 180);
+        turnController.setOutputRange(-1, 1);
+        turnController.setContinuous(true);
+        try {
+            Globals.logger.logger.addStatement("Drivetrain", "encoderLeft", frc.CheeseLog.Type.INT, () -> {
+                return frontLeft.getSelectedSensorPosition(0);
+            }, true, false, false);
+            Globals.logger.logger.addStatement("Drivetrain", "encoderRight", frc.CheeseLog.Type.INT, () -> {
+                return frontRight.getSelectedSensorPosition(0);
+            }, true, false, false);
+            Globals.logger.logger.addStatement("Drivetrain", "setPointLeft", frc.CheeseLog.Type.DECIMAL, () -> {
+                return setPointLeft;
+            }, true, false, false);
+            Globals.logger.logger.addStatement("Drivetrain", "setPointRight", frc.CheeseLog.Type.DECIMAL, () -> {
+                return setPointRight;
+            }, true, false, false);
+            Globals.logger.logger.addStatement("TurnController", "Angle", frc.CheeseLog.Type.DECIMAL,
+                    () -> gyro.getNormalizedYaw(), true, false, false);
+            Globals.logger.logger.addStatement("TurnController", "PIDOut", frc.CheeseLog.Type.DECIMAL,
+                    () -> turnController.get(), true, false, false);
+            Globals.logger.logger.addStatement("TurnController", "Setpoint", frc.CheeseLog.Type.DECIMAL,
+                    () -> turnController.getSetpoint(), true, false, false);
 
-        // driveBasic(im.getForward(), im.getTurn());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void resetEncoders() {
+        frontLeft.setSelectedSensorPosition(0, 0, 0);
+        frontRight.setSelectedSensorPosition(0, 0, 0);
+        setPointLeft = 0;
+        setPointRight = 0;
+    }
+    public void setAngleSetpoint(double angle){
+        turnController.setSetpoint(angle);
+        turnController.enable();
+    }
+    public void tick() {
         magicDrive(im.getForward(), im.getTurn());
+        //driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0)
+        //driveBasic(im.getForward(), im.getTurn());
     }
 
     /**
@@ -61,6 +118,11 @@ public class Drivetrain implements Component {
      * @param turn    A number between -1 (full right) and 1 (full left)
      */
     public void driveBasic(double forward, double turn) {
+        forward = forward * forward * Math.signum(forward);
+        turn = turn * turn * Math.signum(turn);
+        System.out.println("Positions:\n" + "left" + frontLeft.getSelectedSensorPosition(0) + "\nright"
+                + frontRight.getSelectedSensorPosition(0));
+
         frontLeft.set(ControlMode.PercentOutput, forward + turn);
         frontRight.set(ControlMode.PercentOutput, forward - turn);
     }
@@ -72,21 +134,35 @@ public class Drivetrain implements Component {
      * @param forward A number between -1 (full backward) and 1 (full forward)
      * @param turn    A number between -1 (full right) and 1 (full left)
      */
-    public void magicDrive(double forward, double turn) {
-        if (Math.abs(forward) > .001 || Math.abs(turn) > .001) {
-            currentLeftPosition = frontLeft.getSelectedSensorPosition(0);
-            currentRightPosition = frontRight.getSelectedSensorPosition(0);
-        }
-        System.out.println(forward - turn);
-        // TODO test running something like Math.max(Math.min(forward+turn, 1), -1) for
-        // input to cap values
 
-        // 4096 encoder units per turn, MAGIC_DRIVE_ROTATIONS turns forward as a target
-        // from the joysticks at full power
-        frontLeft.set(ControlMode.MotionMagic,
-                currentLeftPosition + (forward + turn) * 4096 * Constants.MAGIC_DRIVE_ROTATIONS);
-        frontRight.set(ControlMode.MotionMagic,
-                currentRightPosition + (forward - turn) * 4096 * Constants.MAGIC_DRIVE_ROTATIONS);
+    public void magicDrive(double forward, double turn) {
+
+        forward = forward * forward * Math.signum(forward);
+        forward = Math.max(Math.min(1, forward), -1);
+        turn = turn * turn * Math.signum(turn); //TODO Experiment with not minning, try something with a drive ratio
+        turn = Math.max(Math.min(1, turn), -1);
+        //TODO Check for problems with driving forward close to max and trying to turn; try separate turn distance
+        currentLeftPosition = frontLeft.getSelectedSensorPosition(0);
+        currentRightPosition = frontRight.getSelectedSensorPosition(0);
+
+        setPointLeft += (forward * Constants.MAX_DRIVE_VELOCITY + turn * Constants.MAX_TURN_VELOCITY);
+        setPointRight += (forward * Constants.MAX_DRIVE_VELOCITY - turn * Constants.MAX_TURN_VELOCITY);
+
+        if (Math.abs(setPointLeft - currentLeftPosition) > 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS) {
+            setPointLeft = Math.signum(setPointLeft - currentLeftPosition) * 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS
+                    + currentLeftPosition;
+        }
+
+        if (Math.abs(setPointRight - currentRightPosition) > 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS) {
+            setPointRight = Math.signum(setPointRight - currentRightPosition) * 4096
+                    * Constants.MAGIC_DRIVE_MAX_ROTATIONS + currentRightPosition;
+        }
+        frontLeft.set(ControlMode.MotionMagic, setPointLeft);
+        frontRight.set(ControlMode.MotionMagic, setPointRight);
+
+        SmartDashboard.putNumber("setPoint", setPointLeft);
+        SmartDashboard.putNumber("currentPosition", frontLeft.getSelectedSensorPosition(0));
+
     }
 
 }

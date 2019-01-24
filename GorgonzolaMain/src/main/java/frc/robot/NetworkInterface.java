@@ -5,6 +5,7 @@ import java.util.HashMap;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.networktables.NetworkTableValue;
 
 /**
@@ -24,7 +25,6 @@ public class NetworkInterface implements Component {
     public NetworkInterface(String tableName) {
         tableValues = new HashMap<String, NetworkTableEntry>();
         table = NetworkTableInstance.getDefault().getTable(tableName);
-
     }
 
     /**
@@ -41,7 +41,7 @@ public class NetworkInterface implements Component {
      * @return the value in the table at that location, as a NetworkTableValue
      * @throws Exception If the value does not exist in the table
      */
-    public NetworkTableValue get(String key) throws Exception {
+    public NetworkTableValue get(String key, NetworkTableType type) throws Exception {
         if (!tableValues.containsKey(key)) {
             throw new Exception();
         }

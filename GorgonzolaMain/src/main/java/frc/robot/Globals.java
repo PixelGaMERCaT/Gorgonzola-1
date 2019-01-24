@@ -14,27 +14,36 @@ public class Globals {
     public static Drivetrain drivetrain;
     public static Gyro gyro;
     public static NetworkInterface testTable;
+    public static LogInterface logger;
+
+
+
     private static ArrayList<Component> components; // Contains all the components in Globals
+
 
     /**
      * Initializes all components of globals
      */
     public static void init() {
+        
         components = new ArrayList<Component>();
         im = new InputManager();
         drivetrain = new Drivetrain();
         gyro = new Gyro();
-        testTable=new NetworkInterface("test");
-        components.addAll(Arrays.asList(im, drivetrain, gyro, testTable));
-        components.forEach(c->c.init());
+        testTable = new NetworkInterface("test");
+        logger=new LogInterface();
+        Globals.logger.logger.initSQL("jdbc:postgresql://10.10.86.135/", "postgres", "Hypercam");
+        
+        components.addAll(Arrays.asList(im, drivetrain, testTable, logger));
+        components.forEach(c -> c.init());
+
     }
 
     /**
      * Ticks all components in globals
      */
     public static void tick() {
-        components.forEach(c->c.tick());
-
+        components.forEach(c -> c.tick());
     }
 
 }

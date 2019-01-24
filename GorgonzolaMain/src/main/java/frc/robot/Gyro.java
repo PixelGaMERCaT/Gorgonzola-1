@@ -10,7 +10,7 @@ public class Gyro implements Component, PIDSource {
     private AHRS navx;
     
     public Gyro() {
-        navx = new AHRS(SerialPort.Port.kUSB1);
+        navx = new AHRS(SerialPort.Port.kMXP);
     }
 
     public void init() {

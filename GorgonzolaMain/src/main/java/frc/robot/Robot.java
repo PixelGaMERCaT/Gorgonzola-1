@@ -66,10 +66,14 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
   }
-
-  /**
-   * This function is called periodically during autonomous.
-   */
+  public void disabledInit() {
+    
+    Globals.drivetrain.driveBasic(0, 0);
+  }
+  public void teleopInit() {
+    Globals.drivetrain.resetEncoders();
+  }
+  
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
@@ -88,6 +92,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Globals.tick();
+   
   }
 
   /**
@@ -95,5 +100,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    Globals.testTable.setDouble("Forward", Math.random());
   }
 }
