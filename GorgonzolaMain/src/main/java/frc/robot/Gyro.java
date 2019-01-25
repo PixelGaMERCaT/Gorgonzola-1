@@ -4,17 +4,23 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SPI;
 
 public class Gyro implements Component, PIDSource {
     private AHRS navx;
     
     public Gyro() {
-        navx = new AHRS(SerialPort.Port.kMXP);
     }
 
     public void init() {
-        navx.zeroYaw();
+        try {
+            navx = new AHRS(SPI.Port.kMXP);
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("problem in initialization of navx");
+        }
+        System.out.println("init Navx");
+        //navx.zeroYaw();
     }
 
     /**
@@ -32,7 +38,13 @@ public class Gyro implements Component, PIDSource {
      * @return the normalized yaw of the robot
      */
     public double getNormalizedYaw() {
-        double yaw = navx.getYaw();
+        double yaw =0;
+        try {
+        yaw= navx.getYaw();
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Problem in getNormalizedYaw");
+        }
         yaw = (yaw + 360) % 360;
         return Math.abs(yaw) <= 180 ? yaw : Math.signum(yaw) * -360 + yaw;
     }
