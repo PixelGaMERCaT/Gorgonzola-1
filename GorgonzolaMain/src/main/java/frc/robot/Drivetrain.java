@@ -137,7 +137,7 @@ public class Drivetrain implements Component {
 
     public void magicDrive(double forward, double turn) {
 
-        forward = forward * forward * Math.signum(forward);
+        /*forward = forward * forward * Math.signum(forward);
         forward = Math.max(Math.min(1, forward), -1);
         turn = turn * turn * Math.signum(turn); //TODO Experiment with not minning, try something with a drive ratio
         turn = Math.max(Math.min(1, turn), -1);
@@ -159,7 +159,9 @@ public class Drivetrain implements Component {
         }
         frontLeft.set(ControlMode.MotionMagic, setPointLeft);
         frontRight.set(ControlMode.MotionMagic, setPointRight);
-
+        */
+        frontLeft.set(ControlMode.MotionMagic, 40960);
+        frontRight.set(ControlMode.MotionMagic, 40960);
         SmartDashboard.putNumber("setPoint", setPointLeft);
         SmartDashboard.putNumber("currentPosition", frontLeft.getSelectedSensorPosition(0));
 
