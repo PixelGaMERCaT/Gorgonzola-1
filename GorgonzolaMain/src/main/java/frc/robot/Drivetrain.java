@@ -93,6 +93,7 @@ public class Drivetrain implements Component {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        this.setAngleSetpoint(90.0);
     }
 
     public void resetEncoders() {
@@ -106,8 +107,9 @@ public class Drivetrain implements Component {
         turnController.enable();
     }
     public void tick() {
-        magicDrive(im.getForward(), im.getTurn());
-        //driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0)
+        //magicDrive(im.getForward(), im.getTurn());
+        System.out.println(turnController.get());
+        driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
         //driveBasic(im.getForward(), im.getTurn());
     }
 
@@ -120,8 +122,8 @@ public class Drivetrain implements Component {
     public void driveBasic(double forward, double turn) {
         forward = forward * forward * Math.signum(forward);
         turn = turn * turn * Math.signum(turn);
-        System.out.println("Positions:\n" + "left" + frontLeft.getSelectedSensorPosition(0) + "\nright"
-                + frontRight.getSelectedSensorPosition(0));
+        //System.out.println("Positions:\n" + "left" + frontLeft.getSelectedSensorPosition(0) + "\nright"
+        //        + frontRight.getSelectedSensorPosition(0));
 
         frontLeft.set(ControlMode.PercentOutput, forward + turn);
         frontRight.set(ControlMode.PercentOutput, forward - turn);

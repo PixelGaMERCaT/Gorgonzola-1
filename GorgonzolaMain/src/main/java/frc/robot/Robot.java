@@ -100,6 +100,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    Globals.testTable.setDouble("Forward", Math.random());
+    System.out.println("Navx: "+ Globals.gyro.getYaw());
   }
 }

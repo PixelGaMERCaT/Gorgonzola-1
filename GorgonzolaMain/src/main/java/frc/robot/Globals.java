@@ -30,11 +30,12 @@ public class Globals {
         im = new InputManager();
         drivetrain = new Drivetrain();
         gyro = new Gyro();
+        gyro.init();
         testTable = new NetworkInterface("test");
         logger=new LogInterface();
-        Globals.logger.logger.initSQL("jdbc:postgresql://10.10.86.135/", "postgres", "Hypercam");
+        //Globals.logger.logger.initSQL("jdbc:postgresql://10.10.86.135/", "postgres", "Hypercam");
         
-        components.addAll(Arrays.asList(im, drivetrain, testTable, logger));
+        components.addAll(Arrays.asList(im, drivetrain, testTable, gyro));
         components.forEach(c -> c.init());
 
     }

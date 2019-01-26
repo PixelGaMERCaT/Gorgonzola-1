@@ -9,5 +9,6 @@ public class Constants {
     public static final double MAX_DRIVE_VELOCITY = 390/50;
     public static  final double MAX_TURN_VELOCITY = 68;
 	public static final double MAGIC_DRIVE_MAX_ROTATIONS = 10;
-    public static final double TURN_KP=0, TURN_KI=0, TURN_KD=0;
+
+    public static final double TURN_KP=.04, TURN_KI=0, TURN_KD=0;
 }
