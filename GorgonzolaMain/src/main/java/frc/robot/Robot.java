@@ -22,7 +22,8 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
-
+  public SandstormPath sandstormMode;
+  public SandstormStart sandstormStarter;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   /**
@@ -32,9 +33,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     Globals.init();
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    sandstormStarter = new SandstormStart();
+    sandstormStarter.initSandstormPaths();
+    sandstormMode = sandstormStarter.start();
   }
 
   /**
@@ -76,13 +77,8 @@ public class Robot extends TimedRobot {
   
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+    if (!sandstormMode.over) {
+      sandstormMode.tick();
     }
   }
 
