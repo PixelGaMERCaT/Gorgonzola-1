@@ -8,32 +8,34 @@
 package frc.sandstorm;
 
 import java.util.ArrayList;
-
+import frc.sandstorm.*;
+import frc.sandstorm.sections.*;
 /**
  * Add your docs here.
  */
 public class SandstormPath {
-    ArrayList<SandstormSection> sections = new ArrayList<SandstormSection>;
+    ArrayList<SandstormSection> sections = new ArrayList<SandstormSection>();
     int section = 0;
     public boolean over = false;
 
     public SandstormPath() {}
 
-    public void add(SandstormSection newSection) { // Adds a section to the path
+    public void addSection(SandstormSection newSection) { // Adds a section to the path
         sections.add(newSection);
     }
 
     public void tick() { 
-        if (section = 0 && sections[section].startTime = 0) {
-            sections[section].init();
+        if (section == 0 && sections.get(section).startTime == 0) {
+            sections.get(section).init();
         } else {
-            sections[section].update();        
+            sections.get(section).update(); 
+            System.out.println("Auto Update");       
         }
-        if (sections[section].isFinished()) {
-            sections[section].end();
+        if (sections.get(section).isFinished()) {
+            sections.get(section).end();
             section++;
-            if (!section + 1 > sections.size()) {
-                sections[section].init();
+            if (!(section + 1 > sections.size())) {
+                sections.get(section).init();
             } else {
                 over = true;
             }
@@ -41,6 +43,6 @@ public class SandstormPath {
     }
 
     public void stopDrive() { // Adds a section that ends the robot's driving
-        sections.add(new Drive(0, 0, 0));
+        sections.addSection(new Drive(0, 0, 0));
     }
 }

@@ -6,7 +6,8 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.sandstorm.sections;
-
+import frc.robot.*;
+import frc.sandstorm.*;
 /**
  * Add your docs here.
  */
@@ -21,8 +22,13 @@ public class Drive extends SandstormSection {
         drive = Globals.drivetrain;
     }
 
+    @Override public void end() {
+
+    }
+
     @Override public void update() {
-        drive.driveBasic(forward, turn);
+        System.out.println("Drive");
+        drive.autoDrive(forward, turn);
     }
 
 }
