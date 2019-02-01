@@ -23,8 +23,9 @@ public abstract class SandstormSection {
 
     public abstract void end(); // Things to run when the section ends
 
+    public abstract boolean customFinish();
+
     public boolean isFinished() { // End conditions
-        finished = System.currentTimeMillis() - startTime > duration * 1000 && duration != -1 ? true : false; // For a section that does not end based on time, set duration to -1
-        return finished;
+        return System.currentTimeMillis() - startTime > duration * 1000 && duration != -1 && customFinish() ? true : false; // For a section that does not end based on time, set duration to -1
     }
 }

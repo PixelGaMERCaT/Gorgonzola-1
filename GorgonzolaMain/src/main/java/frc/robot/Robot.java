@@ -36,8 +36,6 @@ public class Robot extends TimedRobot {
     Globals.init();
     sandstormStarter = new SandstormStart();
     sandstormStarter.initSandstormPaths();
-    sandstormMode = sandstormStarter.start();
-    
   }
 
   /**
@@ -67,7 +65,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    sandstormMode = sandstormStarter.start();
+    SmartDashboard.putString("Sandstorm Path: ", sandstormMode.name);
   }
   public void disabledInit() {
     

@@ -19,23 +19,31 @@ public class SandstormStart {
     SandstormPath testPath;
     SandstormPath testPath2;
 
+    SandstormPath autoMode;
+    SendableChooser<SandstormPath> autoChooser;
+
     public SandstormStart() {}
     
     public void initSandstormPaths() { // Build sandstorm/auto modes here
-        testPath = new SandstormPath();
-        testPath.addSection(new Drive(1, 0, 10));
+        testPath = new SandstormPath("Test Path 1");
+        testPath.add(new Drive(0.75, 0, 1));
+        testPath.add(new Drive(-0.75, 0, 1));
         testPath.stopDrive();
         
-        testPath2 = new SandstormPath();
-        testPath2.addSection(new Drive(-1, 0, 10));
+        testPath2 = new SandstormPath("Test Path 2");
+        testPath2.add(new Drive(-0.25, 0, 1));
         testPath.stopDrive();
+
+        autoChooser = new SendableChooser();
+        autoChooser.addOption(testPath2.name, testPath2);
+        autoChooser.setDefaultOption(testPath.name, testPath);
+        SmartDashboard.putData("Sandstorm Mode Chooser", autoChooser);
+        
     }
 
     public SandstormPath start() { // Auto chooser logic should be written here
-        SendableChooser<SandstormPath> autoChooser = new SendableChooser();
-        autoChooser.addDefault("Testing Mode", testPath);
-        autoChooser.addObject("Testing Mode 2", testPath2);
-        SmartDashboard.putData("Sandstorm Mode Chooser", autoChooser);
-        return autoChooser.getSelected();
+        autoMode = autoChooser.getSelected();
+        return autoMode;
     }
 }
+

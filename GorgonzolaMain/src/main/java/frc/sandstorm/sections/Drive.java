@@ -26,6 +26,10 @@ public class Drive extends SandstormSection {
 
     }
 
+    @Override public boolean customFinish() {
+        return true;
+    }
+
     @Override public void update() {
         System.out.println("Drive");
         drive.autoDrive(forward, turn);

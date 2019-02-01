@@ -15,12 +15,15 @@ import frc.sandstorm.sections.*;
  */
 public class SandstormPath {
     ArrayList<SandstormSection> sections = new ArrayList<SandstormSection>();
+    public String name;
     int section = 0;
     public boolean over = false;
 
-    public SandstormPath() {}
+    public SandstormPath(String name) {
+        this.name = name;
+    }
 
-    public void addSection(SandstormSection newSection) { // Adds a section to the path
+    public void add(SandstormSection newSection) { // Adds a section to the path
         sections.add(newSection);
     }
 
@@ -43,6 +46,6 @@ public class SandstormPath {
     }
 
     public void stopDrive() { // Adds a section that ends the robot's driving
-        sections.addSection(new Drive(0, 0, 0));
+        sections.add(new Drive(0, 0, 0));
     }
 }
