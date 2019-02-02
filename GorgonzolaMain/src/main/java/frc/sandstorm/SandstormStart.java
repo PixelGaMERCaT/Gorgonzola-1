@@ -16,33 +16,14 @@ import frc.sandstorm.SandstormPath;
  */
 public class SandstormStart {
 
-    SandstormPath testPath;
-    SandstormPath testPath2;
-    SandstormPath testPath3;
-
     SandstormPath autoMode;
     SendableChooser<SandstormPath> autoChooser;
 
     public SandstormStart() {}
     
     public void initSandstormPaths() { // Build sandstorm/auto modes here
-        testPath = new SandstormPath("Test Path 1");
-        testPath.add(new Drive(0.25, 0, 1));
-        testPath.add(new Drive(-0.25, 0, 1));
-        testPath.stopDrive();
-        
-        testPath2 = new SandstormPath("Turn 90 Degrees");
-        testPath2.add(new TurnToAngle(90, -1));
-        testPath2.stopDrive();
-
-        testPath3 = new SandstormPath("Drive Straight");
-        testPath3.add(new DriveStraight(0.25, 1));
-        testPath3.stopDrive();
 
         autoChooser = new SendableChooser();
-        autoChooser.addOption(testPath2.name, testPath2);
-        autoChooser.addOption(testPath3.name, testPath3);
-        autoChooser.setDefaultOption(testPath.name, testPath);
         SmartDashboard.putData("Sandstorm Mode Chooser", autoChooser);
         
     }
