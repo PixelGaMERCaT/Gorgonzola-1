@@ -17,18 +17,23 @@ public abstract class SandstormSection {
 
     public void init() { // Things to run when the section starts
         startTime = System.currentTimeMillis();
+        if (duration != -1) {
+            duration = duration * 1000;
+        }
     } 
 
     public abstract void update(); // Things to run while the section is running
 
     public abstract void end(); // Things to run when the section ends
 
-    public abstract boolean customFinish(); // Custom finish code; for a section that ends based on time, return false
+    public boolean customFinish() { // Custom finish code; for a section that ends based on time, return false
+        return false;
+    } 
     /*
     * For a section that does not end based on time, set duration to -1
     * and add custom finish code to the customeFinish() method
     */
     public boolean isFinished() { // End conditions
-        return (System.currentTimeMillis() - startTime > duration * 1000 && duration != -1) || customFinish() ? true : false; 
+        return (System.currentTimeMillis() - startTime > duration && duration != -1) || customFinish() ? true : false; 
     }
 }

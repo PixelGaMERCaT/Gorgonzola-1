@@ -22,17 +22,13 @@ public class DriveStraight extends SandstormSection {
     }
 
     public void init() {
-        startTime = System.currentTimeMillis();
+        super.init();
         drive.turnController.setSetpoint(0);
         drive.turnController.enable();
     }
 
     @Override public void end() {
         drive.turnController.disable();
-    }
-
-    @Override public boolean customFinish() {
-        return false;
     }
 
     @Override public void update() {

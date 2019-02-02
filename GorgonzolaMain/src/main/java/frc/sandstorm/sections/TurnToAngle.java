@@ -22,7 +22,7 @@ public class TurnToAngle extends SandstormSection {
     }
 
     public void init() {
-        startTime = System.currentTimeMillis();
+        super.init();
         drive.turnController.setSetpoint(this.angle);
         drive.turnController.enable();
     }
@@ -31,7 +31,7 @@ public class TurnToAngle extends SandstormSection {
         drive.turnController.disable();
     }
 
-    @Override public boolean customFinish() {
+    public boolean customFinish() {
         return drive.turnController.onTarget();
     }
 
