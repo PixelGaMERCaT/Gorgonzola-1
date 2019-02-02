@@ -11,27 +11,32 @@ import frc.sandstorm.*;
 /**
  * Add your docs here.
  */
-public class Drive extends SandstormSection {
-    double forward, turn;
+public class TurnToAngle extends SandstormSection {
+    double angle;
     Drivetrain drive;
 
-    public Drive(double forward, double turn, double time) {
-        this.forward = forward;
-        this.turn = turn;
+    public TurnToAngle(double angle, double time) {
+        this.angle = angle;
         this.duration = time;
         drive = Globals.drivetrain;
     }
 
-    @Override public void end() {
+    public void init() {
+        super();
+        drive.turnController.setSetpoint(this.angle);
+        drive.turnController.enable();
+    }
 
+    @Override public void end() {
+        drive.turnController.disable();
     }
 
     @Override public boolean customFinish() {
-        return false;
+        return drive.turnController.onTarget();
     }
 
     @Override public void update() {
-        drive.autoDrive(forward, turn);
+        drive.autoDrive(0, drive.turnController.get());
     }
 
 }

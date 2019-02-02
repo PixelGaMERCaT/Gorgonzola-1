@@ -15,7 +15,7 @@ public abstract class SandstormSection {
     public double duration; // Duration of section in seconds
     public long startTime = 0;
 
-    public void init() { 
+    public void init() { // Things to run when the section starts
         startTime = System.currentTimeMillis();
     } 
 
@@ -23,9 +23,12 @@ public abstract class SandstormSection {
 
     public abstract void end(); // Things to run when the section ends
 
-    public abstract boolean customFinish();
-
+    public abstract boolean customFinish(); // Custom finish code; for a section that ends based on time, return false
+    /*
+    * For a section that does not end based on time, set duration to -1
+    * and add custom finish code to the customeFinish() method
+    */
     public boolean isFinished() { // End conditions
-        return System.currentTimeMillis() - startTime > duration * 1000 && duration != -1 && customFinish() ? true : false; // For a section that does not end based on time, set duration to -1
+        return (System.currentTimeMillis() - startTime > duration * 1000 && duration != -1) || customFinish() ? true : false; 
     }
 }
