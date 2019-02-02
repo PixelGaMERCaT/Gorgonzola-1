@@ -14,7 +14,7 @@ public class Drivetrain implements Component {
     public double currentLeftPosition, currentRightPosition;
     private Gyro gyro;
     public double setPointLeft, setPointRight; 
-    private PIDController turnController;
+    public PIDController turnController;
     
     /**
      * The Default constructor for Drivetrain, sets up basic movement and sensor

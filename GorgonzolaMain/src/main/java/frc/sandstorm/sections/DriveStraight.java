@@ -15,14 +15,14 @@ public class DriveStraight extends SandstormSection {
     double forward;
     Drivetrain drive;
 
-    public DriveStraight(double forward double time) {
+    public DriveStraight(double forward, double time) {
         this.forward = forward;
         this.duration = time;
         drive = Globals.drivetrain;
     }
 
     public void init() {
-        super();
+        startTime = System.currentTimeMillis();
         drive.turnController.setSetpoint(0);
         drive.turnController.enable();
     }
