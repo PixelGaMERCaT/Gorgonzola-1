@@ -56,9 +56,7 @@ public class OutputManager {
 				try {
 					if (batches > 0) {
 						double time =System.currentTimeMillis();
-						System.out.println("tryin");
 						statement.executeBatch();
-						System.out.println("ov: "+(time-System.currentTimeMillis()));
 						batches = 0;
 					} 
 					Thread.sleep(1000);

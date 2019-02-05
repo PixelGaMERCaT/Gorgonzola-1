@@ -19,6 +19,7 @@ public class Table {
 	Loggable[] loggables;
 	LoggingMode loggingMode;
 	ArrayList<LoggingCriteria> criterion = new ArrayList<>();
+
 	/**
 	 * Creates a new table.
 	 * 
@@ -39,18 +40,17 @@ public class Table {
 			Type[] dataTypes) {
 		this.loggingMode = loggingMode;
 		name = tableName;
-		String[] columns = new String[columnNames.length + 2];
-		Type[] types = new Type[columnNames.length + 2];
-		System.arraycopy(columnNames, 0, columns, 2, columnNames.length);
-		System.arraycopy(dataTypes, 0, types, 2, dataTypes.length);
-		columns[0] = "Timestamp";
-		columns[1] = "Tick_Number";
-		types[0] = new Varchar();
-		types[1] = new Int();
+		String[] columns = new String[columnNames.length + 1];
+		Type[] types = new Type[columnNames.length + 1];
+		System.arraycopy(columnNames, 0, columns, 1, columnNames.length);
+		System.arraycopy(dataTypes, 0, types, 1, dataTypes.length);
+		columns[0] = "Tick_Number";
+		types[0] = new Int();
+		System.out.println(types);
 		if (!tableName.matches("[a-zA-Z0-9_]+"))
 			throw new Error("Invalid table name " + tableName);
 		table = new OutputManager(connection, tableName, columns, types);
-		
+
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class Table {
 	 * @param logs The loggable objects to get logs from. See Loggable.java for more
 	 */
 	public void setLoggers(Loggable... logs) {
-		if (logs.length == table.columnCount() - 2) {
+		if (logs.length == table.columnCount() - 1) {
 			loggables = logs;
 		} else
 			throw new Error("Unable to set Loggables: Loggables do not match table");
@@ -75,9 +75,9 @@ public class Table {
 	 */
 	public void setLogger(String columnName, Loggable log) {
 		int index = table.columnIndex(columnName);
-		if (index < 2)
+		if (index < 1)
 			throw new Error("Tried to set logger in invalid column " + columnName);
-		loggables[index - 2] = log;
+		loggables[index - 1] = log;
 	}
 
 	/**
@@ -101,12 +101,14 @@ public class Table {
 	public void log(int tick) {
 		try {
 			Object[] logValues = new Object[loggables.length];
-			
+
 			int i = 0;
-			for (Loggable l : loggables)
+
+			for (Loggable l : loggables) {
 				logValues[i++] = l.log();
+			}
+
 			log(tick, logValues);
-			
 		} catch (Exception e) {
 			System.err.println("Error occurred from automatic logging. Check your loggables!");
 			e.printStackTrace();
@@ -124,30 +126,13 @@ public class Table {
 	 */
 	public void log(int tick, Object... args) {
 		String[] logValues = new String[table.columnCount()];
-		logValues[0] = table.getDataType(0).reformat(new Timestamp(System.currentTimeMillis()));
-		logValues[1] = table.getDataType(1).reformat(tick);
-		if (args.length == 0) {
-			assert loggables != null
-					&& loggables.length == table.columnCount() - 2 : "Unable to log: Loggables do not match table";
-			for (int i = 0; i < loggables.length; i++) {
-				Object log = loggables[i].log();
-				assert table.getDataType(i + 2).validate(log) : "Unable to log: " + log.toString()
-						+ " does not conform to type " + table.getDataType(i + 2).toString()
-						+ ". Maybe the loggable is returning the wrong value?";
-				logValues[i + 2] = table.sanitize(table.getDataType(i + 2).reformat(loggables[i].log()));
-			}
-		} else {
-			assert args.length == table.columnCount() - 2 : "Unable to log: log arguments do not match table";
-			for (int i = 0; i < loggables.length; i++) {
-				Object log = loggables[i].log();
-				assert table.getDataType(i + 2).validate(log) : "Unable to log: " + log.toString()
-						+ " does not conform to type " + table.getDataType(i + 2).toString()
-						+ ". Maybe the wrong value was passed in to the function?";
-				logValues[i + 2] = table.sanitize(table.getDataType(i + 2).reformat(loggables[i].log()));
-			}
-			
+		logValues[0] = table.getDataType(0).reformat(tick);
+		for (int i = 0; i < args.length; i++) {
+			logValues[i+1] = table.getDataType(i+1).reformat(args[i]);
 		}
+
 		table.log(logValues);
+
 	}
 
 	/**

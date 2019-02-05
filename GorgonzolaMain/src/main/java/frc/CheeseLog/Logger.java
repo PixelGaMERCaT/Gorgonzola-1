@@ -70,19 +70,10 @@ public class Logger {
      * its conditional criteria and calls log on each.
      */
     public void tick(){
-        /*if(tick == -1){
-            for(String s : implicitTables.keySet()){
-                tables.put(s, new Table(implicitTableOutput.containsKey(s) ? implicitTableOutput.get(s) : defaultOutput, s,
-                        LoggingMode.MANUAL, implicitTables.get(s).keySet().toArray(new String[0]), implicitTables.get(s).values().toArray(new Type[0])));
-                for(String s1 : implicitTableLoggers.get(s).keySet())
-                    tables.get(s).setLogger(s1, implicitTableLoggers.get(s).get(s1));
-            }
-        }*/
-
         tick++;
         for(Table t : tables.values()){
             if(t.shouldAutolog()) {
-            	t.log(tick);
+                t.log(tick);
             }
         }
     }

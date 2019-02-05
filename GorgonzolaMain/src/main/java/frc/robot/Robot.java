@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
   }
   public void teleopInit() {
     Globals.drivetrain.resetEncoders();
+    Globals.poseTracker.init();
   }
   
   @Override

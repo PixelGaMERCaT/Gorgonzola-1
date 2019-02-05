@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Bool;
 import frc.CheeseLog.SQLType.Decimal;
@@ -41,8 +40,7 @@ public class Drivetrain implements Component {
             middleRight.follow(frontRight);
             compressor = new Compressor(RobotMap.COMPRESSOR);
             compressor.setClosedLoopControl(true);
-            switcher=new Solenoid(0);
-        
+            switcher = new Solenoid(0);
 
         }
         backRight.setInverted(true);
@@ -110,25 +108,26 @@ public class Drivetrain implements Component {
         turnController.setSetpoint(angle);
         turnController.enable();
     }
-    int maxVelocity=0;
+
+    int maxVelocity = 0;
+
     public void tick() {
-        //magicDrive(im.getForward(), im.getTurn());
+        driveBasic(im.getForward(), im.getTurn());
         //driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
-        
+
         /*if (Math.abs(maxVelocity)-Math.abs(frontRight.getEncoderVelocity())<0){
             System.out.println("right velocity: "+ frontRight.getEncoderVelocity());
             System.out.println("left velocity: "+ frontLeft.getEncoderVelocity());
             maxVelocity=frontRight.getEncoderVelocity();
         }*/
         //System.out.println("right distance "+ frontRight.getEncoderPosition());
-        if (!Globals.isNSP){
+        if (!Globals.isNSP) {
             switcher.set(im.getGearSwitchButton());
         }
     }
 
     /**
      * A basic percent-based drive method. Moves the treads of the robot
-     * 
      * @param forward A number between -1 (full backward) and 1 (full forward)
      * @param turn    A number between -1 (full right) and 1 (full left)
      */
@@ -189,6 +188,7 @@ public class Drivetrain implements Component {
     public int getRightPosition() {
         return frontRight.getEncoderPosition();
     }
+
     /**
      * Returns the velocity of the left encoder
      */
@@ -202,14 +202,15 @@ public class Drivetrain implements Component {
     public int getRightVelocity() {
         return frontRight.getEncoderVelocity();
     }
+
     /**
      * Drives the robot foward based on Motion profiling output
      * @param left the power to apply to the left side of the robot
      * @param right the power to apply to the right side of the robot
      * @param turn a correction factor based on the output of a turnPID
      */
-    public void driveMP(double left, double right, double turn){
-        frontLeft.set(ControlMode.PercentOutput, left-turn);
-        frontRight.set(ControlMode.PercentOutput, right+turn);
+    public void driveMP(double left, double right, double turn) {
+        frontLeft.set(ControlMode.PercentOutput, left - turn);
+        frontRight.set(ControlMode.PercentOutput, right + turn);
     }
 }

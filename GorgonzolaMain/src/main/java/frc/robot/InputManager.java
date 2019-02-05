@@ -36,7 +36,7 @@ public class InputManager implements Component {
      * @return a number [-1, 1], denoting the position of the joystick along the forward/backward axis
      */
     public double getForward() {
-        return getSafetyButton() ? left.getY() : 0;
+        return getSafetyButton() ? left.getRawAxis(0) : 0;
     }
 
     /**
