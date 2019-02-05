@@ -1,12 +1,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import frc.CheeseLog.Output.*;
+import frc.CheeseLog.*;
+import frc.CheeseLog.SQLType.*;
 
 /**
  * A component that parses input from the driverstation (joysticks, etc)
  */
 public class InputManager implements Component {
-
+    LogInterface logger;
     private Joystick left, right, aux;
 
     public InputManager() {
@@ -16,16 +19,13 @@ public class InputManager implements Component {
     }
 
     public void init() {
+        logger = Globals.logger;
         try {
-            Globals.logger.logger.addStatement("IM", "forward", frc.CheeseLog.Type.DECIMAL, () -> {
-                return getForward();
-            }, true, false, false);
-            Globals.logger.logger.addStatement("IM", "turn", frc.CheeseLog.Type.DECIMAL, () -> {
-                return getTurn();
-            }, true, false, false);
-
+            logger.inputManager = LogInterface.table("Input_Manager",
+                    new String[] { "forward", "turn", "safetyButton" },
+                    new Type[] { new Decimal(), new Decimal(), new Bool() },
+                    new Loggable[] { () -> getForward(), () -> getTurn(), () -> getSafetyButton() });
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -53,5 +53,9 @@ public class InputManager implements Component {
      */
     public boolean getSafetyButton() {
         return left.getRawButton(ButtonMap.SAFETY);
+    }
+
+    public boolean getGearSwitchButton(){
+        return left.getRawButton(ButtonMap.GEAR_SHIFT);
     }
 }

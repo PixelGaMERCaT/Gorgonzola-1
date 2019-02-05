@@ -1,16 +1,17 @@
 package frc.MotionProfiling;
 
-import frc.CheeseLog.Type;
 import frc.robot.Globals;
 import frc.robot.LogInterface;
 //import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory;
+import frc.CheeseLog.SQLType.*;
+import frc.CheeseLog.*;
 
 /**
  * Taken from Jaci's Pathfinder, with added logging functionality
  */
 public class EncoderFollower {
-    private double encoder_offset, encoder_tick_count, wheel_circumference;
+    private double encoder_offset, encoder_tick_count, inches_per_rotation;
     private double kp, ki, kd, kv, ka;
     private LogInterface logger;
     private double last_error, heading;
@@ -20,31 +21,19 @@ public class EncoderFollower {
     int segment;
     Trajectory trajectory;
 
-    public EncoderFollower(Trajectory traj, String filePath) {
-        this(traj);
+    public EncoderFollower(Trajectory traj) {
+        this.trajectory=traj;
         distance = position = velocity = acceleration = encoderVelocity = outputValue = 0;
         logger = Globals.logger;
         try {
-            logger.logger.addStatement("Motion_Profiling", "Distance", Type.DECIMAL, () -> {
-                return distance;
-            }, true, false, false);
-            logger.logger.addStatement("Motion_Profiling", "Position", Type.DECIMAL, () -> {
-                return position;
-            }, true, false, false);
-            logger.logger.addStatement("Motion_Profiling", "Velocity", Type.DECIMAL, () -> {
-                return velocity;
-            }, true, false, false);
-            logger.logger.addStatement("Motion_Profiling", "Acceleration", Type.DECIMAL, () -> {
-                return acceleration;
-            }, true, false, false);
-            logger.logger.addStatement("Motion_Profiling", "Encoder_Velocity", Type.DECIMAL, () -> {
-                return encoderVelocity;
-            }, true, false, false);
-            logger.logger.addStatement("Motion_Profiling", "Output_Value", Type.DECIMAL, () -> {
-                return outputValue;
-            }, true, false, false);
+            logger.motionProfiling = LogInterface.manualTable("Motion_Profiling",
+                    new String[] { "distance", "position", "velocity", "acceleration", "encoderVelocity",
+                            "outputValue" },
+                    new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
+                            new Decimal() },
+                    new Loggable[] { () -> distance, () -> position, () -> velocity, () -> acceleration,
+                            () -> encoderVelocity, () -> outputValue });
         } catch (Exception e) {
-            System.err.println("Problem in MP Logging setup.");
             e.printStackTrace();
 
         }
@@ -61,23 +50,17 @@ public class EncoderFollower {
     public double calculate(int encoder_tick, double vel) {
         Trajectory.Segment seg = trajectory.get(segment);
         outputValue = calculate(encoder_tick);
-        distance = ((encoder_tick - encoder_offset) / encoder_tick_count) * wheel_circumference;
-        position=seg.position;
-        velocity=seg.velocity;
-        acceleration=seg.acceleration;
-        velocity=vel;
-        
-       
-
+        distance = ((encoder_tick - encoder_offset) / encoder_tick_count) * inches_per_rotation;
+        // ((<distance travelled in encoder ticks>)/<encoder ticks per revolution>)*<inches travelled per revolution>
+        position = seg.position;
+        velocity = seg.velocity;
+        acceleration = seg.acceleration;
+        velocity = vel;
+        logger.motionProfiling.log(logger.getTick());
         return outputValue;
     }
 
-    
-
-    private EncoderFollower(Trajectory traj) {
-        this.trajectory = traj;
-    }
-
+   
     /**
      * Set a new trajectory to follow, and reset the cumulative errors and segment counts
     */
@@ -109,12 +92,12 @@ public class EncoderFollower {
      * @param initial_position      The initial 'offset' of your encoder. This should be set to the encoder value just
      *                              before you start to track
      * @param ticks_per_revolution  How many ticks per revolution the encoder has
-     * @param wheel_diameter        The diameter of your wheels (or pulleys for track systems) in meters
+     * @param inches_per_rotation   How many inches you travel per rotation of the wheels
     */
-    public void configureEncoder(int initial_position, int ticks_per_revolution, double wheel_diameter) {
+    public void configureEncoder(int initial_position, int ticks_per_revolution, double inches_per_rotation) {
         encoder_offset = initial_position;
         encoder_tick_count = ticks_per_revolution;
-        wheel_circumference = Math.PI * wheel_diameter;
+        this.inches_per_rotation = inches_per_rotation;
     }
 
     /**
@@ -133,7 +116,7 @@ public class EncoderFollower {
      * @return             The desired output for your motor controller
      */
     public double calculate(int encoder_tick) {
-        double distance_covered = ((encoder_tick - encoder_offset) / encoder_tick_count) * wheel_circumference;
+        double distance_covered = ((encoder_tick - encoder_offset) / encoder_tick_count) * inches_per_rotation;
         if (segment < trajectory.length()) {
             Trajectory.Segment seg = trajectory.get(segment);
             double error = seg.position - distance_covered;
@@ -172,9 +155,9 @@ public class EncoderFollower {
 
     /**
      * @return the remaining duration in the current motion profile
-    */ 
+    */
     public double getRemainingDuration() {
         return 1000 * (trajectory.length() - segment);// * MPConstants.DELTA_TIME;
     }
-    
+
 }

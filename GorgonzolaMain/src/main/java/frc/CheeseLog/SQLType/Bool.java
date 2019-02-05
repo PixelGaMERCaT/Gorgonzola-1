@@ -3,7 +3,8 @@ package frc.CheeseLog.SQLType;
 /**
  * Represents a boolean value. Can accept boolean objects, strings matching true or false, or 0 or 1
  */
-public class Bool implements SQLType {
+public class Bool implements Type {
+
     /**
      * Determines if s is a valid boolean. Returns valid if s is a java boolean, "true", "false", 0, or 1
      * @param s The object to check
@@ -31,15 +32,18 @@ public class Bool implements SQLType {
         try {
             int i = Integer.parseInt(o.toString());
             if(i == 0 || i == 1)
-                return Boolean.toString(i == 1);
+                return (i == 1) ? "true" : "false";
         } catch (Exception e){
-            return Boolean.toString(o.toString().toLowerCase().contains("true"));
+            return o.toString().toLowerCase().contains("true") ? "true" : "false";
         }
         return "false";
     }
 
+    /**
+     * Returns the SQL name for the boolean type
+     * @return "bool"
+     */
     @Override public String toString(){
-        return "boolean";
+        return "bool";
     }
-
 }

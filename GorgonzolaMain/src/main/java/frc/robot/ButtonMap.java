@@ -4,4 +4,5 @@ package frc.robot;
  */
 public class ButtonMap {
     public static final int SAFETY=1;
+    public static final int GEAR_SHIFT=3;
 }

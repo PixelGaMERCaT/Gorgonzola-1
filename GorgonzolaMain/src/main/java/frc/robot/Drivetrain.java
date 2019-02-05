@@ -2,18 +2,26 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.CheeseLog.Loggable;
+import frc.CheeseLog.SQLType.Bool;
+import frc.CheeseLog.SQLType.Decimal;
+import frc.CheeseLog.SQLType.Int;
+import frc.CheeseLog.SQLType.Type;
 
 public class Drivetrain implements Component {
-    public TalonSRX frontLeft, frontRight, backLeft, backRight;
+    public TalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
     private InputManager im;
+    private Compressor compressor;
+    private Solenoid switcher;
     public double currentLeftPosition, currentRightPosition;
     private Gyro gyro;
-    public double setPointLeft, setPointRight; 
+    private LogInterface logger;
+    public double setpointLeft, setpointRight;
     private PIDController turnController;
 
     /**
@@ -21,96 +29,101 @@ public class Drivetrain implements Component {
      * functionality
      */
     public Drivetrain() {
-        im = Globals.im;
-        frontLeft = new TalonSRX(RobotMap.FRONT_LEFT_TALON);
-        frontRight = new TalonSRX(RobotMap.FRONT_RIGHT_TALON);
-        backLeft = new TalonSRX(RobotMap.BACK_LEFT_TALON);
-        backRight = new TalonSRX(RobotMap.BACK_RIGHT_TALON);
+        frontLeft = new TalonManager(RobotMap.FRONT_LEFT_TALON);
+        frontRight = new TalonManager(RobotMap.FRONT_RIGHT_TALON);
+        backLeft = new TalonManager(RobotMap.BACK_LEFT_TALON);
+        backRight = new TalonManager(RobotMap.BACK_RIGHT_TALON);
+        if (!Globals.isNSP) {
+            middleLeft = new TalonManager(RobotMap.MIDDLE_LEFT_TALON);
+            middleRight = new TalonManager(RobotMap.MIDDLE_RIGHT_TALON);
+            middleRight.setInverted(true);
+            middleLeft.follow(frontLeft);
+            middleRight.follow(frontRight);
+            compressor = new Compressor(RobotMap.COMPRESSOR);
+            compressor.setClosedLoopControl(true);
+            switcher=new Solenoid(0);
+        
+
+        }
         backRight.setInverted(true);
         frontRight.setInverted(true);
         backLeft.follow(frontLeft);
         backRight.follow(frontRight);
-        frontLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        frontRight.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        frontLeft.configNominalOutputForward(0);
-        frontLeft.configNominalOutputReverse(0);
-        frontLeft.configPeakOutputForward(1);
-        frontLeft.configPeakOutputReverse(-1);
-        frontLeft.configNominalOutputForward(0);
-        frontLeft.configNominalOutputReverse(0);
-        frontLeft.configPeakOutputForward(1);
-        frontLeft.configPeakOutputReverse(-1);
-        frontRight.configNominalOutputForward(0);
-        frontRight.configNominalOutputReverse(0);
-        frontRight.configPeakOutputForward(1);
-        frontRight.configPeakOutputReverse(-1);
-        frontRight.configNominalOutputForward(0);
-        frontRight.configNominalOutputReverse(0);
-        frontRight.configPeakOutputForward(1);
-        frontRight.configPeakOutputReverse(-1);
-        frontLeft.config_kP(0, 1.1);
-        frontLeft.config_kI(0, 0);
-        frontLeft.config_kD(0, 0);
-        frontLeft.config_kF(0, .3);
-        frontRight.config_kP(0, 1.1);
-        frontRight.config_kI(0, 0);
-        frontRight.config_kD(0, 0);
-        frontRight.config_kF(0, .3);
+        frontLeft.initEncoders(0, 0, 0, 1.1);
+        frontRight.initEncoders(0, 0, 0, 1.1);
         resetEncoders();
-        // TODO Acceleration and cruise velocity
+
     }
 
     public void init() {
+        im = Globals.im;
+        logger = Globals.logger;
         gyro = Globals.gyro;
-        currentLeftPosition = frontLeft.getSelectedSensorPosition(0);
-        currentRightPosition = frontRight.getSelectedSensorPosition(0);
+        currentLeftPosition = frontLeft.getEncoderPosition();
+        currentRightPosition = frontRight.getEncoderPosition();
+        try {
+            logger.magicDrive = LogInterface.manualTable("Magic_Drive",
+                    new String[] { "encoderLeft", "encoderRight", "setpointLeft", "setpointRight" },
+                    new Type[] { new Int(), new Int(), new Decimal(), new Decimal() },
+                    new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
+                            () -> setpointLeft, () -> setpointRight });
+
+            logger.drivetrain = LogInterface.table("Drivetrain",
+                    new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower" },
+                    new Type[] { new Int(), new Int(), new Decimal(), new Decimal() },
+                    new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
+                            () -> frontLeft.getOutputCurrent(), () -> frontRight.getOutputCurrent() });
+
+            logger.turnController = LogInterface.manualTable("Turn_Controller",
+                    new String[] { "angle", "output", "setpoint", "enabled" },
+                    new Type[] { new Decimal(), new Decimal(), new Decimal(), new Bool() },
+                    new Loggable[] { () -> gyro.getYaw(), () -> turnController.get(),
+                            () -> turnController.getSetpoint(), () -> turnController.isEnabled() });
+            //TODO use turncontroller table
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         turnController = new PIDController(Constants.TURN_KP, Constants.TURN_KI, Constants.TURN_KD, gyro, o -> {
         });
         turnController.setAbsoluteTolerance(1);
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-1, 1);
         turnController.setContinuous(true);
-        try {
-            Globals.logger.logger.addStatement("Drivetrain", "encoderLeft", frc.CheeseLog.Type.INT, () -> {
-                return frontLeft.getSelectedSensorPosition(0);
-            }, true, false, false);
-            Globals.logger.logger.addStatement("Drivetrain", "encoderRight", frc.CheeseLog.Type.INT, () -> {
-                return frontRight.getSelectedSensorPosition(0);
-            }, true, false, false);
-            Globals.logger.logger.addStatement("Drivetrain", "setPointLeft", frc.CheeseLog.Type.DECIMAL, () -> {
-                return setPointLeft;
-            }, true, false, false);
-            Globals.logger.logger.addStatement("Drivetrain", "setPointRight", frc.CheeseLog.Type.DECIMAL, () -> {
-                return setPointRight;
-            }, true, false, false);
-            Globals.logger.logger.addStatement("TurnController", "Angle", frc.CheeseLog.Type.DECIMAL,
-                    () -> gyro.getNormalizedYaw(), true, false, false);
-            Globals.logger.logger.addStatement("TurnController", "PIDOut", frc.CheeseLog.Type.DECIMAL,
-                    () -> turnController.get(), true, false, false);
-            Globals.logger.logger.addStatement("TurnController", "Setpoint", frc.CheeseLog.Type.DECIMAL,
-                    () -> turnController.getSetpoint(), true, false, false);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        this.setAngleSetpoint(90.0);
+        this.setYawSetpoint(90.0);
     }
 
+    /**
+     * Resets the drivetrain's encoders
+     */
     public void resetEncoders() {
-        frontLeft.setSelectedSensorPosition(0, 0, 0);
-        frontRight.setSelectedSensorPosition(0, 0, 0);
-        setPointLeft = 0;
-        setPointRight = 0;
+        frontLeft.resetEncoder();
+        frontRight.resetEncoder();
+        setpointLeft = 0;
+        setpointRight = 0;
     }
-    public void setAngleSetpoint(double angle){
+
+    /**
+     * Sets the setpoint for the Turn PID controller.
+     * @param angle the setpoint
+     */
+    public void setYawSetpoint(double angle) {
         turnController.setSetpoint(angle);
         turnController.enable();
     }
+    int maxVelocity=0;
     public void tick() {
         //magicDrive(im.getForward(), im.getTurn());
-        System.out.println(turnController.get());
-        driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
-        //driveBasic(im.getForward(), im.getTurn());
+        //driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
+        
+        /*if (Math.abs(maxVelocity)-Math.abs(frontRight.getEncoderVelocity())<0){
+            System.out.println("right velocity: "+ frontRight.getEncoderVelocity());
+            System.out.println("left velocity: "+ frontLeft.getEncoderVelocity());
+            maxVelocity=frontRight.getEncoderVelocity();
+        }*/
+        //System.out.println("right distance "+ frontRight.getEncoderPosition());
+        if (!Globals.isNSP){
+            switcher.set(im.getGearSwitchButton());
+        }
     }
 
     /**
@@ -122,9 +135,6 @@ public class Drivetrain implements Component {
     public void driveBasic(double forward, double turn) {
         forward = forward * forward * Math.signum(forward);
         turn = turn * turn * Math.signum(turn);
-        //System.out.println("Positions:\n" + "left" + frontLeft.getSelectedSensorPosition(0) + "\nright"
-        //        + frontRight.getSelectedSensorPosition(0));
-
         frontLeft.set(ControlMode.PercentOutput, forward + turn);
         frontRight.set(ControlMode.PercentOutput, forward - turn);
     }
@@ -139,34 +149,67 @@ public class Drivetrain implements Component {
 
     public void magicDrive(double forward, double turn) {
 
-        /*forward = forward * forward * Math.signum(forward);
+        forward = forward * forward * Math.signum(forward);
         forward = Math.max(Math.min(1, forward), -1);
         turn = turn * turn * Math.signum(turn); //TODO Experiment with not minning, try something with a drive ratio
         turn = Math.max(Math.min(1, turn), -1);
         //TODO Check for problems with driving forward close to max and trying to turn; try separate turn distance
-        currentLeftPosition = frontLeft.getSelectedSensorPosition(0);
-        currentRightPosition = frontRight.getSelectedSensorPosition(0);
+        currentLeftPosition = frontLeft.getEncoderPosition();
+        currentRightPosition = frontRight.getEncoderPosition();
 
-        setPointLeft += (forward * Constants.MAX_DRIVE_VELOCITY + turn * Constants.MAX_TURN_VELOCITY);
-        setPointRight += (forward * Constants.MAX_DRIVE_VELOCITY - turn * Constants.MAX_TURN_VELOCITY);
-
+        setpointLeft += (forward * Constants.MAX_DRIVE_VELOCITY + turn * Constants.MAX_TURN_VELOCITY);
+        setpointRight += (forward * Constants.MAX_DRIVE_VELOCITY - turn * Constants.MAX_TURN_VELOCITY);
+        /*
         if (Math.abs(setPointLeft - currentLeftPosition) > 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS) {
             setPointLeft = Math.signum(setPointLeft - currentLeftPosition) * 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS
                     + currentLeftPosition;
         }
-
+        
         if (Math.abs(setPointRight - currentRightPosition) > 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS) {
             setPointRight = Math.signum(setPointRight - currentRightPosition) * 4096
                     * Constants.MAGIC_DRIVE_MAX_ROTATIONS + currentRightPosition;
-        }
-        frontLeft.set(ControlMode.MotionMagic, setPointLeft);
-        frontRight.set(ControlMode.MotionMagic, setPointRight);
-        */
-        frontLeft.set(ControlMode.MotionMagic, 40960);
-        frontRight.set(ControlMode.MotionMagic, 40960);
-        SmartDashboard.putNumber("setPoint", setPointLeft);
-        SmartDashboard.putNumber("currentPosition", frontLeft.getSelectedSensorPosition(0));
+        }*/
 
+        frontLeft.set(ControlMode.MotionMagic, setpointLeft);
+        frontRight.set(ControlMode.MotionMagic, setpointRight);
+        logger.magicDrive.log(logger.getTick());
+        logger.magicDrive.log(logger.getTick());
     }
 
+    /**
+     * Returns the position of the left encoder
+     */
+    public int getLeftPosition() {
+        return frontLeft.getEncoderPosition();
+    }
+
+    /**
+     * returns the position of the right encoder
+     */
+    public int getRightPosition() {
+        return frontRight.getEncoderPosition();
+    }
+    /**
+     * Returns the velocity of the left encoder
+     */
+    public int getLeftVelocity() {
+        return frontLeft.getEncoderVelocity();
+    }
+
+    /**
+     * returns the velocity of the right encoder
+     */
+    public int getRightVelocity() {
+        return frontRight.getEncoderVelocity();
+    }
+    /**
+     * Drives the robot foward based on Motion profiling output
+     * @param left the power to apply to the left side of the robot
+     * @param right the power to apply to the right side of the robot
+     * @param turn a correction factor based on the output of a turnPID
+     */
+    public void driveMP(double left, double right, double turn){
+        frontLeft.set(ControlMode.PercentOutput, left-turn);
+        frontRight.set(ControlMode.PercentOutput, right+turn);
+    }
 }

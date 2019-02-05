@@ -3,8 +3,7 @@ package frc.CheeseLog.SQLType;
 /**
  * Represents an integer value. Can accept longs, ints, shorts, bytes, or strings consisting of any of the above (in base 10)
  */
-public class Int implements SQLType {
-
+public class Int implements Type {
     /**
      * Determines if an object can be an Int
      * @param o The object to check
@@ -21,9 +20,11 @@ public class Int implements SQLType {
         return true;
     }
 
+    /**
+     * Returns the SQL datatype
+     * @return "int"
+     */
     @Override public String toString(){
-        return "Int";
+        return "int";
     }
-
-	
 }

@@ -5,22 +5,40 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
+import frc.CheeseLog.Loggable;
+import frc.CheeseLog.SQLType.Decimal;
+import frc.CheeseLog.SQLType.Type;
+
+
 
 public class Gyro implements Component, PIDSource {
     private AHRS navx;
-    
+    private LogInterface logger;
     public Gyro() {
+        try {
+            navx = new AHRS(SPI.Port.kMXP);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void init() {
+        logger=Globals.logger;
         try {
-            navx = new AHRS(SPI.Port.kMXP);
+            logger.gyro=LogInterface.table("Gyro", new String[]{
+                "yaw"
+            }, new Type[]{
+                new Decimal()
+            }, new Loggable[]{
+                ()->getNormalizedYaw()
+            });
+
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("problem in initialization of navx");
         }
         System.out.println("init Navx");
-        //navx.zeroYaw();
+        navx.zeroYaw();
     }
 
     /**
