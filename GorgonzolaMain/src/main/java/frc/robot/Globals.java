@@ -11,7 +11,9 @@ import frc.pose.PoseTracker;
  * information
  */
 public class Globals {
-    public static boolean isNSP = true;
+    public static boolean isNSP=false;
+    public static boolean isAdelost=true;
+
     public static InputManager im;
     public static Drivetrain drivetrain;
     public static Gyro gyro;

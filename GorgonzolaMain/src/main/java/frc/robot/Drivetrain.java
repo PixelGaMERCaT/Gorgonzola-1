@@ -19,6 +19,7 @@ public class Drivetrain implements Component {
     private Solenoid switcher;
     public double currentLeftPosition, currentRightPosition;
     private Gyro gyro;
+
     private LogInterface logger;
     public double setpointLeft, setpointRight;
     private PIDController turnController;
@@ -43,8 +44,11 @@ public class Drivetrain implements Component {
             switcher = new Solenoid(0);
 
         }
+        if (!Globals.isAdelost){
         backRight.setInverted(true);
         frontRight.setInverted(true);
+        }
+        testing
         backLeft.follow(frontLeft);
         backRight.follow(frontRight);
         frontLeft.initEncoders(0, 0, 0, 1.1);
@@ -112,6 +116,7 @@ public class Drivetrain implements Component {
     int maxVelocity = 0;
 
     public void tick() {
+
         driveBasic(im.getForward(), im.getTurn());
         //driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
 
@@ -121,7 +126,7 @@ public class Drivetrain implements Component {
             maxVelocity=frontRight.getEncoderVelocity();
         }*/
         //System.out.println("right distance "+ frontRight.getEncoderPosition());
-        if (!Globals.isNSP) {
+        if (!(Globals.isNSP || Globals.isAdelost)) {
             switcher.set(im.getGearSwitchButton());
         }
     }
@@ -136,6 +141,12 @@ public class Drivetrain implements Component {
         turn = turn * turn * Math.signum(turn);
         frontLeft.set(ControlMode.PercentOutput, forward + turn);
         frontRight.set(ControlMode.PercentOutput, forward - turn);
+    }
+
+    public void autoDrive(double forward, double turn) {
+        frontLeft.set(ControlMode.PercentOutput, forward + turn);
+        frontRight.set(ControlMode.PercentOutput, forward - turn);
+        System.out.println("Drive Method: " + forward + ", " + turn);
     }
 
     /**
