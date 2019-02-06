@@ -14,20 +14,25 @@ public class Drivetrain implements Component {
     public double currentLeftPosition, currentRightPosition;
     private Gyro gyro;
     public double setPointLeft, setPointRight; 
-    private PIDController turnController;
-
+    public PIDController turnController;
+    
     /**
      * The Default constructor for Drivetrain, sets up basic movement and sensor
      * functionality
      */
     public Drivetrain() {
+        
         im = Globals.im;
         frontLeft = new TalonSRX(RobotMap.FRONT_LEFT_TALON);
         frontRight = new TalonSRX(RobotMap.FRONT_RIGHT_TALON);
         backLeft = new TalonSRX(RobotMap.BACK_LEFT_TALON);
         backRight = new TalonSRX(RobotMap.BACK_RIGHT_TALON);
-        backRight.setInverted(true);
-        frontRight.setInverted(true);
+        if (Globals.isAdelost){
+
+        } else  {
+            backRight.setInverted(true);
+            frontRight.setInverted(true);
+        }
         backLeft.follow(frontLeft);
         backRight.follow(frontRight);
         frontLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
@@ -93,7 +98,7 @@ public class Drivetrain implements Component {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.setAngleSetpoint(90.0);
+        //this.setAngleSetpoint(90.0);
     }
 
     public void resetEncoders() {
@@ -109,8 +114,8 @@ public class Drivetrain implements Component {
     public void tick() {
         //magicDrive(im.getForward(), im.getTurn());
         System.out.println(turnController.get());
-        driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
-        //driveBasic(im.getForward(), im.getTurn());
+        // driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
+        driveBasic(im.getForward(), im.getTurn());
     }
 
     /**
@@ -127,6 +132,12 @@ public class Drivetrain implements Component {
 
         frontLeft.set(ControlMode.PercentOutput, forward + turn);
         frontRight.set(ControlMode.PercentOutput, forward - turn);
+    }
+
+    public void autoDrive(double forward, double turn) {
+        frontLeft.set(ControlMode.PercentOutput, forward + turn);
+        frontRight.set(ControlMode.PercentOutput, forward - turn);
+        System.out.println("Drive Method: " + forward + ", " + turn);
     }
 
     /**
