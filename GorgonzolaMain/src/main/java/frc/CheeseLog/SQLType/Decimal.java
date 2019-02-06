@@ -3,8 +3,7 @@ package frc.CheeseLog.SQLType;
 /**
  * Represents a decimal value. Can accept doubles, floats, or strings consisting of a double/float
  */
-public class Decimal implements SQLType {
-
+public class Decimal implements Type {
     /**
      * Determines if an object can be a decimal
      * @param o The object to check
@@ -21,8 +20,11 @@ public class Decimal implements SQLType {
         return true;
     }
 
+    /**
+     * Returns the SQL datatype
+     * @return "double"
+     */
     @Override public String toString(){
-        return "real";
+        return "DOUBLE PRECISION";
     }
-    
 }

@@ -1,5 +1,4 @@
-package frc.robot;
- /**
+/**
   * A basic component of the robot. Contains three methods, all of which can be overrided.
   * Example: Drivetrain
   */

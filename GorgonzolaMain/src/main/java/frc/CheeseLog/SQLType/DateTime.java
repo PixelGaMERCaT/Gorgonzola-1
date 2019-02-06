@@ -1,19 +1,34 @@
 package frc.CheeseLog.SQLType;
 
+import java.text.SimpleDateFormat;
+
 /**
- * This is probably not going to be used by an end user, so validation was left... open
- * Matches datetime objects. This is intended to be used for the timestamp column
+ * Matches datetime objects. This is intended to be used only for the timestamp column
  */
-public class DateTime implements SQLType {
+public class DateTime implements Type {
+    /**
+     * Determines if an object matches a sql timestamp
+     * @param o The objec to check
+     * @return Whether or not it is a valid timestamp
+     */
     @Override public boolean validate(Object o){
-        /**
-         * TODO: determine if o can be a timestamp
-         */
-        return true;
+        try { new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parseObject(o.toString()); return true; } catch (Exception e) { return false; }
     }
-    @Override
-	
-    public String toString() {
-    	return "timestamp";
+
+    /**
+     * Formats a timestamp by putting quotes around it
+     * @param o The timestamp
+     * @return The timestamp with quotes
+     */
+    @Override public String reformat(Object o){
+        return "'" + o.toString() + "'";
+    }
+
+    /**
+     * Returns the SQL datatype
+     * @return "timestamp"
+     */
+    @Override public String toString(){
+        return "timestamp";
     }
 }

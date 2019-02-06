@@ -25,6 +25,7 @@ public class NetworkInterface implements Component {
     public NetworkInterface(String tableName) {
         tableValues = new HashMap<String, NetworkTableEntry>();
         table = NetworkTableInstance.getDefault().getTable(tableName);
+        
     }
 
     /**
@@ -41,9 +42,9 @@ public class NetworkInterface implements Component {
      * @return the value in the table at that location, as a NetworkTableValue
      * @throws Exception If the value does not exist in the table
      */
-    public NetworkTableValue get(String key, NetworkTableType type) throws Exception {
+    public NetworkTableValue get(String key) throws Exception {
         if (!tableValues.containsKey(key)) {
-            throw new Exception();
+            tableValues.put(key, table.getEntry(key));
         }
         return tableValues.get(key).getValue();
     }

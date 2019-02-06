@@ -69,11 +69,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Sandstorm Path: ", sandstormMode.name);
   }
   public void disabledInit() {
-    
     Globals.drivetrain.driveBasic(0, 0);
   }
   public void teleopInit() {
     Globals.drivetrain.resetEncoders();
+    Globals.poseTracker.init();
   }
   
   @Override
@@ -89,14 +89,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Globals.tick();
-   
   }
-
+  @Override 
+  public void testInit(){
+  }
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
-    System.out.println("Navx: "+ Globals.gyro.getYaw());
   }
 }

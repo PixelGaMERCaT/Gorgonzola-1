@@ -1,4 +1,4 @@
-package frc.robot;
+
 
 import java.util.HashMap;
 
@@ -11,7 +11,7 @@ import edu.wpi.first.networktables.NetworkTableValue;
 /**
  * Allows interfacing with Networktables; wraps NetworkTable
  */
-public class NetworkInterface implements Component {
+public class NetworkInterface {
     private HashMap<String, NetworkTableEntry> tableValues; // contains the respective table entries for each name
     private NetworkTable table;
 
@@ -25,7 +25,6 @@ public class NetworkInterface implements Component {
     public NetworkInterface(String tableName) {
         tableValues = new HashMap<String, NetworkTableEntry>();
         table = NetworkTableInstance.getDefault().getTable(tableName);
-        
     }
 
     /**

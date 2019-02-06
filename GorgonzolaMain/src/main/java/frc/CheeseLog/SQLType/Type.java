@@ -3,9 +3,9 @@ package frc.CheeseLog.SQLType;
 /**
  * Type provides a method for typechecking values logged in the database.
  * An instance of Type is created for each column. That instance is responsible for assuring all values
- * inserted into the column match the column's type in the database.
+ * inserted in to the column match the column's type in the database.
  */
-public interface SQLType {
+public interface Type {
 
     /**
      * Determines if an object can typecheck with the given type.
@@ -13,11 +13,7 @@ public interface SQLType {
      * @return Whether or not it can be of the given type
      */
     boolean validate(Object s);
-    /**
-     * Returns the PostgreSQL typestring (eg: varchar for strings)
-     * @return the typestring of the variable
-     */
-    String toString();
+
     /**
      * Formats an object in to a string that can match a given type to an appropriate form. For example, 1 is a valid Bool, but
      * the database needs it to be either true or false, so this would take care of that
