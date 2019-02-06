@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.sandstorm.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,7 +23,8 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
-
+  public SandstormPath sandstormMode;
+  public SandstormStart sandstormStarter;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   /**
@@ -32,9 +34,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     Globals.init();
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    sandstormStarter = new SandstormStart();
+    sandstormStarter.initSandstormPaths();
   }
 
   /**
@@ -64,7 +65,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    sandstormMode = sandstormStarter.start();
+    SmartDashboard.putString("Sandstorm Path: ", sandstormMode.name);
   }
   public void disabledInit() {
     Globals.drivetrain.driveBasic(0, 0);
@@ -76,13 +78,8 @@ public class Robot extends TimedRobot {
   
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+    if (!sandstormMode.over) {
+      sandstormMode.tick();
     }
   }
 
