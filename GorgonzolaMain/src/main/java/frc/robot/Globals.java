@@ -11,7 +11,7 @@ import frc.pose.PoseTracker;
  * information
  */
 public class Globals {
-    public static boolean isNSP = true;
+    public static boolean isNSP = false;
     public static InputManager im;
     public static Drivetrain drivetrain;
     public static Gyro gyro;
@@ -31,7 +31,7 @@ public class Globals {
         drivetrain = new Drivetrain();
         testTable = new NetworkInterface("blue");
         logger = new LogInterface();
-        components.addAll(Arrays.asList(poseTracker, gyro, /*im*/ drivetrain, testTable, logger));
+        components.addAll(Arrays.asList(poseTracker, gyro, im, drivetrain, testTable, logger));
         components.forEach(c -> c.init());
 
     }
@@ -56,7 +56,6 @@ public class Globals {
      */
     public static boolean isAuto() {
         return true;
-        //TODO Actual returning
     }
 
 }
