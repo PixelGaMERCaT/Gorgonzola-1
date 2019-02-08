@@ -26,7 +26,7 @@ public class MotionProfile extends SandstormSection {
     }
 
     @Override public void end() {
-
+        drive.resetEncoders();
     }
 
     @Override public void init() {
