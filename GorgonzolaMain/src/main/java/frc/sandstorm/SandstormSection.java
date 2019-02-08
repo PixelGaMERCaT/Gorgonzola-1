@@ -15,25 +15,42 @@ public abstract class SandstormSection {
     public double duration; // Duration of section in seconds
     public long startTime = 0;
 
-    public void init() { // Things to run when the section starts
+    /*
+    * By default, init() stores the time at which the section starts during the auto mode
+    * It should be overriden in sections where things need to be initialized as soon as the section starts, such as in TurnToAngle and MotionProfile
+    */
+    public void init() { 
         startTime = System.currentTimeMillis();
         if (duration != -1) {
             duration = duration * 1000;
         }
     } 
 
-    public abstract void update(); // Things to run while the section is running
+    /*
+    * update() is what will be run while the sectoin is active during the auto mode
+    * It will often include motor powering and should always be overriden
+    */
+    public abstract void update(); 
 
-    public abstract void end(); // Things to run when the section ends
+    /*
+    * end() should be overriden to include what the section should do when it ends
+    * An example of this could be resetting encoders at the end of the section
+    */
 
-    public boolean customFinish() { // Custom finish code; for a section that ends based on time, return false
+    public abstract void end();
+
+    /*
+    * By default, customFinish() returns false
+    * It should be overriden in sections with a non-time based end condition, such as MotionProfile and turnToAngle
+    */
+    public boolean customFinish() {
         return false;
     } 
     /*
-    * For a section that does not end based on time, set duration to -1
-    * and add custom finish code to the customeFinish() method
+    * End conditions are set up in isFinished()
+    * It should NOT be overriden
     */
-    public boolean isFinished() { // End conditions
+    public boolean isFinished() { 
         return (System.currentTimeMillis() - startTime > duration && duration != -1) || customFinish() ? true : false; 
     }
 }

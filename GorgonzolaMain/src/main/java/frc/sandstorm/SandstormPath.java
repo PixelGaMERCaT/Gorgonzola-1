@@ -27,12 +27,11 @@ public class SandstormPath {
         sections.add(newSection);
     }
 
-    public void tick() { 
+    public void tick() { // Iterates through the sections of the auto mode
         if (section == 0 && sections.get(section).startTime == 0) {
             sections.get(section).init();
         } else {
             sections.get(section).update(); 
-            System.out.println("Auto Update");       
         }
         if (sections.get(section).isFinished()) {
             sections.get(section).end();
