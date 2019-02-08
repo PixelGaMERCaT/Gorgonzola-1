@@ -35,7 +35,7 @@ public class DriveStraight extends SandstormSection {
         turnController.setContinuous(true);
     }
 
-    public void init() {
+    @Override public void init() {
         super.init();
         turnController.setSetpoint(0);
         turnController.enable();
