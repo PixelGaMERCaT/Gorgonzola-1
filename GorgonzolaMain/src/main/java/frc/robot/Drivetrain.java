@@ -22,7 +22,7 @@ public class Drivetrain implements Component {
 
     private LogInterface logger;
     public double setpointLeft, setpointRight;
-    private PIDController turnController;
+    public PIDController turnController;
 
     /**
      * The Default constructor for Drivetrain, sets up basic movement and sensor
@@ -48,7 +48,7 @@ public class Drivetrain implements Component {
         backRight.setInverted(true);
         frontRight.setInverted(true);
         }
-        testing
+        
         backLeft.follow(frontLeft);
         backRight.follow(frontRight);
         frontLeft.initEncoders(0, 0, 0, 1.1);
