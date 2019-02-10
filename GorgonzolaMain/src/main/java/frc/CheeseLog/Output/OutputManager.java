@@ -49,13 +49,11 @@ public class OutputManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		double last = System.nanoTime();
 
 		new Thread(() -> {
 			while (!Thread.interrupted()) {
 				try {
 					if (batches > 0) {
-						double time =System.currentTimeMillis();
 						statement.executeBatch();
 						batches = 0;
 					} 

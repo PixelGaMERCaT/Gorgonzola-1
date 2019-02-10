@@ -1,11 +1,12 @@
-package frc.MotionProfiling;
+package frc.motionprofiling;
 
+import frc.CheeseLog.Loggable;
+import frc.CheeseLog.SQLType.Decimal;
+import frc.CheeseLog.SQLType.Type;
+import frc.components.LogInterface;
 import frc.robot.Globals;
-import frc.robot.LogInterface;
 //import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory;
-import frc.CheeseLog.SQLType.*;
-import frc.CheeseLog.*;
 
 /**
  * Taken from Jaci's Pathfinder, with added logging functionality

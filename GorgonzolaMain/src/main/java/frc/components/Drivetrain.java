@@ -1,25 +1,25 @@
 
-package frc.robot;
+package frc.components;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.Solenoid;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Bool;
 import frc.CheeseLog.SQLType.Decimal;
-import frc.CheeseLog.SQLType.Int;
 import frc.CheeseLog.SQLType.Type;
-
+import frc.robot.Constants;
+import frc.robot.Globals;
+import frc.robot.RobotMap;
+import frc.talonmanager.DriveTalonManager;
 public class Drivetrain implements Component {
-    public TalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
+    public DriveTalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
     private InputManager im;
     private Compressor compressor;
-    private Solenoid switcher;
     public double currentLeftPosition, currentRightPosition;
     private Gyro gyro;
-
+    private GearShifter shifter;
     private LogInterface logger;
     public double setpointLeft, setpointRight;
     public PIDController turnController;
@@ -29,30 +29,32 @@ public class Drivetrain implements Component {
      * functionality
      */
     public Drivetrain() {
-        frontLeft = new TalonManager(RobotMap.FRONT_LEFT_TALON);
-        frontRight = new TalonManager(RobotMap.FRONT_RIGHT_TALON);
-        backLeft = new TalonManager(RobotMap.BACK_LEFT_TALON);
-        backRight = new TalonManager(RobotMap.BACK_RIGHT_TALON);
-        if (!Globals.isNSP) {
-            middleLeft = new TalonManager(RobotMap.MIDDLE_LEFT_TALON);
-            middleRight = new TalonManager(RobotMap.MIDDLE_RIGHT_TALON);
+        frontLeft = new DriveTalonManager(RobotMap.FRONT_LEFT_TALON);
+        frontRight = new DriveTalonManager(RobotMap.FRONT_RIGHT_TALON);
+        backLeft = new DriveTalonManager(RobotMap.BACK_LEFT_TALON);
+        backRight = new DriveTalonManager(RobotMap.BACK_RIGHT_TALON);
+        if (!(Globals.isNSP || Globals.isAdelost)) {
+            middleLeft = new DriveTalonManager(RobotMap.MIDDLE_LEFT_TALON);
+            middleRight = new DriveTalonManager(RobotMap.MIDDLE_RIGHT_TALON);
             middleRight.setInverted(true);
             middleLeft.follow(frontLeft);
             middleRight.follow(frontRight);
             compressor = new Compressor(RobotMap.COMPRESSOR);
             compressor.setClosedLoopControl(true);
-            switcher = new Solenoid(0);
 
         }
-        if (!Globals.isAdelost){
-        backRight.setInverted(true);
-        frontRight.setInverted(true);
+        if (!Globals.isAdelost) {
+            backRight.setInverted(true);
+            frontRight.setInverted(true);
         }
-        
+
         backLeft.follow(frontLeft);
         backRight.follow(frontRight);
-        frontLeft.initEncoders(0, 0, 0, 1.1);
-        frontRight.initEncoders(0, 0, 0, 1.1);
+        System.out.println("Proper F: " + Constants.MAGIC_KF_LOW);
+        frontLeft.initEncoder(Constants.MAGIC_KP_LOW, Constants.MAGIC_KI_LOW, Constants.MAGIC_KD_LOW,
+                -Constants.MAGIC_KF_LOW);
+        frontRight.initEncoder(Constants.MAGIC_KP_LOW, Constants.MAGIC_KI_LOW, Constants.MAGIC_KD_LOW,
+                -Constants.MAGIC_KF_LOW);
         resetEncoders();
 
     }
@@ -65,14 +67,17 @@ public class Drivetrain implements Component {
         currentRightPosition = frontRight.getEncoderPosition();
         try {
             logger.magicDrive = LogInterface.manualTable("Magic_Drive",
-                    new String[] { "encoderLeft", "encoderRight", "setpointLeft", "setpointRight" },
-                    new Type[] { new Int(), new Int(), new Decimal(), new Decimal() },
+                    new String[] { "encoderLeft", "encoderRight", "setpointLeft", "setpointRight", "currentLeft",
+                            "currentRight" },
+                    new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
+                            new Decimal() },
                     new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
-                            () -> setpointLeft, () -> setpointRight });
+                            () -> setpointLeft, () -> setpointRight, () -> frontLeft.getOutputCurrent(),
+                            () -> frontRight.getOutputCurrent() });
 
             logger.drivetrain = LogInterface.table("Drivetrain",
                     new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower" },
-                    new Type[] { new Int(), new Int(), new Decimal(), new Decimal() },
+                    new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal() },
                     new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
                             () -> frontLeft.getOutputCurrent(), () -> frontRight.getOutputCurrent() });
 
@@ -113,22 +118,35 @@ public class Drivetrain implements Component {
         turnController.enable();
     }
 
-    int maxVelocity = 0;
+    double maxVelocity = 0;
+    double imForward = 0;
+    double tick = 0;
 
     public void tick() {
-
-        driveBasic(im.getForward(), im.getTurn());
-        //driveBasic(im.getForward(), turnController.get()* (im.getSafetyButton() ? 1 : 0));
-
-        /*if (Math.abs(maxVelocity)-Math.abs(frontRight.getEncoderVelocity())<0){
-            System.out.println("right velocity: "+ frontRight.getEncoderVelocity());
-            System.out.println("left velocity: "+ frontLeft.getEncoderVelocity());
-            maxVelocity=frontRight.getEncoderVelocity();
-        }*/
-        //System.out.println("right distance "+ frontRight.getEncoderPosition());
-        if (!(Globals.isNSP || Globals.isAdelost)) {
-            switcher.set(im.getGearSwitchButton());
+        //maxVelocity = Math.max(maxVelocity, Math.abs(frontLeft.getEncoderVelocityIPS()));
+        /*System.out.println("PositionR "+frontRight.getEncoderPositionInches());
+        System.out.println("PositionL "+frontLeft.getEncoderPositionInches());
+        System.out.println(maxVelocity);
+        */
+        //driveBasic(im.getForward(), im.getTurn());
+        //magicDrive(im.getForward(), im.getTurn());
+        if (im.getSafetyButton()) {
+            tick++;
+            if (tick < 80) {
+                magicDrive(.75, im.getTurn());
+            } else if (tick < 160) {
+                magicDrive(-.75, im.getTurn());
+            } else {
+                frontRight.set(ControlMode.PercentOutput, 0);
+                frontLeft.set(ControlMode.PercentOutput, 0);
+            }
+            //frontRight.set(ControlMode.MotionMagic, -12 * Constants.ENCODER_TO_INCHES);
+            //frontLeft.set(ControlMode.MotionMagic, -12 * Constants.ENCODER_TO_INCHES);
+        } else {
+            frontRight.set(ControlMode.PercentOutput, 0);
+            frontLeft.set(ControlMode.PercentOutput, 0);
         }
+        
     }
 
     /**
@@ -139,18 +157,22 @@ public class Drivetrain implements Component {
     public void driveBasic(double forward, double turn) {
         forward = forward * forward * Math.signum(forward);
         turn = turn * turn * Math.signum(turn);
-        frontLeft.set(ControlMode.PercentOutput, forward + turn);
-        frontRight.set(ControlMode.PercentOutput, forward - turn);
-    }
-
-    public void autoDrive(double forward, double turn) {
-        frontLeft.set(ControlMode.PercentOutput, forward + turn);
-        frontRight.set(ControlMode.PercentOutput, forward - turn);
-        System.out.println("Drive Method: " + forward + ", " + turn);
+        frontLeft.set(ControlMode.PercentOutput, forward - turn);
+        frontRight.set(ControlMode.PercentOutput, forward + turn);
     }
 
     /**
-     * A Magic-Drive based movement option. Works similarly to driveBasic, but
+     * A drive method designed for auto; the same as driveBasic but without squaring
+     * @param forward A number between -1 (full backward) and 1 (full forward)
+     * @param turn    A number between -1 (full right) and 1 (full left)
+     */
+    public void autoDrive(double forward, double turn) {
+        frontLeft.set(ControlMode.PercentOutput, forward - turn);
+        frontRight.set(ControlMode.PercentOutput, forward + turn);
+    }
+
+    /**
+     * A Motion Magic-based movement option. Works similarly to driveBasic, but
      * resists unwanted change in motion.
      * 
      * @param forward A number between -1 (full backward) and 1 (full forward)
@@ -159,30 +181,31 @@ public class Drivetrain implements Component {
 
     public void magicDrive(double forward, double turn) {
 
-        forward = forward * forward * Math.signum(forward);
-        forward = Math.max(Math.min(1, forward), -1);
+        /*forward = forward * forward * Math.signum(forward);
         turn = turn * turn * Math.signum(turn); //TODO Experiment with not minning, try something with a drive ratio
-        turn = Math.max(Math.min(1, turn), -1);
-        //TODO Check for problems with driving forward close to max and trying to turn; try separate turn distance
+        *///TODO Check for problems with driving forward close to max and trying to turn; try separate turn distance
         currentLeftPosition = frontLeft.getEncoderPosition();
         currentRightPosition = frontRight.getEncoderPosition();
-
-        setpointLeft += (forward * Constants.MAX_DRIVE_VELOCITY + turn * Constants.MAX_TURN_VELOCITY);
-        setpointRight += (forward * Constants.MAX_DRIVE_VELOCITY - turn * Constants.MAX_TURN_VELOCITY);
+        turn = 0; //TODO REMOVE
+        setpointLeft += (forward * Constants.MAX_DRIVE_VELOCITY_LOW / 50.0 * Constants.DRIVE_ENCU_PER_INCH
+                - turn * Constants.MAX_TURN_VELOCITY_LOW);
+        setpointRight += (forward * Constants.MAX_DRIVE_VELOCITY_LOW / 50.0 * Constants.DRIVE_ENCU_PER_INCH
+                + turn * Constants.MAX_TURN_VELOCITY_LOW);
+        System.out.println("Forward" + (forward * Constants.MAX_DRIVE_VELOCITY_LOW * Constants.DRIVE_ENCU_PER_INCH));
+        System.out.println("turn" + turn);
         /*
         if (Math.abs(setPointLeft - currentLeftPosition) > 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS) {
-            setPointLeft = Math.signum(setPointLeft - currentLeftPosition) * 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS
-                    + currentLeftPosition;
+        setPointLeft = Math.signum(setPointLeft - currentLeftPosition) * 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS
+        + currentLeftPosition;
         }
         
         if (Math.abs(setPointRight - currentRightPosition) > 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS) {
-            setPointRight = Math.signum(setPointRight - currentRightPosition) * 4096
-                    * Constants.MAGIC_DRIVE_MAX_ROTATIONS + currentRightPosition;
+        setPointRight = Math.signum(setPointRight - currentRightPosition) * 4096
+        * Constants.MAGIC_DRIVE_MAX_ROTATIONS + currentRightPosition;
         }*/
 
         frontLeft.set(ControlMode.MotionMagic, setpointLeft);
         frontRight.set(ControlMode.MotionMagic, setpointRight);
-        logger.magicDrive.log(logger.getTick());
         logger.magicDrive.log(logger.getTick());
     }
 

@@ -1,6 +1,6 @@
-package frc.robot;
+package frc.components;
  /**
-  * A basic component of the robot. Contains three methods, all of which can be overrided.
+  * A basic component of the robot. Contains three methods, all of which can be overridden.
   * Example: Drivetrain
   */
 public interface Component {

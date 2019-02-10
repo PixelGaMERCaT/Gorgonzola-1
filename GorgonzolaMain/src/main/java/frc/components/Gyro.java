@@ -1,39 +1,42 @@
-package frc.robot;
+package frc.components;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Decimal;
 import frc.CheeseLog.SQLType.Type;
-
-
+import frc.robot.Globals;
 
 public class Gyro implements Component, PIDSource {
     private AHRS navx;
     private LogInterface logger;
+
     public Gyro() {
         try {
-            navx = new AHRS(SPI.Port.kMXP);
-        } catch (Exception e){
+            if (Globals.isNSP) {
+
+                navx = new AHRS(SPI.Port.kMXP);
+            } else {
+                navx= new AHRS(SerialPort.Port.kUSB1);
+                System.out.println(getYaw());
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void init() {
-        logger=Globals.logger;
+        logger = Globals.logger;
         try {
-            logger.gyro=LogInterface.table("Gyro", new String[]{
-                "yaw"
-            }, new Type[]{
-                new Decimal()
-            }, new Loggable[]{
-                ()->getNormalizedYaw()
-            });
+            logger.gyro = LogInterface.table("Gyro", new String[] { "yaw" }, new Type[] { new Decimal() },
+                    new Loggable[] { () -> getNormalizedYaw() });
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("problem in initialization of navx");
         }
@@ -56,10 +59,10 @@ public class Gyro implements Component, PIDSource {
      * @return the normalized yaw of the robot
      */
     public double getNormalizedYaw() {
-        double yaw =0;
+        double yaw = 0;
         try {
-        yaw= navx.getYaw();
-        } catch (Exception e){
+            yaw = navx.getYaw();
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Problem in getNormalizedYaw");
         }

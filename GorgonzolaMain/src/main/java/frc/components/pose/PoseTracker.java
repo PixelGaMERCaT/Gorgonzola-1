@@ -1,11 +1,11 @@
-package frc.pose;
+package frc.components.pose;
 
 import java.util.Arrays;
 
-import frc.robot.Component;
-import frc.robot.Drivetrain;
+import frc.components.Component;
+import frc.components.Drivetrain;
+import frc.components.Gyro;
 import frc.robot.Globals;
-import frc.robot.Gyro;
 
 /**
 * Keeps a log of poses from previous timestamps, acts as a stack (LIFO with self-overwriting)

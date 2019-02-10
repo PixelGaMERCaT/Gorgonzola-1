@@ -29,9 +29,10 @@ public abstract class SandstormSection {
     public boolean customFinish() { // Custom finish code; for a section that ends based on time, return false
         return false;
     } 
+    
     /*
     * For a section that does not end based on time, set duration to -1
-    * and add custom finish code to the customeFinish() method
+    * and add custom finish code to the customFinish() method
     */
     public boolean isFinished() { // End conditions
         return (System.currentTimeMillis() - startTime > duration && duration != -1) || customFinish() ? true : false; 

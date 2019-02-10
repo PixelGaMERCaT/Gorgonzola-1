@@ -1,4 +1,4 @@
-package frc.pose;
+package frc.components.pose;
 
 public class Pose {
     /**

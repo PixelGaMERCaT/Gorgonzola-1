@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.components;
 
 import java.util.Arrays;
 
@@ -13,7 +13,7 @@ import frc.CheeseLog.SQLType.*;
 public class LogInterface implements Component {
     private Logger logger;
     private static DatabaseConnection sqlConnection;
-    public Table magicDrive, turnController, drivetrain, inputManager, motionProfiling, gyro, networkTables;
+    public Table magicDrive, turnController, drivetrain, inputManager, motionProfiling, gyro, networkTables, shoulder, wrist;
 
     /**
     * Initializes a logInterface
@@ -22,7 +22,7 @@ public class LogInterface implements Component {
         try {
             sqlConnection = new DatabaseConnection("10.10.86.135", "postgres", "postgres", "Hypercam");
             logger = new Logger();
-
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

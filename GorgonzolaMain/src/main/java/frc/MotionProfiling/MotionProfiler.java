@@ -1,12 +1,12 @@
-package frc.MotionProfiling;
+package frc.motionprofiling;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import frc.robot.Component;
-import frc.robot.Drivetrain;
+import frc.components.Component;
+import frc.components.Drivetrain;
+import frc.components.Gyro;
 import frc.robot.Globals;
-import frc.robot.Gyro;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory.Config;

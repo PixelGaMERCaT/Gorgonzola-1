@@ -3,7 +3,16 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import frc.pose.PoseTracker;
+import frc.components.Component;
+import frc.components.Drivetrain;
+import frc.components.GearShifter;
+import frc.components.Gyro;
+import frc.components.InputManager;
+import frc.components.LogInterface;
+import frc.components.NetworkInterface;
+import frc.components.Shoulder;
+import frc.components.Wrist;
+import frc.components.pose.PoseTracker;
 
 /**
  * A class that contains all components of the robot to be accessed. For
@@ -11,21 +20,26 @@ import frc.pose.PoseTracker;
  * information
  */
 public class Globals {
-    public static boolean isNSP=false;
-    public static boolean isAdelost=true;
-
+    public static boolean isNSP = false;
+    public static boolean isAdelost = false;
+    public static boolean isProto = true;
+    
     public static InputManager im;
     public static Drivetrain drivetrain;
     public static Gyro gyro;
     public static NetworkInterface testTable;
     public static LogInterface logger;
     public static PoseTracker poseTracker;
+    public static GearShifter gearShifter;
+    public static Shoulder shoulder;
+    public static Wrist wrist; //TODO unused
     private static ArrayList<Component> components; // Contains all the components in Globals
 
     /**
      * Initializes all components of globals
      */
     public static void init() {
+        gearShifter = new GearShifter();
         components = new ArrayList<Component>();
         poseTracker = new PoseTracker(50);
         im = new InputManager();
@@ -33,7 +47,9 @@ public class Globals {
         drivetrain = new Drivetrain();
         testTable = new NetworkInterface("blue");
         logger = new LogInterface();
-        components.addAll(Arrays.asList(poseTracker, gyro, im, drivetrain, testTable, logger));
+        shoulder=new Shoulder();
+        components.addAll(Arrays.asList(shoulder, im));
+        //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, shoulder, logger));
         components.forEach(c -> c.init());
 
     }
@@ -42,14 +58,14 @@ public class Globals {
      * Ticks all components in globals
      */
     public static void tick() {
-
         components.forEach(c -> {
-            double startTime = System.currentTimeMillis();
-            c.tick();
-            System.out.println(c + " " + ( System.currentTimeMillis()- startTime));
+            try {
+                c.tick();
+            } catch (Exception e) {
+                System.err.println("Problem ticking " + c);
+                e.printStackTrace();
+            }
         });
-
-        System.out.println("Heading "+poseTracker.get(System.nanoTime()-PoseTracker.tickTime*25).heading);
     }
 
     /**
@@ -57,7 +73,7 @@ public class Globals {
      * @return true if the robot is in auto, false otherwise
      */
     public static boolean isAuto() {
-        return true;
+        return true; //TODO actually return
     }
 
 }

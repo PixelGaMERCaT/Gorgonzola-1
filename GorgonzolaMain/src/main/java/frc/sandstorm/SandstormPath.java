@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import frc.sandstorm.*;
 import frc.sandstorm.sections.*;
 /**
- * Add your docs here.
+ * A set of Sandstorm Sections that 
  */
 public class SandstormPath {
     ArrayList<SandstormSection> sections = new ArrayList<SandstormSection>();

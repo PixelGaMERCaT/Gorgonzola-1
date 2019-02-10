@@ -1,15 +1,19 @@
-package frc.robot;
+package frc.components;
 
 import edu.wpi.first.wpilibj.Joystick;
-import frc.CheeseLog.Output.*;
-import frc.CheeseLog.*;
-import frc.CheeseLog.SQLType.*;
+import frc.CheeseLog.Loggable;
+import frc.CheeseLog.SQLType.Bool;
+import frc.CheeseLog.SQLType.Decimal;
+import frc.CheeseLog.SQLType.Type;
+import frc.robot.ButtonMap;
+import frc.robot.Globals;
+import frc.robot.RobotMap;
 
 /**
  * A component that parses input from the driverstation (joysticks, etc)
  */
 public class InputManager implements Component {
-    LogInterface logger;
+    private LogInterface logger;
     private Joystick left, right, aux;
 
     public InputManager() {
@@ -36,7 +40,7 @@ public class InputManager implements Component {
      * @return a number [-1, 1], denoting the position of the joystick along the forward/backward axis
      */
     public double getForward() {
-        return getSafetyButton() ? left.getRawAxis(0) : 0;
+        return getSafetyButton() ? left.getY() : 0;
     }
 
     /**
@@ -54,8 +58,24 @@ public class InputManager implements Component {
     public boolean getSafetyButton() {
         return left.getRawButton(ButtonMap.SAFETY);
     }
-
+    /**
+     * Returns whether the gear shift button (button which shifts gears) is being pushed
+     * @return true if the button is being pushed, false otherwise
+     */
     public boolean getGearSwitchButton(){
         return left.getRawButton(ButtonMap.GEAR_SHIFT);
+    }
+    /**
+     * Returns whether the elevator should be enabled
+     * @return true if the elevator should be enabled, false otherwise.
+     */
+    public boolean getElevatorButton(){
+        return aux.getRawButton(ButtonMap.ELEVATOR_ENABLE);
+    }
+    /**
+     * 
+     */
+    public double getShoulderHeight(){
+        return (1.0+aux.getY())/2.0;
     }
 }

@@ -9,8 +9,6 @@ package frc.sandstorm;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.sandstorm.sections.*;
-import frc.sandstorm.SandstormPath;
 /**
  * Add your docs here.
  */
