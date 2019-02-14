@@ -69,8 +69,11 @@ public class InputManager implements Component {
      * Returns whether the elevator should be enabled
      * @return true if the elevator should be enabled, false otherwise.
      */
-    public boolean getElevatorButton(){
+    public boolean getShoulderButton(){
         return aux.getRawButton(ButtonMap.ELEVATOR_ENABLE);
+    }
+    public boolean getWristButton(){
+        return aux.getRawButton(3);
     }
     /**
      * 
@@ -78,4 +81,12 @@ public class InputManager implements Component {
     public double getShoulderHeight(){
         return (1.0+aux.getY())/2.0;
     }
+    public boolean getIntakeInButton(){
+        return aux.getRawButton(4);
+    }
+    
+    public boolean getIntakeOutButton(){
+        return aux.getRawButton(5);
+    }
+
 }

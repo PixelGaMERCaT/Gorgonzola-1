@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import frc.components.Climber;
 import frc.components.Component;
 import frc.components.Drivetrain;
 import frc.components.GearShifter;
@@ -32,7 +33,8 @@ public class Globals {
     public static PoseTracker poseTracker;
     public static GearShifter gearShifter;
     public static Shoulder shoulder;
-    public static Wrist wrist; //TODO unused
+    public static Wrist wrist;
+    public static Climber climber;
     private static ArrayList<Component> components; // Contains all the components in Globals
 
     /**
@@ -48,8 +50,11 @@ public class Globals {
         testTable = new NetworkInterface("blue");
         logger = new LogInterface();
         shoulder=new Shoulder();
-        components.addAll(Arrays.asList(shoulder, im));
-        //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, shoulder, logger));
+        wrist=new Wrist();
+        
+        components.addAll(Arrays.asList(im, shoulder, wrist, logger));
+        //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
+
         components.forEach(c -> c.init());
 
     }

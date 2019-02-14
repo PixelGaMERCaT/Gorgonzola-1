@@ -20,12 +20,12 @@ public class RobotMap {
     public static final int MIDDLE_RIGHT_TALON=15;
     */
 
-    public static final int FRONT_LEFT_TALON=13;
-    public static final int BACK_LEFT_TALON=14;
-    public static final int MIDDLE_LEFT_TALON=15;
-    public static final int FRONT_RIGHT_TALON=10;
-    public static final int BACK_RIGHT_TALON=11;
-    public static final int MIDDLE_RIGHT_TALON=12;
+    public static final int FRONT_LEFT_TALON=12;
+    public static final int BACK_LEFT_TALON=13;
+    public static final int MIDDLE_LEFT_TALON=14;
+    public static final int FRONT_RIGHT_TALON=1;
+    public static final int BACK_RIGHT_TALON=0;
+    public static final int MIDDLE_RIGHT_TALON=11;
 
     public static final int LEFT_STICK=0;
     public static final int RIGHT_STICK=1;
@@ -34,9 +34,13 @@ public class RobotMap {
     public static final int COMPRESSOR=0;
     public static final int GEAR_SHIFT=0;
 
-    public static final int SHOULDER_TALON_1 =0;
-    public static final int SHOULDER_TALON_2 =1;
-    public static final int WRIST_TALON_1 =-1;
-    public static final int WRIST_TALON_2 =-1;
+    public static final int SHOULDER_TALON_1 =2;
+    public static final int SHOULDER_TALON_2 =3;
+    public static final int WRIST_TALON_1 =5;
+    public static final int WRIST_TALON_2 =4;
+
+    public static final int INTAKE_TALON_1=7;
+    public static final int INTAKE_TALON_2=6;
+
    
 }

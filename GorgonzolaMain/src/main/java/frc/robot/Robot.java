@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Sandstorm Path: ", sandstormMode.name);
   }
   public void disabledInit() {
-    Globals.drivetrain.driveBasic(0, 0);
+    
   }
   public void teleopInit() {
     Globals.drivetrain.resetEncoders();

@@ -40,7 +40,7 @@ public class Drivetrain implements Component {
             middleLeft.follow(frontLeft);
             middleRight.follow(frontRight);
             compressor = new Compressor(RobotMap.COMPRESSOR);
-            compressor.setClosedLoopControl(true);
+            compressor.setClosedLoopControl(false);
 
         }
         if (!Globals.isAdelost) {
@@ -96,7 +96,6 @@ public class Drivetrain implements Component {
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-1, 1);
         turnController.setContinuous(true);
-        this.setYawSetpoint(90.0);
     }
 
     /**
@@ -123,14 +122,14 @@ public class Drivetrain implements Component {
     double tick = 0;
 
     public void tick() {
-        //maxVelocity = Math.max(maxVelocity, Math.abs(frontLeft.getEncoderVelocityIPS()));
-        /*System.out.println("PositionR "+frontRight.getEncoderPositionInches());
-        System.out.println("PositionL "+frontLeft.getEncoderPositionInches());
-        System.out.println(maxVelocity);
-        */
-        //driveBasic(im.getForward(), im.getTurn());
+        maxVelocity = Math.max(maxVelocity, Math.abs(frontLeft.getEncoderVelocity()));
+        //System.out.println("PositionR "+frontRight.getEncoderPositionContextual());
+        //System.out.println("PositionL "+frontLeft.getEncoderPositionContextual());
+        //System.out.println(maxVelocity);
+        
+        driveBasic(im.getForward(), im.getTurn());
         //magicDrive(im.getForward(), im.getTurn());
-        if (im.getSafetyButton()) {
+        /*if (im.getSafetyButton()) {
             tick++;
             if (tick < 80) {
                 magicDrive(.75, im.getTurn());
@@ -145,7 +144,7 @@ public class Drivetrain implements Component {
         } else {
             frontRight.set(ControlMode.PercentOutput, 0);
             frontLeft.set(ControlMode.PercentOutput, 0);
-        }
+        }*/
         
     }
 

@@ -2,15 +2,19 @@ package frc.components;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.CheeseLog.Loggable;
+import frc.CheeseLog.SQLType.Bool;
+import frc.CheeseLog.SQLType.Decimal;
+import frc.CheeseLog.SQLType.Type;
 import frc.robot.Constants;
 import frc.robot.Globals;
 import frc.robot.RobotMap;
-import frc.talonmanager.TalonManager;
 import frc.talonmanager.WristTalonManager;
 
 public class Wrist implements Component {
-    public double height, armlength;
-    private TalonManager talon1, talon2;
+    public double height, angleSetpoint;
+    private WristTalonManager talon1, talon2, intakeTalon1, intakeTalon2;
     private double currentPosition;
     private LogInterface logger;
     private InputManager im;
@@ -19,21 +23,52 @@ public class Wrist implements Component {
     public Wrist() {
         talon1 = new WristTalonManager(RobotMap.WRIST_TALON_1);
         talon2 = new WristTalonManager(RobotMap.WRIST_TALON_2);
-        talon1.initEncoder(0, 0, 0, 0);
+        intakeTalon1 = new WristTalonManager(RobotMap.INTAKE_TALON_1);
+        intakeTalon2 = new WristTalonManager(RobotMap.INTAKE_TALON_2);
+        intakeTalon2.follow(intakeTalon1);
+        talon1.initEncoder(-Constants.WRIST_KP, Constants.WRIST_KI, Constants.WRIST_KD, -Constants.WRIST_KF);
         talon2.follow(talon1);
-        currentPosition = getHeight();
+        angleSetpoint = 0;
+        // currentPosition = getHeight();
     }
 
     public void init() {
         im = Globals.im;
         logger = Globals.logger;
-
+        logger.wrist = LogInterface.table("Wrist",
+                new String[] { "ButtonPressed", "Velocity", "Angle", "desangle", "percentout", "Setpoint", "encu" },
+                new Type[] { new Bool(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal() },
+                new Loggable[] { () -> im.getWristButton(), () -> talon1.getEncoderVelocity(), () -> getAngle(),
+                        () -> angleSetpoint, () -> talon1.talon.getMotorOutputPercent(),
+                        () -> talon1.talon.getClosedLoopTarget(), ()->talon1.getEncoderPosition() });
     }
 
-    public void tick() {
+    double maxVelocity = 0;
 
-        setAngle(-shoulder.getAngle());
-        currentPosition = getHeight();
+    public void tick() {
+        maxVelocity = Math.max(maxVelocity, talon1.getEncoderVelocity());
+        //System.out.println("maxvel" + maxVelocity);
+        if (im.getWristButton()) {
+            //talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderHeight() * 2.0 - 1.0);
+            
+            angleSetpoint = (im.getShoulderHeight() * 2.0 - 1.0) * Constants.WRIST_ANGLE_RANGE / 2.0;
+            setAngle(angleSetpoint);
+
+        } else {
+
+        }
+        System.out.println("current angle " + getAngle() * 180.0 / Math.PI);
+        System.out.println("setpoint " + angleSetpoint * 180 / Math.PI);
+
+        /*if (im.getIntakeOutButton()){
+            intakeTalon1.set(ControlMode.PercentOutput, -1);
+        } else if (im.getIntakeInButton()) {
+            intakeTalon1.set(ControlMode.PercentOutput, 1);
+        } else {
+            intakeTalon1.set(ControlMode.PercentOutput, 0);
+        }*/
+        //setAngle(-shoulder.getAngle());
+        //currentPosition = getHeight();
 
     }
 
@@ -42,7 +77,7 @@ public class Wrist implements Component {
      * @param angle the angle to set the arm to (radians)
      */
     public void setAngle(double angle) {
-        talon1.set(ControlMode.MotionMagic, angleToEncU(height));
+        talon1.set(ControlMode.MotionMagic, angleToEncU(angle));
     }
 
     /**
@@ -50,7 +85,7 @@ public class Wrist implements Component {
      * @return the angle in radians
      */
     public double getAngle() {
-        return talon1.getEncoderPositionContextual();
+        return -talon1.getEncoderPositionContextual(); //TODO better solution
     }
 
     /**
@@ -58,7 +93,7 @@ public class Wrist implements Component {
      * @return the height of the arm in inches
      */
     public double getHeight() {
-        return shoulder.getHeight()+Constants.WRIST_LENGTH*Math.sin(getAngle());
+        return shoulder.getHeight() + Constants.WRIST_LENGTH * Math.sin(getAngle());
     }
 
     /**
@@ -67,7 +102,7 @@ public class Wrist implements Component {
      * @return the encoder units of that angle
      */
     public double angleToEncU(double angle) {
-        return angle/(2*Math.PI)*Constants.WRIST_TICKS_PER_ROTATION;
-      }
+        return angle / (2 * Math.PI) * Constants.WRIST_TICKS_PER_ROTATION + Constants.WRIST_ENCU_ZERO;
+    }
 
 }
