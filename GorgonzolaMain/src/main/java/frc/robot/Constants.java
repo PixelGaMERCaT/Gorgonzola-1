@@ -23,8 +23,8 @@ public class Constants {
     public static final double WRIST_TICKS_PER_ROTATION = 1024;
     public static final double WRIST_ENCU_ZERO = 855;
     public static final double WRIST_ANGLE_RANGE = Math.PI;
-    public static final double WRIST_MAX_VELOCITY = 162; 
-    public static final double WRIST_KP = 28, WRIST_KI = 0, WRIST_KD = 0, WRIST_KF = 1023.0 / WRIST_MAX_VELOCITY;
+    public static final double WRIST_MAX_VELOCITY = 54; 
+    public static final double WRIST_KP =0, WRIST_KI = 0, WRIST_KD = 0, WRIST_KF = 1023.0 / WRIST_MAX_VELOCITY;
 
 
     public static final double CLIMBER_TICKS_PER_ROTATION = 4096;

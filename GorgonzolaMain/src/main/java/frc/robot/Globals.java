@@ -11,6 +11,7 @@ import frc.components.Gyro;
 import frc.components.InputManager;
 import frc.components.LogInterface;
 import frc.components.NetworkInterface;
+import frc.components.PneumaticController;
 import frc.components.Shoulder;
 import frc.components.Wrist;
 import frc.components.pose.PoseTracker;
@@ -27,7 +28,7 @@ public class Globals {
     
     public static InputManager im;
     public static Drivetrain drivetrain;
-    public static Gyro gyro;
+    private static Gyro gyro;
     public static NetworkInterface testTable;
     public static LogInterface logger;
     public static PoseTracker poseTracker;
@@ -35,17 +36,19 @@ public class Globals {
     public static Shoulder shoulder;
     public static Wrist wrist;
     public static Climber climber;
+    public static PneumaticController pneumaticController;
     private static ArrayList<Component> components; // Contains all the components in Globals
 
     /**
      * Initializes all components of globals
      */
     public static void init() {
+        pneumaticController=new PneumaticController();
         gearShifter = new GearShifter();
         components = new ArrayList<Component>();
-        poseTracker = new PoseTracker(50);
+        //poseTracker = new PoseTracker(50);
         im = new InputManager();
-        gyro = new Gyro();
+        //gyro = new Gyro();
         drivetrain = new Drivetrain();
         testTable = new NetworkInterface("blue");
         logger = new LogInterface();

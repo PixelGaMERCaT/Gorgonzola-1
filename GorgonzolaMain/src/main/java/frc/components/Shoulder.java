@@ -34,15 +34,16 @@ public class Shoulder implements Component {
         maxVelocity=Math.max(maxVelocity, talon1.getEncoderVelocity()/1024.0*10.0*Math.PI*2);
         //System.out.println("angle " + Math.toDegrees(getAngle()));
         //System.out.println("maxVelocity "+ maxVelocity);
-        //System.out.println("encu "+ talon1.getEncoderPosition()%Constants.SHOULDER_TICKS_PER_ROTATION);
+        System.out.println("encu "+ talon1.getEncoderPosition());
         if (im.getShoulderButton()) {
-            System.out.println("applying power" +( im.getShoulderHeight()*2.0-1.0) + "\n"+ talon1.getOutputCurrent());
-            talon1.set(ControlMode.PercentOutput, .1+(im.getShoulderHeight()*2.0)-1.0);
+            System.out.println("applying power" +( im.getShoulderHeight()*2.0-1.0) + "\n"+ talon1.talon.getMotorOutputPercent());
+            talon1.set(ControlMode.PercentOutput, -.15-((im.getShoulderHeight()*2.0)-1.0));
+            
             /*setHeight(Constants.SHOULDER_MIN_POSITION + (im.getShoulderHeight() * (Constants.SHOULDER_RANGE)));
             currentPosition = getHeight();
             */
         } else {
-            talon1.set(ControlMode.PercentOutput, 0.1);
+            talon1.set(ControlMode.PercentOutput, -0.15);
             //setHeight(currentPosition);
         }
     }

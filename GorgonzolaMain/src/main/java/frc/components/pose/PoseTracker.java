@@ -31,7 +31,7 @@ public class PoseTracker implements Component {
     }
 
     public void init() {
-        gyro = Globals.gyro;
+        //gyro = Globals.gyro;
         drivetrain = Globals.drivetrain;
         Arrays.fill(poses, new Pose(System.nanoTime(), gyro.getYaw(), drivetrain.getLeftPosition(),
                 drivetrain.getRightPosition()));

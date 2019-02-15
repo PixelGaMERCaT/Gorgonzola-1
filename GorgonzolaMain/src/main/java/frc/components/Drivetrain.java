@@ -39,9 +39,7 @@ public class Drivetrain implements Component {
             middleRight.setInverted(true);
             middleLeft.follow(frontLeft);
             middleRight.follow(frontRight);
-            compressor = new Compressor(RobotMap.COMPRESSOR);
-            compressor.setClosedLoopControl(false);
-
+            
         }
         if (!Globals.isAdelost) {
             backRight.setInverted(true);
@@ -50,7 +48,6 @@ public class Drivetrain implements Component {
 
         backLeft.follow(frontLeft);
         backRight.follow(frontRight);
-        System.out.println("Proper F: " + Constants.MAGIC_KF_LOW);
         frontLeft.initEncoder(Constants.MAGIC_KP_LOW, Constants.MAGIC_KI_LOW, Constants.MAGIC_KD_LOW,
                 -Constants.MAGIC_KF_LOW);
         frontRight.initEncoder(Constants.MAGIC_KP_LOW, Constants.MAGIC_KI_LOW, Constants.MAGIC_KD_LOW,
@@ -62,7 +59,7 @@ public class Drivetrain implements Component {
     public void init() {
         im = Globals.im;
         logger = Globals.logger;
-        gyro = Globals.gyro;
+        //gyro = Globals.gyro;
         currentLeftPosition = frontLeft.getEncoderPosition();
         currentRightPosition = frontRight.getEncoderPosition();
         try {

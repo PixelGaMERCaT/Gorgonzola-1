@@ -11,7 +11,8 @@ public class GearShifter implements Component {
     private Solenoid switcher;
     private InputManager im;
     private boolean highGear;
-    private boolean buttonPressed=false;
+    private boolean buttonPressed = false;
+
     public GearShifter() {
         highGear = false;
         if (!(Globals.isNSP || Globals.isAdelost)) {
@@ -25,11 +26,11 @@ public class GearShifter implements Component {
     }
 
     public void tick() {
-        if (im.getGearSwitchButton() && !buttonPressed){
+        if (im.getGearSwitchButton() && !buttonPressed) {
             highGear = !highGear;
-            buttonPressed=true;
+            buttonPressed = true;
         } else if (!im.getGearSwitchButton()) {
-            buttonPressed=false;
+            buttonPressed = false;
         }
         if (!(Globals.isNSP || Globals.isAdelost)) {
             switcher.set(highGear);

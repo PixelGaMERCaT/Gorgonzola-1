@@ -34,7 +34,9 @@ public class InputManager implements Component {
         }
 
     }
-
+    public boolean getHatchIntakeButton(){
+        return aux.getRawButton(4);
+    }
     /**
      * A method to get a number from -1 to 1 denoting the position of the primary joystick
      * @return a number [-1, 1], denoting the position of the joystick along the forward/backward axis
@@ -42,7 +44,10 @@ public class InputManager implements Component {
     public double getForward() {
         return getSafetyButton() ? left.getY() : 0;
     }
-
+    public boolean getIntakeActuatorButton(){
+        return aux.getRawButton(5);
+        
+    }
     /**
      * A method to get a number from -1 to 1 denoting the position of the primary joystick
      * @return a number [-1, 1], denoting the position of the joystick along the forward/backward axis

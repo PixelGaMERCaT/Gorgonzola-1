@@ -2,6 +2,7 @@ package frc.components;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Bool;
@@ -29,36 +30,47 @@ public class Wrist implements Component {
         talon1.initEncoder(-Constants.WRIST_KP, Constants.WRIST_KI, Constants.WRIST_KD, -Constants.WRIST_KF);
         talon2.follow(talon1);
         angleSetpoint = 0;
-        // currentPosition = getHeight();
     }
 
     public void init() {
         im = Globals.im;
         logger = Globals.logger;
         logger.wrist = LogInterface.table("Wrist",
-                new String[] { "ButtonPressed", "Velocity", "Angle", "desangle", "percentout", "Setpoint", "encu" },
-                new Type[] { new Bool(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal() },
+                new String[] { "ButtonPressed", "Velocity", "Angle", "desangle", "percentout", "difference", "Setpoint",
+                        "encu" },
+                new Type[] { new Bool(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
+                        new Decimal(), new Decimal() },
                 new Loggable[] { () -> im.getWristButton(), () -> talon1.getEncoderVelocity(), () -> getAngle(),
                         () -> angleSetpoint, () -> talon1.talon.getMotorOutputPercent(),
-                        () -> talon1.talon.getClosedLoopTarget(), ()->talon1.getEncoderPosition() });
+                        () -> talon1.talon.getClosedLoopError(), () -> talon1.talon.getClosedLoopTarget(),
+                        () -> talon1.getEncoderPosition() });
     }
 
     double maxVelocity = 0;
 
     public void tick() {
-        maxVelocity = Math.max(maxVelocity, talon1.getEncoderVelocity());
-        //System.out.println("maxvel" + maxVelocity);
+        maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
+        SmartDashboard.putNumber("maxvel", maxVelocity);
+        //TODO: DELETE THIS TEST CODE
+        //System.out.println("setpoint " + angleSetpoint * 180.0 / Math.PI);
+        SmartDashboard.putNumber("ffd ", talon1.talon.getActiveTrajectoryArbFeedFwd());
+        SmartDashboard.putNumber("Derivative ", talon1.talon.getErrorDerivative());
+        SmartDashboard.putNumber("error", talon1.talon.getClosedLoopError());
+        SmartDashboard.putNumber("target", talon1.talon.getClosedLoopTarget());
+        SmartDashboard.putNumber("target ??", talon1.talon.getActiveTrajectoryPosition(0));
+        SmartDashboard.putNumber("position", talon1.talon.getSelectedSensorPosition());
+        SmartDashboard.putString("ControlMode", talon1.talon.getControlMode().toString());
+        SmartDashboard.putNumber("Angle", getAngle() * 180.0 / Math.PI);
         if (im.getWristButton()) {
+
             //talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderHeight() * 2.0 - 1.0);
-            
+
             angleSetpoint = (im.getShoulderHeight() * 2.0 - 1.0) * Constants.WRIST_ANGLE_RANGE / 2.0;
             setAngle(angleSetpoint);
 
         } else {
-
+            talon1.set(ControlMode.PercentOutput, 0);
         }
-        System.out.println("current angle " + getAngle() * 180.0 / Math.PI);
-        System.out.println("setpoint " + angleSetpoint * 180 / Math.PI);
 
         /*if (im.getIntakeOutButton()){
             intakeTalon1.set(ControlMode.PercentOutput, -1);

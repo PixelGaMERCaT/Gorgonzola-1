@@ -31,7 +31,7 @@ public class LogInterface implements Component {
      * Adds all initialized tables to Logger.
      */
     public void init(){
-            for (Table t : Arrays.asList(magicDrive, drivetrain, inputManager, wrist)){
+            for (Table t : Arrays.asList(inputManager, wrist)){
                 try {
                     System.out.println(t);
                     System.out.println(t.getName());

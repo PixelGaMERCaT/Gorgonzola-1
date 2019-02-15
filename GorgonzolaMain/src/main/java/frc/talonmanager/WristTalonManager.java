@@ -36,10 +36,10 @@ public class WristTalonManager extends TalonManager {
     public void initEncoder(double P, double I, double D, double F) {
         talon.configFactoryDefault();
         talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, 0);
-        talon.configMotionCruiseVelocity(3*(int)Constants.WRIST_MAX_VELOCITY);
-        talon.configMotionAcceleration(50*(int)Constants.WRIST_MAX_VELOCITY); //accelerate to max speed in a second
-        talon.configNominalOutputForward(.1);
-        talon.configNominalOutputReverse(.1);
+        talon.configMotionCruiseVelocity((int)Constants.WRIST_MAX_VELOCITY);
+        talon.configMotionAcceleration((int)Constants.WRIST_MAX_VELOCITY); //accelerate to max speed in a second
+        talon.configNominalOutputForward(0);
+        talon.configNominalOutputReverse(0);
         talon.configPeakOutputForward(1);
         talon.configPeakOutputReverse(-1);
         talon.config_kP(0, P);
