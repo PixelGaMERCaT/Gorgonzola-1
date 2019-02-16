@@ -54,8 +54,8 @@ public class Globals {
         logger = new LogInterface();
         shoulder=new Shoulder();
         wrist=new Wrist();
-        
-        components.addAll(Arrays.asList(im, shoulder, wrist, logger));
+        climber=new Climber();
+        components.addAll(Arrays.asList(im,drivetrain, climber, /*shoulder, /*wrist,*/  gearShifter, pneumaticController, logger));
         //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
 
         components.forEach(c -> c.init());

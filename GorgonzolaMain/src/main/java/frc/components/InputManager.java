@@ -70,6 +70,9 @@ public class InputManager implements Component {
     public boolean getGearSwitchButton(){
         return left.getRawButton(ButtonMap.GEAR_SHIFT);
     }
+    public double getClimb(){
+        return left.getRawButton(1) ? left.getY() : 0;
+    }
     /**
      * Returns whether the elevator should be enabled
      * @return true if the elevator should be enabled, false otherwise.

@@ -2,6 +2,7 @@ package frc.components;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Globals;
 import frc.robot.RobotMap;
@@ -17,7 +18,11 @@ public class Shoulder implements Component {
     public Shoulder() {
         talon1 = new ShoulderTalonManager(RobotMap.SHOULDER_TALON_1);
         talon2 = new ShoulderTalonManager(RobotMap.SHOULDER_TALON_2);
-        talon1.initEncoder(0, 0, 0, 0);
+        
+        talon1.initEncoder(Constants.SHOULDER_KP, Constants.SHOULDER_KI, Constants.SHOULDER_KD, Constants.SHOULDER_KF);
+        talon1.talon.setSensorPhase(true);
+        talon2.talon.setSensorPhase(true);
+
         talon2.follow(talon1);
         currentPosition = getHeight();
     }
@@ -31,17 +36,21 @@ public class Shoulder implements Component {
     double maxVelocity = 0;
 
     public void tick() {
-        maxVelocity=Math.max(maxVelocity, talon1.getEncoderVelocity()/1024.0*10.0*Math.PI*2);
+        //maxVelocity=Math.max(maxVelocity, talon1.getEncoderVelocity()/1024.0*10.0*Math.PI*2);
+        maxVelocity=Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
         //System.out.println("angle " + Math.toDegrees(getAngle()));
-        //System.out.println("maxVelocity "+ maxVelocity);
+        System.out.println(talon1.talon.getSelectedSensorPosition());
+        SmartDashboard.putNumber("angleShoulder",getAngle()*180/Math.PI);
+        SmartDashboard.putNumber("heightShoulder",getHeight());
+
         if (im.getShoulderButton()) {
-            talon1.set(ControlMode.PercentOutput, -.15-((im.getShoulderHeight()*2.0)-1.0));
+            talon1.set(ControlMode.PercentOutput, -.2-((im.getShoulderHeight()*2.0)-1.0));
             
             /*setHeight(Constants.SHOULDER_MIN_POSITION + (im.getShoulderHeight() * (Constants.SHOULDER_RANGE)));
             currentPosition = getHeight();
             */
         } else {
-            talon1.set(ControlMode.PercentOutput, -0.15);
+            talon1.set(ControlMode.PercentOutput, -0.2);
             //setHeight(currentPosition);
         }
     }

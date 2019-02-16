@@ -54,6 +54,6 @@ public class RobotMap {
     //Intake:
     public static final int INTAKE_TALON_1=7;
     public static final int INTAKE_TALON_2=6;
-
-   
+    public static final int CLIMB_TALON_1 = 9;
+    public static final int CLIMB_TALON_2 = 10;
 }

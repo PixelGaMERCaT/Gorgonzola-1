@@ -41,6 +41,7 @@ public class GearShifter implements Component {
     /**
      * Returns the current gear of the robot
      * @return true if robot is in high gear, false otherwise
+   
      */
     public boolean isHighGear() {
         return highGear;

@@ -43,6 +43,7 @@ public class WristTalonManager extends TalonManager {
         talon.configPeakOutputForward(1);
         talon.configPeakOutputReverse(-1);
         talon.config_kP(0, P);
+        
         talon.config_kI(0, I);
         talon.config_kD(0, D);
         talon.config_kF(0, F);
