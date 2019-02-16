@@ -59,7 +59,7 @@ public class Drivetrain implements Component {
     public void init() {
         im = Globals.im;
         logger = Globals.logger;
-        //gyro = Globals.gyro;
+        gyro = Globals.gyro;
         currentLeftPosition = frontLeft.getEncoderPosition();
         currentRightPosition = frontRight.getEncoderPosition();
         try {

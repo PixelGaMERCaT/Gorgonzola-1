@@ -28,7 +28,7 @@ public class Globals {
     
     public static InputManager im;
     public static Drivetrain drivetrain;
-    private static Gyro gyro;
+    public static Gyro gyro;
     public static NetworkInterface testTable;
     public static LogInterface logger;
     public static PoseTracker poseTracker;
@@ -48,7 +48,7 @@ public class Globals {
         components = new ArrayList<Component>();
         //poseTracker = new PoseTracker(50);
         im = new InputManager();
-        //gyro = new Gyro();
+        gyro = new Gyro();
         drivetrain = new Drivetrain();
         testTable = new NetworkInterface("blue");
         logger = new LogInterface();

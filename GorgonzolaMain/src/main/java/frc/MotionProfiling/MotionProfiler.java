@@ -22,7 +22,7 @@ public class MotionProfiler implements Component {
     private double startHeading, angleError, turnOutput;
     public MotionProfiler() {
         drivetrain = Globals.drivetrain;
-        //gyro = Globals.gyro;
+        gyro = Globals.gyro;
         turnController = new PIDController(MPConstants.TURN_KP, MPConstants.TURN_KI, MPConstants.TURN_KD,
                 new PIDSource() {
                     @Override

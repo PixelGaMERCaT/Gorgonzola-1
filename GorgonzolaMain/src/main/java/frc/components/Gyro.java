@@ -19,9 +19,9 @@ public class Gyro implements Component, PIDSource {
         try {
             if (Globals.isNSP) {
 
-                navx = new AHRS(SPI.Port.kMXP);
+                //navx = new AHRS(SPI.Port.kMXP);
             } else {
-                navx= new AHRS(SerialPort.Port.kUSB1);
+                //navx= new AHRS(SerialPort.Port.kUSB1);
                 System.out.println(getYaw());
             }
 
@@ -34,14 +34,15 @@ public class Gyro implements Component, PIDSource {
         logger = Globals.logger;
         try {
             logger.gyro = LogInterface.table("Gyro", new String[] { "yaw" }, new Type[] { new Decimal() },
-                    new Loggable[] { () -> getNormalizedYaw() });
+                    new Loggable[] { () ->  -0.1086});// getNormalizedYaw() });
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("problem in initialization of navx");
         }
         System.out.println("init Navx");
-        navx.zeroYaw();
+        //navx.zeroYaw();
+        
     }
 
     /**
@@ -50,7 +51,7 @@ public class Gyro implements Component, PIDSource {
      * @return the yaw of the robot relative to its starting position
      */
     public double getYaw() {
-        return navx.getYaw();
+        return 0.1086;//navx.getYaw();
     }
 
     /**

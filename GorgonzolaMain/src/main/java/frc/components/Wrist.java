@@ -27,7 +27,7 @@ public class Wrist implements Component {
         intakeTalon1 = new WristTalonManager(RobotMap.INTAKE_TALON_1);
         intakeTalon2 = new WristTalonManager(RobotMap.INTAKE_TALON_2);
         intakeTalon2.follow(intakeTalon1);
-        talon1.initEncoder(-Constants.WRIST_KP, Constants.WRIST_KI, Constants.WRIST_KD, -Constants.WRIST_KF);
+        talon1.initEncoder(Constants.WRIST_KP, Constants.WRIST_KI, Constants.WRIST_KD, -Constants.WRIST_KF);
         talon2.follow(talon1);
         angleSetpoint = 0;
     }
@@ -59,17 +59,19 @@ public class Wrist implements Component {
         SmartDashboard.putNumber("target", talon1.talon.getClosedLoopTarget());
         SmartDashboard.putNumber("target ??", talon1.talon.getActiveTrajectoryPosition(0));
         SmartDashboard.putNumber("position", talon1.talon.getSelectedSensorPosition());
+        System.out.println("position "+ talon1.talon.getSelectedSensorPosition());
+
         SmartDashboard.putString("ControlMode", talon1.talon.getControlMode().toString());
         SmartDashboard.putNumber("Angle", getAngle() * 180.0 / Math.PI);
         if (im.getWristButton()) {
-
+            
             //talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderHeight() * 2.0 - 1.0);
 
             angleSetpoint = (im.getShoulderHeight() * 2.0 - 1.0) * Constants.WRIST_ANGLE_RANGE / 2.0;
             setAngle(angleSetpoint);
 
         } else {
-            talon1.set(ControlMode.PercentOutput, 0);
+            setAngle(Math.PI/2);
         }
 
         /*if (im.getIntakeOutButton()){
