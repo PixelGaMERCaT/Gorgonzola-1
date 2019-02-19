@@ -24,13 +24,15 @@ public class Wrist implements Component {
     public Wrist() {
         talon1 = new WristTalonManager(RobotMap.WRIST_TALON_1);
         talon2 = new WristTalonManager(RobotMap.WRIST_TALON_2);
-        intakeTalon1 = new WristTalonManager(RobotMap.INTAKE_TALON_1);
-        intakeTalon2 = new WristTalonManager(RobotMap.INTAKE_TALON_2);
+       
         talon1.talon.setSensorPhase(true);
         talon2.talon.setSensorPhase(true);
-        talon1.setInverted(true);
-        talon2.setInverted(true );
-        intakeTalon2.follow(intakeTalon1);
+        talon1.setInverted(false);
+        if (Globals.isProto){
+        talon2.setInverted(false);
+        } else {
+            talon2.setInverted(true);
+        }
         talon1.initEncoder(Constants.WRIST_KP, Constants.WRIST_KI, Constants.WRIST_KD, Constants.WRIST_KF);
         
         talon2.follow(talon1);
@@ -40,6 +42,7 @@ public class Wrist implements Component {
     public void init() {
         im = Globals.im;
         logger = Globals.logger;
+        shoulder=Globals.shoulder;
         logger.wrist = LogInterface.table("Wrist",
                 new String[] { "ButtonPressed", "Velocity", "Angle", "desangle", "percentout", "difference", "Setpoint",
                         "encu" },
@@ -56,39 +59,29 @@ public class Wrist implements Component {
     public void tick() {
         maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
         SmartDashboard.putNumber("maxvel", maxVelocity);
-        //TODO: DELETE THIS TEST CODE
-        //System.out.println("setpoint " + angleSetpoint * 180.0 / Math.PI);
         SmartDashboard.putNumber("ffd ", talon1.talon.getActiveTrajectoryArbFeedFwd());
         SmartDashboard.putNumber("Derivative ", talon1.talon.getErrorDerivative());
         SmartDashboard.putNumber("error", talon1.talon.getClosedLoopError());
         SmartDashboard.putNumber("target", talon1.talon.getClosedLoopTarget());
         SmartDashboard.putNumber("target ??", talon1.talon.getActiveTrajectoryPosition(0));
-        SmartDashboard.putNumber("position", talon1.talon.getSelectedSensorPosition());
-        System.out.println("position "+ talon1.talon.getSelectedSensorPosition());
-        System.out.println("angle"+ getAngle()*180/Math.PI);
+        SmartDashboard.putNumber("wristPosition", talon1.talon.getSelectedSensorPosition(0));
+        
         SmartDashboard.putString("ControlMode", talon1.talon.getControlMode().toString());
         SmartDashboard.putNumber("Angle", getAngle() * 180.0 / Math.PI);
+        
         if (im.getWristButton()) {
             
-            //talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderHeight() * 2.0 - 1.0);
-
+            talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderHeight() * 2.0 - 1.0);
+            
             angleSetpoint = (im.getShoulderHeight() * 2.0 - 1.0) * Constants.WRIST_ANGLE_RANGE / 2.0;
-            setAngle(angleSetpoint);
-
+            //setAngle(-shoulder.getAngle());
+            System.out.println("anglesetpoint "+ angleSetpoint*180/Math.PI);
+            //setAngle(angleSetpoint);
         } else {
-            //talon1.set(ControlMode.PercentOutput, 0);
-            setAngle(0);
+            talon1.set(ControlMode.PercentOutput, 0.1);
+
         }
 
-        /*if (im.getIntakeOutButton()){
-            intakeTalon1.set(ControlMode.PercentOutput, -1);
-        } else if (im.getIntakeInButton()) {
-            intakeTalon1.set(ControlMode.PercentOutput, 1);
-        } else {
-            intakeTalon1.set(ControlMode.PercentOutput, 0);
-        }*/
-        //setAngle(-shoulder.getAngle());
-        //currentPosition = getHeight();
 
     }
 
@@ -105,7 +98,7 @@ public class Wrist implements Component {
      * @return the angle in radians
      */
     public double getAngle() {
-        return -talon1.getEncoderPositionContextual(); //TODO better solution
+        return talon1.getEncoderPositionContextual(); //TODO better solution
     }
 
     /**

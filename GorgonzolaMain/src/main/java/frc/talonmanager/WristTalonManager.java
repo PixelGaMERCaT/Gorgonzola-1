@@ -68,8 +68,8 @@ public class WristTalonManager extends TalonManager {
         * 2pi (τ)            -- converts the values from "percentage of a rotation" to radians
         
         */
-        return (getEncoderPosition() % Constants.WRIST_TICKS_PER_ROTATION - Constants.WRIST_ENCU_ZERO)
-                / Constants.WRIST_TICKS_PER_ROTATION * Math.PI * 2;
+        return ((getEncoderPosition() % Constants.WRIST_TICKS_PER_ROTATION - Constants.WRIST_ENCU_ZERO)
+                / Constants.WRIST_TICKS_PER_ROTATION * Math.PI * 2)%(2*Math.PI);
     }
 
 }
