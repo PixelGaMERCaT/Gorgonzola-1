@@ -40,10 +40,11 @@ public class Shoulder implements Component {
         // talon1.getEncoderVelocity()/1024.0*10.0*Math.PI*2);
         maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
         // System.out.println("angle " + Math.toDegrees(getAngle()));
-        System.out.println(talon1.talon.getSelectedSensorPosition());
+       // System.out.println(talon1.talon.getSelectedSensorPosition());
         SmartDashboard.putNumber("angleShoulder", getAngle() * 180 / Math.PI);
         SmartDashboard.putNumber("heightShoulder", getHeight());
         SmartDashboard.putNumber("maxvelShoulder", maxVelocity);
+        SmartDashboard.putNumber("shoulder encu", talon1.getEncoderPosition());
         if (im.getShoulderButton()) {
             talon1.set(ControlMode.PercentOutput, -.1 - ((im.getShoulderHeight() * 2.0) - 1.0));
 

@@ -18,6 +18,8 @@ public class Intake implements Component{
         
         intakeTalon1 = new IntakeTalonManager(RobotMap.INTAKE_TALON_1);
         intakeTalon2 = new IntakeTalonManager(RobotMap.INTAKE_TALON_2);
+        intakeTalon1.setInverted(false);
+        intakeTalon2.setInverted(false);
         //intakeTalon2.follow(intakeTalon1);
 
         leftSuction=new Solenoid(RobotMap.INTAKE_LEFT_SOLENOID);
@@ -34,9 +36,9 @@ public class Intake implements Component{
         rightSuction.set(im.getHatchOutputButton());
         suctionActuator.set(im.getHatchIntakeButton());
         if (im.getIntakeOutButton()){
-            intakeTalon1.set(ControlMode.PercentOutput, 1);
-        } else if (im.getIntakeInButton()) {
             intakeTalon1.set(ControlMode.PercentOutput, -1);
+        } else if (im.getIntakeInButton()) {
+            intakeTalon1.set(ControlMode.PercentOutput, 1);
         } else {
             intakeTalon1.set(ControlMode.PercentOutput, 0);
         }

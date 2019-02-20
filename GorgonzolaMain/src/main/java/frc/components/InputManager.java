@@ -154,6 +154,7 @@ public class InputManager implements Component {
      */
     public boolean getIntakeOutButton() {
         return aux.getRawButton(9);
+        
     }
 
 }

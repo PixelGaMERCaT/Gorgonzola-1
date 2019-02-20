@@ -15,7 +15,7 @@ public class Constants {
         // Spooky zone (unchecked)
         // TODO reduce spookiness
         public static final double SHOULDER_TICKS_PER_ROTATION = 1024.0;
-        public static final double SHOULDER_ENCU_ZERO = -367; // 1249.8, 1227
+        public static final double SHOULDER_ENCU_ZERO = -352; // 1249.8, 1227
         public static final double SHOULDER_ANGLE_RANGE = Math.PI; // inches
         public static final double SHOULDER_MIN_POSITION = 12;
         public static final double SHOULDER_MAX_POSITION = 78;
@@ -24,10 +24,10 @@ public class Constants {
                         SHOULDER_KF = 1023.0 / SHOULDER_MAX_VELOCITY;
 
         public static final double WRIST_TICKS_PER_ROTATION = 1024;
-        public static final double WRIST_ENCU_ZERO = 145;
+        public static final double WRIST_ENCU_ZERO = Globals.isProto ? 76 : 127;
         public static final double WRIST_ANGLE_RANGE = Math.PI;
-        public static final double WRIST_MAX_VELOCITY = 54;
-        public static final double WRIST_KP = 7, WRIST_KI = 0, WRIST_KD = 0, WRIST_KF = 1023.0 / WRIST_MAX_VELOCITY;
+        public static final double WRIST_MAX_VELOCITY = Globals.isProto ? 54 : 78;
+        public static final double WRIST_KP = 3.5, WRIST_KI = 0, WRIST_KD = 0, WRIST_KF = 1023.0 / WRIST_MAX_VELOCITY;
 
         public static final double CLIMBER_TICKS_PER_ROTATION = 4096;
         public static final double ARM_JOINT_HEIGHT = 43.937;
