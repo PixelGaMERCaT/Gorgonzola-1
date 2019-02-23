@@ -6,17 +6,14 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.sandstorm.sections;
-<<<<<<< HEAD
 
+import edu.wpi.first.wpilibj.PIDController;
 import frc.components.Drivetrain;
+import frc.components.Gyro;
+import frc.robot.Constants;
 import frc.robot.Globals;
 import frc.sandstorm.SandstormSection;
-=======
-import frc.robot.*;
-import frc.sandstorm.*;
-import edu.wpi.first.wpilibj.PIDController;
 
->>>>>>> c1e2cdc2a78d40f2782817778289cb30a9ef2f1f
 /**
  * Add your docs here.
  */

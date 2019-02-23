@@ -6,9 +6,11 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.sandstorm.sections;
-import frc.robot.*;
-import frc.sandstorm.*;
-import frc.MotionProfiling.*;
+
+import frc.components.Drivetrain;
+import frc.motionprofiling.MotionProfiler;
+import frc.robot.Globals;
+import frc.sandstorm.SandstormSection;
 import jaci.pathfinder.Waypoint;
 /**
  * Add your docs here.

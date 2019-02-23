@@ -1,4 +1,4 @@
-package frc.MotionProfiling;
+package frc.motionprofiling;
 
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Decimal;

@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
@@ -9,12 +9,8 @@ package frc.sandstorm;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-<<<<<<< HEAD
-=======
-import frc.sandstorm.sections.*;
-import frc.sandstorm.SandstormPath;
+import frc.sandstorm.sections.MotionProfile;
 import jaci.pathfinder.Waypoint;
->>>>>>> c1e2cdc2a78d40f2782817778289cb30a9ef2f1f
 /**
  * Add your docs here.
  */

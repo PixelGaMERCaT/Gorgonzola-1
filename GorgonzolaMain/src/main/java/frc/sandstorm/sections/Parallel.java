@@ -6,8 +6,10 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.sandstorm.sections;
-import frc.robot.*;
-import frc.sandstorm.*;
+
+import frc.components.Drivetrain;
+import frc.robot.Globals;
+import frc.sandstorm.SandstormSection;
 /**
  * Add your docs here.
  */

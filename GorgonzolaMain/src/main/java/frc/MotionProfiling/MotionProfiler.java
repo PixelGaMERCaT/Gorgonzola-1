@@ -1,4 +1,4 @@
-package frc.MotionProfiling;
+package frc.motionprofiling;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;

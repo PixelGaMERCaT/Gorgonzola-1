@@ -1,4 +1,4 @@
-package frc.MotionProfiling;
+package frc.motionprofiling;
  class MPConstants {
     public static final double MAX_VELOCITY=0;
     public static final double MAX_ACCELERATION=0;
