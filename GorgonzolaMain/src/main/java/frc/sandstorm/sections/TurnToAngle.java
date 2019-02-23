@@ -6,39 +6,58 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.sandstorm.sections;
+<<<<<<< HEAD
 
 import frc.components.Drivetrain;
 import frc.robot.Globals;
 import frc.sandstorm.SandstormSection;
+=======
+import frc.robot.*;
+import frc.sandstorm.*;
+import edu.wpi.first.wpilibj.PIDController;
+
+>>>>>>> c1e2cdc2a78d40f2782817778289cb30a9ef2f1f
 /**
  * Add your docs here.
  */
 public class TurnToAngle extends SandstormSection {
     double angle;
     Drivetrain drive;
+    PIDController turnController;
+    Gyro gyro;
 
     public TurnToAngle(double angle, double time) {
         this.angle = angle;
         this.duration = time;
         drive = Globals.drivetrain;
+        gyro = Globals.gyro;
+        turnController = new PIDController(Constants.TURN_KP, Constants.TURN_KI, Constants.TURN_KD, gyro, o -> {
+        });
+        turnController.setAbsoluteTolerance(1);
+        turnController.setInputRange(-180, 180);
+        turnController.setOutputRange(-1, 1);
+        turnController.setContinuous(true);
+        turnController.setInputRange(-180, 180);
+        turnController.setOutputRange(-1, 1);
+        turnController.setContinuous(true);
     }
 
     public void init() {
         super.init();
-        drive.turnController.setSetpoint(this.angle);
-        drive.turnController.enable();
+        turnController.setSetpoint(this.angle);
+        turnController.enable();
     }
 
     @Override public void end() {
-        drive.turnController.disable();
+        turnController.disable();
     }
 
     public boolean customFinish() {
-        return drive.turnController.onTarget();
+        return turnController.onTarget();
     }
 
     @Override public void update() {
-        drive.autoDrive(0, drive.turnController.get());
+        drive.autoDrive(0, turnController.get());
     }
 
 }

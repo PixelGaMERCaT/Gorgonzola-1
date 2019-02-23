@@ -9,19 +9,47 @@ package frc.sandstorm;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+<<<<<<< HEAD
+=======
+import frc.sandstorm.sections.*;
+import frc.sandstorm.SandstormPath;
+import jaci.pathfinder.Waypoint;
+>>>>>>> c1e2cdc2a78d40f2782817778289cb30a9ef2f1f
 /**
  * Add your docs here.
  */
 public class SandstormStart {
+
+    SandstormPath mpTestAuto;
 
     SandstormPath autoMode;
     SendableChooser<SandstormPath> autoChooser;
 
     public SandstormStart() {}
     
-    public void initSandstormPaths() { // Build sandstorm/auto modes here
+    /* 
+    * Write auto modes in initSandstormPaths(), and then add them to the sendable chooser
+    * ex:
+    * -------------------------------------------
+    * testAuto = new SandstormPath("Test Auto");
+    * testAuto.add(new Drive(0.5, 0, 1));
+    * testAuto.stopDrive();
+    * -------------------------------------------
+    * Would make an auto mode where the robot drives forward at 50% power for 1 second and then stops
+    * Sendable Chooser code: autoChooser.addOption(testAuto.name, testAuto);
+    */
+
+    public void initSandstormPaths() { 
+
+        mpTestAuto = new SandstormPath("MP Test Auto");
+        mpTestAuto.add(new MotionProfile(new Waypoint[] {
+            new Waypoint(0, 0, 0),
+            new Waypoint(24, 0, 0)
+        }));
+        mpTestAuto.stopDrive();
 
         autoChooser = new SendableChooser();
+        autoChooser.addDefault(mpTestAuto.name, mpTestAuto);
         SmartDashboard.putData("Sandstorm Mode Chooser", autoChooser);
         
     }
