@@ -43,6 +43,7 @@ public class WristTalonManager extends TalonManager {
         talon.configPeakOutputForward(1);
         talon.configPeakOutputReverse(-1);
         talon.config_kP(0, P);
+        
         talon.config_kI(0, I);
         talon.config_kD(0, D);
         talon.config_kF(0, F);
@@ -67,8 +68,8 @@ public class WristTalonManager extends TalonManager {
         * 2pi (τ)            -- converts the values from "percentage of a rotation" to radians
         
         */
-        return (getEncoderPosition() % Constants.WRIST_TICKS_PER_ROTATION - Constants.WRIST_ENCU_ZERO)
-                / Constants.WRIST_TICKS_PER_ROTATION * Math.PI * 2;
+        return ((getEncoderPosition() % Constants.WRIST_TICKS_PER_ROTATION - Constants.WRIST_ENCU_ZERO)
+                / Constants.WRIST_TICKS_PER_ROTATION * Math.PI * 2)%(2*Math.PI);
     }
 
 }

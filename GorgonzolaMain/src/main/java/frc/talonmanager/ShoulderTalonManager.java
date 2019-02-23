@@ -36,6 +36,8 @@ public class ShoulderTalonManager extends TalonManager {
         talon.configFactoryDefault();
         talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, 0);
         //nominal output
+        talon.configMotionAcceleration((int)Constants.SHOULDER_MAX_VELOCITY);
+        talon.configMotionCruiseVelocity((int)Constants.SHOULDER_MAX_VELOCITY);
         talon.configNominalOutputForward(0);
         talon.configNominalOutputReverse(0);
         talon.configPeakOutputForward(1);

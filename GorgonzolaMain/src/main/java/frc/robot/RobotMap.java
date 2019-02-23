@@ -44,7 +44,7 @@ public class RobotMap {
     public static final int GEAR_SHIFT=0;
     public static final int INTAKE_LEFT_SOLENOID=1;
     public static final int INTAKE_RIGHT_SOLENOID=2;
-    public static final int INTAKE_ACTUATOR_SOLENOID=3;
+    public static final int INTAKE_ACTUATOR_SOLENOID=4;
     //Arm:
     public static final int SHOULDER_TALON_1 =2;
     public static final int SHOULDER_TALON_2 =3;
@@ -54,6 +54,6 @@ public class RobotMap {
     //Intake:
     public static final int INTAKE_TALON_1=7;
     public static final int INTAKE_TALON_2=6;
-
-   
+    public static final int CLIMB_TALON_1 = 9;
+    public static final int CLIMB_TALON_2 = 10;
 }

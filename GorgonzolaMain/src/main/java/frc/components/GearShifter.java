@@ -15,7 +15,7 @@ public class GearShifter implements Component {
 
     public GearShifter() {
         highGear = false;
-        if (!(Globals.isNSP || Globals.isAdelost)) {
+        if (!(Globals.isNSP)) {
             switcher = new Solenoid(RobotMap.GEAR_SHIFT);
         }
     }
@@ -41,6 +41,7 @@ public class GearShifter implements Component {
     /**
      * Returns the current gear of the robot
      * @return true if robot is in high gear, false otherwise
+   
      */
     public boolean isHighGear() {
         return highGear;

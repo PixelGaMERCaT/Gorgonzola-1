@@ -34,64 +34,127 @@ public class InputManager implements Component {
         }
 
     }
-    public boolean getHatchIntakeButton(){
+
+    /**
+     * Returns whether the hatch output button is being pressed
+     * 
+     * @return true if we should be outputting a hatch, false otherwise
+     */
+    public boolean getHatchOutputButton() {
         return aux.getRawButton(4);
     }
+
     /**
-     * A method to get a number from -1 to 1 denoting the position of the primary joystick
-     * @return a number [-1, 1], denoting the position of the joystick along the forward/backward axis
+     * A method to get a number from -1 to 1 denoting the position of the primary
+     * joystick
+     * 
+     * @return a number [-1, 1], denoting the position of the joystick along the
+     *         forward/backward axis
      */
     public double getForward() {
         return getSafetyButton() ? left.getY() : 0;
     }
-    public boolean getIntakeActuatorButton(){
-        return aux.getRawButton(5);
-        
-    }
+
     /**
-     * A method to get a number from -1 to 1 denoting the position of the primary joystick
-     * @return a number [-1, 1], denoting the position of the joystick along the forward/backward axis
+     * Returns whether we should be intaking a hatch
+     * 
+     * @return true if we should be intaking a hatch, false otherwise.
+     */
+    public boolean getHatchIntakeButton() {
+        return aux.getRawButton(5);
+
+    }
+
+    /**
+     * A method to get a number from -1 to 1 denoting the position of the secondary
+     * joystick
+     * 
+     * @return a number [-1, 1], denoting the position of the joystick along the
+     *         left/right axis
      */
     public double getTurn() {
         return getSafetyButton() ? right.getX() : 0;
     }
 
     /**
-     * A method that returns true if the safety button is being pressed, and false otherwise
+     * A method that returns true if the safety button is being pressed, and false
+     * otherwise
+     * 
      * @return true if the safety button is being pressed, and false otherwise.
      */
     public boolean getSafetyButton() {
         return left.getRawButton(ButtonMap.SAFETY);
     }
+
     /**
-     * Returns whether the gear shift button (button which shifts gears) is being pushed
+     * Returns whether the gear shift button (button which shifts gears) is being
+     * pushed
+     * 
      * @return true if the button is being pushed, false otherwise
      */
-    public boolean getGearSwitchButton(){
+    public boolean getGearSwitchButton() {
         return left.getRawButton(ButtonMap.GEAR_SHIFT);
     }
+
+    public boolean getAuxButton(int id) {
+        return aux.getRawButton(id);
+    }
+
     /**
-     * Returns whether the elevator should be enabled
-     * @return true if the elevator should be enabled, false otherwise.
+     * Returns the power with which the CAM should be moving.
+     * 
+     * @return a number [-1, 1], denoting the position of the joystick along the
+     *         forward/backward axis
      */
-    public boolean getShoulderButton(){
+    public double getClimb() {
+        return right.getRawButton(1) ? right.getY() : 0;
+    }
+
+    /**
+     * Returns whether the shoulder should be enabled
+     * 
+     * @return true if the shoulder should be enabled, false otherwise.
+     */
+    public boolean getShoulderButton() {
         return aux.getRawButton(ButtonMap.ELEVATOR_ENABLE);
     }
-    public boolean getWristButton(){
+
+    /**
+     * Returns whether the wrist should be enabled
+     * 
+     * @return true if the wrist should be enabled, false otherwise.
+     */
+    public boolean getWristButton() {
         return aux.getRawButton(3);
     }
+
     /**
+     * Returns a number denoting the position of the shoulder within the range of
+     * the shoulder
      * 
+     * @return 0 for the bottom of the shoulder's range, .5 for the middle, etc
      */
-    public double getShoulderHeight(){
-        return (1.0+aux.getY())/2.0;
+    public double getShoulderHeight() {
+        return (1.0 + aux.getY()) / 2.0;
     }
-    public boolean getIntakeInButton(){
-        return aux.getRawButton(4);
+
+    /**
+     * Returns whether the intake should be spinning inwards
+     * 
+     * @return true if the intake should be spinning in, false otherwise.
+     */
+    public boolean getIntakeInButton() {
+        return aux.getRawButton(8);
     }
-    
-    public boolean getIntakeOutButton(){
-        return aux.getRawButton(5);
+
+    /**
+     * Returns whether the intake should be spinning outwards
+     * 
+     * @return true if the intake should be spinning outwards, false otherwise
+     */
+    public boolean getIntakeOutButton() {
+        return aux.getRawButton(9);
+        
     }
 
 }
