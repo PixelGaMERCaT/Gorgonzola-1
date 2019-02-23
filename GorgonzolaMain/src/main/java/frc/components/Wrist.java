@@ -46,6 +46,11 @@ public class Wrist implements Component {
     }
 
     public void init() {
+        SmartDashboard.putNumber("WristP", Constants.WRIST_KP);
+        SmartDashboard.putNumber("WristI", 0);
+        SmartDashboard.putNumber("WristD", Constants.WRIST_KD); 
+        SmartDashboard.putNumber("WristF", Constants.WRIST_KF);
+
         im = Globals.im;
         logger = Globals.logger;
         shoulder = Globals.shoulder;
@@ -63,6 +68,10 @@ public class Wrist implements Component {
     double maxVelocity = 0;
 
     public void tick() {
+        if (im.getAuxButton(11)){
+            talon1.initEncoder(SmartDashboard.getNumber("WristP", Constants.WRIST_KP), SmartDashboard.getNumber("WristI", 0),SmartDashboard.getNumber("WristD", Constants.WRIST_KD), SmartDashboard.getNumber("WristF", Constants.WRIST_KF));
+            System.out.println("Wristp"+ SmartDashboard.getNumber("WristP", -1));
+        }
         maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
         SmartDashboard.putNumber("maxvel", maxVelocity);
         SmartDashboard.putNumber("ffd ", talon1.talon.getActiveTrajectoryArbFeedFwd());
@@ -77,8 +86,7 @@ public class Wrist implements Component {
 
         if (im.getWristButton()) {
 
-            talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderHeight() * 2.0 - 1.0);
-
+            //talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderHeight() * 2.0 - 1.0);
             angleSetpoint = (im.getShoulderHeight() * 2.0 - 1.0) * Constants.WRIST_ANGLE_RANGE / 2.0;
             // setAngle(-shoulder.getAngle());
             // System.out.println("anglesetpoint "+ angleSetpoint*180/Math.PI);

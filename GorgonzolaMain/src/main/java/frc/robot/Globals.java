@@ -26,7 +26,7 @@ import frc.components.pose.PoseTracker;
 public class Globals {
     public static boolean isNSP = false;
     public static boolean isAdelost = false; 
-    public static boolean isProto = false;
+    public static boolean isProto = true;
     
     public static InputManager im;
     public static Drivetrain drivetrain;

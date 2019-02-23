@@ -20,7 +20,7 @@ public class Intake implements Component{
         intakeTalon2 = new IntakeTalonManager(RobotMap.INTAKE_TALON_2);
         intakeTalon1.setInverted(false);
         intakeTalon2.setInverted(false);
-        //intakeTalon2.follow(intakeTalon1);
+        intakeTalon2.follow(intakeTalon1);
 
         leftSuction=new Solenoid(RobotMap.INTAKE_LEFT_SOLENOID);
         rightSuction=new Solenoid(RobotMap.INTAKE_RIGHT_SOLENOID);
