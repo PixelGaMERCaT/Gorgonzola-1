@@ -40,6 +40,7 @@ public class Drivetrain implements Component {
             middleLeft.follow(frontLeft);
             middleRight.follow(frontRight);
             
+
         }
         if (!Globals.isAdelost) {
             backRight.setInverted(true);
@@ -125,24 +126,7 @@ public class Drivetrain implements Component {
         //System.out.println(maxVelocity);
         
         driveBasic(im.getForward(), im.getTurn());
-        //magicDrive(im.getForward(), im.getTurn());
-        /*if (im.getSafetyButton()) {
-            tick++;
-            if (tick < 80) {
-                magicDrive(.75, im.getTurn());
-            } else if (tick < 160) {
-                magicDrive(-.75, im.getTurn());
-            } else {
-                frontRight.set(ControlMode.PercentOutput, 0);
-                frontLeft.set(ControlMode.PercentOutput, 0);
-            }
-            //frontRight.set(ControlMode.MotionMagic, -12 * Constants.ENCODER_TO_INCHES);
-            //frontLeft.set(ControlMode.MotionMagic, -12 * Constants.ENCODER_TO_INCHES);
-        } else {
-            frontRight.set(ControlMode.PercentOutput, 0);
-            frontLeft.set(ControlMode.PercentOutput, 0);
-        }*/
-        
+                
     }
 
     /**
@@ -157,6 +141,7 @@ public class Drivetrain implements Component {
         frontRight.set(ControlMode.PercentOutput, forward + turn);
     }
 
+
     /**
      * A drive method designed for auto; the same as driveBasic but without squaring
      * @param forward A number between -1 (full backward) and 1 (full forward)
@@ -164,6 +149,7 @@ public class Drivetrain implements Component {
      */
     public void autoDrive(double forward, double turn) {
         frontLeft.set(ControlMode.PercentOutput, forward - turn);
+        
         frontRight.set(ControlMode.PercentOutput, forward + turn);
     }
 

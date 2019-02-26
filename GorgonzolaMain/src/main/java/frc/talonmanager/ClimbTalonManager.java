@@ -36,9 +36,9 @@ public class ClimbTalonManager extends TalonManager {
     */
     public void initEncoder(double P, double I, double D, double F) {
         talon.configFactoryDefault();
-        talon.configMotionAcceleration((int) (Constants.MAX_DRIVE_VELOCITY_LOW * Constants.DRIVE_ENCU_PER_INCH / 10.0));
+        talon.configMotionAcceleration((int) (Constants.MAX_CLIMB_VELOCITY));
         talon.configMotionCruiseVelocity(
-                (int) (Constants.MAX_DRIVE_VELOCITY_LOW * Constants.DRIVE_ENCU_PER_INCH / 10.0));
+                (int) (Constants.MAX_CLIMB_VELOCITY));
         talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
         talon.setSensorPhase(true);
         talon.configNominalOutputForward(0);

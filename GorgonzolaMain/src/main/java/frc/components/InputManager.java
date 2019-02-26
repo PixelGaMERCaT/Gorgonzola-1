@@ -7,7 +7,6 @@ import frc.CheeseLog.SQLType.Decimal;
 import frc.CheeseLog.SQLType.Type;
 import frc.robot.ButtonMap;
 import frc.robot.Globals;
-import frc.robot.RobotMap;
 
 /**
  * A component that parses input from the driverstation (joysticks, etc)
@@ -15,11 +14,13 @@ import frc.robot.RobotMap;
 public class InputManager implements Component {
     private LogInterface logger;
     private Joystick left, right, aux;
+    private ArmControlState state; 
 
     public InputManager() {
-        left = new Joystick(RobotMap.LEFT_STICK);
-        right = new Joystick(RobotMap.RIGHT_STICK);
-        aux = new Joystick(RobotMap.AUX_STICK);
+        state = ArmControlState.AUTO;
+        left = new Joystick(ButtonMap.LEFT_STICK);
+        right = new Joystick(ButtonMap.RIGHT_STICK);
+        aux = new Joystick(ButtonMap.AUX_STICK);
     }
 
     public void init() {
@@ -35,14 +36,28 @@ public class InputManager implements Component {
 
     }
 
-    /**
-     * Returns whether the hatch output button is being pressed
-     * 
-     * @return true if we should be outputting a hatch, false otherwise
-     */
-    public boolean getHatchOutputButton() {
-        return aux.getRawButton(4);
+    public void tick() {
+        if (aux.getRawButtonPressed(ButtonMap.POS_MANUAL_OVERRIDE)) {
+            switch (state) {
+            case POSITON_MANUAL:
+                state = ArmControlState.AUTO;
+                break;
+            default:
+                state = ArmControlState.POSITON_MANUAL;
+            }
+        }
+
+        if (aux.getRawButtonPressed(ButtonMap.FULL_MANUAL_OVERRIDE)) {
+            switch (state) {
+            case FULL_MANUAL:
+                state = ArmControlState.AUTO;
+                break;
+            default:
+                state = ArmControlState.FULL_MANUAL;
+            }
+        }
     }
+
 
     /**
      * A method to get a number from -1 to 1 denoting the position of the primary
@@ -56,12 +71,12 @@ public class InputManager implements Component {
     }
 
     /**
-     * Returns whether we should be intaking a hatch
+     * Returns whether the hatch button is being pressed
      * 
-     * @return true if we should be intaking a hatch, false otherwise.
+     * @return true if we should be holding a hatch, false otherwise.
      */
-    public boolean getHatchIntakeButton() {
-        return aux.getRawButton(5);
+    public boolean getHatchButton() {
+        return aux.getRawButton(ButtonMap.SUCC_TOGGLE_BUTTON);
 
     }
 
@@ -83,7 +98,7 @@ public class InputManager implements Component {
      * @return true if the safety button is being pressed, and false otherwise.
      */
     public boolean getSafetyButton() {
-        return left.getRawButton(ButtonMap.SAFETY);
+        return left.getRawButton(ButtonMap.DRIVE_SAFETY);
     }
 
     /**
@@ -93,11 +108,58 @@ public class InputManager implements Component {
      * @return true if the button is being pushed, false otherwise
      */
     public boolean getGearSwitchButton() {
-        return left.getRawButton(ButtonMap.GEAR_SHIFT);
+        return right.getRawButton(ButtonMap.GEAR_SHIFT);
     }
 
-    public boolean getAuxButton(int id) {
-        return aux.getRawButton(id);
+    
+
+    /**
+     * Gives the desired location of the arm, based on the following:
+     * @return the desired height of the arm
+     */
+    public ArmHeight getArmPosition() {
+        if (getArmSafetyButton()) {
+            if (state == ArmControlState.FULL_MANUAL)
+                return ArmHeight.FULL_MANUAL;
+            if (state == ArmControlState.POSITON_MANUAL)
+                return ArmHeight.POSITION_MANUAL;
+
+            if (aux.getRawButton(1)) {
+                return ArmHeight.GROUND_PICKUP;
+            }
+            if (aux.getRawButton(2)) {
+                return ArmHeight.BALL_LOW;
+            }
+            if (aux.getRawButton(3)) {
+                return ArmHeight.BALL_MEDIUM;
+            }
+            if (aux.getRawButton(4)) {
+                return ArmHeight.BALL_HIGH;
+            }
+            int pov = aux.getPOV();
+            System.out.println("pov " + pov);
+            if (pov == ButtonMap.HATCH_LOW) {
+                return ArmHeight.HATCH_LOW;
+            }
+            if (pov == ButtonMap.HATCH_MID) {
+                return ArmHeight.HATCH_MEDIUM;
+            }
+            if (pov == ButtonMap.HATCH_HIGH) {
+                return ArmHeight.HATCH_HIGH;
+            }
+            if (pov == ButtonMap.STOW) {
+                return ArmHeight.STOW;
+            }
+
+            return ArmHeight.NO_CHANGE; //Nothing will be done
+        } else {
+            return ArmHeight.NO_MOVEMENT;
+        }
+
+    }
+
+    public boolean getArmSafetyButton() {
+        return aux.getRawButton(ButtonMap.AUX_SAFETY);
     }
 
     /**
@@ -107,26 +169,17 @@ public class InputManager implements Component {
      *         forward/backward axis
      */
     public double getClimb() {
-        return right.getRawButton(1) ? right.getY() : 0;
+        return right.getY();
     }
 
-    /**
-     * Returns whether the shoulder should be enabled
-     * 
-     * @return true if the shoulder should be enabled, false otherwise.
-     */
-    public boolean getShoulderButton() {
-        return aux.getRawButton(ButtonMap.ELEVATOR_ENABLE);
+    public boolean getManualClimbButton() {
+        return right.getRawButton(ButtonMap.CAM_MANUAL);
     }
 
-    /**
-     * Returns whether the wrist should be enabled
-     * 
-     * @return true if the wrist should be enabled, false otherwise.
-     */
-    public boolean getWristButton() {
-        return aux.getRawButton(3);
+    public boolean getAutoClimbButton() {
+        return right.getRawButton(ButtonMap.CAM_AUTO);
     }
+
 
     /**
      * Returns a number denoting the position of the shoulder within the range of
@@ -134,8 +187,12 @@ public class InputManager implements Component {
      * 
      * @return 0 for the bottom of the shoulder's range, .5 for the middle, etc
      */
-    public double getShoulderHeight() {
-        return (1.0 + aux.getY()) / 2.0;
+    public double getShoulderManualHeight() {
+        return aux.getRawAxis(ButtonMap.SHOULDER_STICK);
+    }
+
+    public double getWristManualPosition() {
+        return aux.getRawAxis(ButtonMap.WRIST_STICK);
     }
 
     /**
@@ -143,8 +200,8 @@ public class InputManager implements Component {
      * 
      * @return true if the intake should be spinning in, false otherwise.
      */
-    public boolean getIntakeInButton() {
-        return aux.getRawButton(8);
+    public boolean getBallIntakeInButton() {
+        return aux.getRawButton(ButtonMap.BALL_INTAKE);
     }
 
     /**
@@ -153,8 +210,12 @@ public class InputManager implements Component {
      * @return true if the intake should be spinning outwards, false otherwise
      */
     public boolean getIntakeOutButton() {
-        return aux.getRawButton(9);
-        
+        return aux.getRawButton(ButtonMap.BALL_OUTPUT);
+
+    }
+
+    public boolean getClimbKnives() {
+        return left.getRawButton(ButtonMap.KNIFE_DEPLOY);
     }
 
 }

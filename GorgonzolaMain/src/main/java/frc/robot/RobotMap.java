@@ -10,6 +10,8 @@ public class RobotMap {
     public static final int FRONT_LEFT_TALON=1;
     public static final int BACK_RIGHT_TALON=4;
     public static final int BACK_LEFT_TALON=3;
+    public static final int MIDDLE_LEFT_TALON=12;
+    public static final int MIDDLE_RIGHT_TALON=15;
     */
     /*
     public static final int FRONT_RIGHT_TALON=1;
@@ -23,7 +25,7 @@ public class RobotMap {
     
     //IMPORTANT NOTE: *****_TALON_1 is the one with the encoder for wrist/shoulder
     //FRONT_****_TALON is the one with the encoder for drive
-
+    
     //DRIVE TALONS:
     public static final int FRONT_LEFT_TALON=12;
     public static final int BACK_LEFT_TALON=13;
@@ -31,13 +33,9 @@ public class RobotMap {
     public static final int FRONT_RIGHT_TALON=1;
     public static final int BACK_RIGHT_TALON=0;
     public static final int MIDDLE_RIGHT_TALON=11;
+    
 
-
-    //Joysticks:
-    public static final int LEFT_STICK=0;
-    public static final int RIGHT_STICK=1;
-    public static final int AUX_STICK=5;
-
+    
 
     //Pneumatics:
     public static final int COMPRESSOR=0;

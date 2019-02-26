@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.Solenoid;
 import frc.components.Climber;
 import frc.components.Component;
 import frc.components.Drivetrain;
@@ -16,6 +15,7 @@ import frc.components.LogInterface;
 import frc.components.NetworkInterface;
 import frc.components.Shoulder;
 import frc.components.Wrist;
+import frc.components.lights.PWMLightController;
 import frc.components.pose.PoseTracker;
 
 /**
@@ -48,20 +48,21 @@ public class Globals {
     public static void init() {
         components = new ArrayList<Component>();
         compressor=new Compressor(RobotMap.COMPRESSOR);
-        compressor.setClosedLoopControl(true);
+        drivetrain = new Drivetrain();
+        im = new InputManager();
+        logger = new LogInterface();
+        PWMLightController pwmLightController= new PWMLightController(0, 1);
+        compressor.setClosedLoopControl(false);
         intake=new Intake();
         gearShifter = new GearShifter();
         poseTracker = new PoseTracker(50);
-        im = new InputManager();
         gyro = new Gyro();
-        drivetrain = new Drivetrain();
         testTable = new NetworkInterface("blue");
-        logger = new LogInterface();
         shoulder=new Shoulder();
         wrist=new Wrist();
         climber=new Climber();
         //GYRO IS COMMENTED OUT
-        components.addAll(Arrays.asList(im, drivetrain, shoulder, wrist,  gearShifter, intake, gyro, poseTracker, logger));
+        components.addAll(Arrays.asList(im, pwmLightController, drivetrain, shoulder, wrist,  gearShifter, intake, gyro, poseTracker, climber, logger));
         //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
 
         components.forEach(c -> c.init());

@@ -41,7 +41,7 @@ public class ShoulderTalonManager extends TalonManager {
         talon.configNominalOutputForward(0);
         talon.configNominalOutputReverse(0);
         talon.configPeakOutputForward(1);
-        talon.configPeakOutputReverse(-1);
+        talon.configPeakOutputReverse(-.75);
         talon.config_kP(0, P);
         talon.config_kI(0, I);
         talon.config_kD(0, D);

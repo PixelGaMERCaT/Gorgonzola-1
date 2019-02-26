@@ -31,7 +31,7 @@ public class LogInterface implements Component {
      * Adds all initialized tables to Logger.
      */
     public void init(){
-            for (Table t : Arrays.asList(inputManager, wrist)){
+            for (Table t : Arrays.asList(inputManager, wrist, shoulder)){
                 try {
                     System.out.println(t);
                     System.out.println(t.getName());
@@ -85,6 +85,7 @@ public class LogInterface implements Component {
      * Ticks the logger (logs values)
      */
     public void tick() {
+        System.out.println("ticking logger");
         try {
             logger.tick();
         } catch (Exception e) {
