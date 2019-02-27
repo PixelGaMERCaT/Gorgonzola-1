@@ -31,14 +31,16 @@ public class Shoulder implements Component {
 
             talon1.talon.setSensorPhase(false);
             talon2.talon.setSensorPhase(false);
-            talon1.setInverted(false);
-            talon2.setInverted(false);
-
+            talon1.setInverted(true);
+            talon2.setInverted(true);
         } else {
             talon1.talon.setSensorPhase(true);
             talon2.talon.setSensorPhase(true);
 
         }
+        talon1.talon.configFeedbackNotContinuous(true, 0);
+        talon2.talon.configFeedbackNotContinuous(true, 0);
+
         talon2.follow(talon1);
         currentPosition = getHeight();
     }
@@ -118,6 +120,7 @@ public class Shoulder implements Component {
             break;
         case FULL_MANUAL:
             talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderManualHeight());
+            
             break;
         case STOW:
             setHeight(Constants.SHOULDER_MIN_POSITION);
@@ -134,7 +137,7 @@ public class Shoulder implements Component {
      * @param height
      */
     public void setHeight(double height) {
-        //TODO Extract to constant
+        height = Math.min(height, Constants.SHOULDER_MAX_POSITION);
         talon1.set(ControlMode.MotionMagic, heightToEncU(height));
     }
 

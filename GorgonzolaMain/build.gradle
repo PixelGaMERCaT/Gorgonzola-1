@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2019.1.1"
+    id "edu.wpi.first.GradleRIO" version "2019.4.1"
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
@@ -43,7 +43,8 @@ repositories {
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
-// Also defines JUnit 4.
+// Also defines JUnit 
+
 dependencies {
     compile wpi.deps.wpilib()
     compile wpi.deps.vendor.java()

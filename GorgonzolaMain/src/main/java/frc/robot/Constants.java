@@ -15,7 +15,7 @@ public class Constants {
         // Spooky zone (unchecked)
         // TODO reduce spookiness
         public static final double SHOULDER_TICKS_PER_ROTATION = 1024.0;
-        public static final double SHOULDER_ENCU_ZERO = 720; // 1249.8, 1227
+        public static final double SHOULDER_ENCU_ZERO = -396; // 1249.8, 1227
         public static final double SHOULDER_MIN_POSITION = 12; //inches
         public static final double SHOULDER_MAX_POSITION = 78;
         public static final double SHOULDER_MAX_VELOCITY = 55;
@@ -25,7 +25,7 @@ public class Constants {
         
 
 
-        public static final double SHOULDER_KP = 15, SHOULDER_KI = 0, SHOULDER_KD = .5,
+        public static final double SHOULDER_KP = 15, SHOULDER_KI = 0, SHOULDER_KD = 5,
                         SHOULDER_KF = 1023.0 / SHOULDER_MAX_VELOCITY;
         public static final double WRIST_STOW_POSITION = 145.0*Math.PI/180.0;
         public static final double WRIST_GEAR_OFFSET = 3.6 * Math.PI/180; //Offset for slack in gearbox (radians)

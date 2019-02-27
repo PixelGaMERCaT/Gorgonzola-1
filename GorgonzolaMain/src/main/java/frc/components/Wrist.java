@@ -26,11 +26,14 @@ public class Wrist implements Component {
         if (Globals.isProto) {
             talon1.talon.setSensorPhase(true);
             talon2.talon.setSensorPhase(true);
+
         } else {
             talon1.talon.setSensorPhase(true);
             talon2.talon.setSensorPhase(true);
         }
-        
+        talon1.talon.configFeedbackNotContinuous(true, 0);
+        talon2.talon.configFeedbackNotContinuous(true, 0);
+
         if (Globals.isProto) {
             talon1.setInverted(false);
             talon2.setInverted(false);
@@ -94,10 +97,9 @@ public class Wrist implements Component {
                     talon1.set(ControlMode.PercentOutput, .1 + im.getWristManualPosition());
                     break;
                 case BALL_HIGH:
-                    setAngle(-45.0*Math.PI/180.0);
+                    setAngle(-30.0*Math.PI/180.0);
                 case NO_CHANGE:
                     break;
-                
                 default:
                     setAngle(-shoulder.getAngle()+Constants.WRIST_GEAR_OFFSET);
             }
