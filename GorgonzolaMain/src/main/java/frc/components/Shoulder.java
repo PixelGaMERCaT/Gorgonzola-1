@@ -121,8 +121,7 @@ public class Shoulder implements Component {
                     + ((1.0 + im.getShoulderManualHeight()) / 2.0 * (Constants.SHOULDER_RANGE)));
             break;
         case FULL_MANUAL:
-            System.out.println("full manual");
-            talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderManualHeight());
+            talon1.set(ControlMode.PercentOutput, .1 + .5*im.getShoulderManualHeight());
 
             break;
         case STOW:

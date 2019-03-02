@@ -113,7 +113,7 @@ public class Wrist implements Component {
             setAngle(im.getWristManualPosition());
             break;
         case FULL_MANUAL:
-            talon1.set(ControlMode.PercentOutput, .1 + im.getWristManualPosition());
+            talon1.set(ControlMode.PercentOutput, .1 + .5*im.getWristManualPosition());
             break;
         case BALL_HIGH:
             setAngle(-30.0 * Math.PI / 180.0);
