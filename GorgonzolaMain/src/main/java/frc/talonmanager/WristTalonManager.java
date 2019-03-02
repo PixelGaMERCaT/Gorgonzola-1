@@ -47,6 +47,7 @@ public class WristTalonManager extends TalonManager {
         talon.config_kI(0, I);
         talon.config_kD(0, D);
         talon.config_kF(0, F);
+        talon.configMotionSCurveStrength(2);
     }
 
     

@@ -27,7 +27,7 @@ public class Intake implements Component {
         leftSuction = new Solenoid(RobotMap.INTAKE_LEFT_SOLENOID);
         rightSuction = new Solenoid(RobotMap.INTAKE_RIGHT_SOLENOID);
         venturi = new Solenoid(RobotMap.INTAKE_ACTUATOR_SOLENOID);
-        hatchActiveOut = new Solenoid(6);
+        hatchActiveOut = new Solenoid(RobotMap.HATCH_DEPLOY_SOLENOID);
     }
 
     public void init() {
@@ -36,13 +36,17 @@ public class Intake implements Component {
     }
 
     int venturiTick = 200;
-    int hatchOutputTimer=-1;
+    int hatchOutputTimer = -1;
+
     public void tick() {
         boolean hatchIntake = im.getHatchButton();
-
-        if (hatchIntake) {
-            SmartDashboard.putString("intake", "intaking hatch");
-            //picking up a hatch
+        System.out.println(hatchIntake);
+        /*
+        venturi.set(hatchIntake);
+        hatchActiveOut.set(im.getClimbKnives());
+        */
+        
+        if (hatchIntake) { //picking up a hatch
             if (venturiTick > 0) {
                 leftSuction.set(true);
                 rightSuction.set(true);
@@ -51,30 +55,31 @@ public class Intake implements Component {
                 leftSuction.set(false);
                 rightSuction.set(false);
                 venturi.set(false);
-                
+
             }
             venturiTick--;
             hatchActiveOut.set(false);
-            hatchOutputTimer=25;
-        } else if (hatchOutputTimer>0){
+            hatchOutputTimer = 25;
+        } else if (hatchOutputTimer > 0) {
             SmartDashboard.putString("intake", "Outputting hatch");
             leftSuction.set(true);
             rightSuction.set(true);
             venturi.set(false);
             hatchActiveOut.set(true);
             hatchOutputTimer--;
-            venturiTick=200;
+            venturiTick = 200;
         } else {
             SmartDashboard.putString("intake", "Default State");
             venturi.set(false);
+
             leftSuction.set(false);
             rightSuction.set(false);
             hatchActiveOut.set(false);
         }
-        if (im.getIntakeOutButton()) {
-            intakeTalon1.set(ControlMode.PercentOutput, -1);
+        if (im.getBallIntakeOutButton()) {
+            intakeTalon1.set(ControlMode.PercentOutput, 0.5);
         } else if (im.getBallIntakeInButton()) {
-            intakeTalon1.set(ControlMode.PercentOutput, 1);
+            intakeTalon1.set(ControlMode.PercentOutput, -0.5);
         } else {
             intakeTalon1.set(ControlMode.PercentOutput, 0);
         }

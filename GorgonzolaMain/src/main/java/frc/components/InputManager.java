@@ -103,12 +103,11 @@ public class InputManager implements Component {
     public boolean getGearSwitchButton() {
         return right.getRawButton(ButtonMap.GEAR_SHIFT);
     }
-
     /**
      * Gives the desired location of the arm as an ArmPosition
      * @return An ArmPosition representing the state of the arm
      */
-    public ArmHeight getArmPosition() {
+    /*public ArmHeight getArmPosition() {
         if (getArmSafetyButton()) {
             if (state == ArmControlState.FULL_MANUAL)
                 return ArmHeight.FULL_MANUAL;
@@ -128,8 +127,7 @@ public class InputManager implements Component {
                 return ArmHeight.BALL_HIGH;
             }
             int pov = aux.getPOV();
-            System.out.println("pov " + pov);
-            if (pov == ButtonMap.HATCH_LOW) {
+           if (pov == ButtonMap.HATCH_LOW) {
                 return ArmHeight.HATCH_LOW;
             }
             if (pov == ButtonMap.HATCH_MID) {
@@ -147,7 +145,7 @@ public class InputManager implements Component {
             return ArmHeight.NO_MOVEMENT;
         }
 
-    }
+    }*/
 
     /**
      * Returns whether the arm safety button is being pressed
@@ -203,18 +201,18 @@ public class InputManager implements Component {
      * Returns whether the ball input button is being pressed
      * @return true if the button is being pressed, false otherwise
      */
-    public boolean getBallIntakeInButton() {
+    /*public boolean getBallIntakeInButton() {
         return aux.getRawButton(ButtonMap.BALL_INTAKE);
-    }
+    }*/
 
     /**
      * Returns whether the ball output button is being pressed
      * @return true if the button is being pressed, false otherwise
      */
-    public boolean getBallIntakeOutButton() {
+    /*public boolean getBallIntakeOutButton() {
         return aux.getRawButton(ButtonMap.BALL_OUTPUT);
 
-    }
+    }*/
 
     /**
      * Returns whether the climb knife deploy button is being pressed.
@@ -224,4 +222,51 @@ public class InputManager implements Component {
         return left.getRawButton(ButtonMap.KNIFE_DEPLOY);
     }
 
+    //Untested alternate control scheme
+    
+        public ArmHeight getArmPosition() {
+        if (getArmSafetyButton()) {
+            if (state == ArmControlState.FULL_MANUAL)
+                return ArmHeight.FULL_MANUAL;
+            if (state == ArmControlState.POSITON_MANUAL)
+                return ArmHeight.POSITION_MANUAL;
+            if (aux.getRawButton(ButtonMap.HB_SWITCH)) {
+                if (aux.getRawButton(1)) {
+                    return ArmHeight.GROUND_PICKUP;
+                }
+                if (aux.getRawButton(2)) {
+                    return ArmHeight.BALL_LOW;
+                }
+                if (aux.getRawButton(3)) {
+                    return ArmHeight.BALL_MEDIUM;
+                }
+                if (aux.getRawButton(4)) {
+                    return ArmHeight.BALL_HIGH;
+                }
+            }else {
+                if (aux.getRawButton(1)) {
+                    return ArmHeight.STOW;
+                }
+                if (aux.getRawButton(2)) {
+                    return ArmHeight.HATCH_LOW;
+                }
+                if (aux.getRawButton(3)) {
+                    return ArmHeight.HATCH_MEDIUM;
+                }
+                if (aux.getRawButton(4)) {
+                    return ArmHeight.HATCH_HIGH;
+                }
+            }
+            return ArmHeight.NO_CHANGE; //Nothing will be done
+        } else {
+            return ArmHeight.NO_MOVEMENT;
+        }
+    }
+    public boolean getBallIntakeInButton() {
+        return aux.getPOV() == ButtonMap.BALL_INTAKE;
+    }
+    public boolean getBallIntakeOutButton() {
+        return aux.getPOV() == ButtonMap.BALL_OUTPUT;
+    }
+    
 }

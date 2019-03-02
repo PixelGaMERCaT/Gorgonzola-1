@@ -85,7 +85,6 @@ public class LogInterface implements Component {
      * Ticks the logger (logs values)
      */
     public void tick() {
-        System.out.println("ticking logger");
         try {
             logger.tick();
         } catch (Exception e) {

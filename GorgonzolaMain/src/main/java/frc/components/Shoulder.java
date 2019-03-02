@@ -36,6 +36,8 @@ public class Shoulder implements Component {
         } else {
             talon1.talon.setSensorPhase(true);
             talon2.talon.setSensorPhase(true);
+            talon1.setInverted(true);
+            talon2.setInverted(true);
 
         }
         talon1.talon.configFeedbackNotContinuous(true, 0);
@@ -119,11 +121,12 @@ public class Shoulder implements Component {
                     + ((1.0 + im.getShoulderManualHeight()) / 2.0 * (Constants.SHOULDER_RANGE)));
             break;
         case FULL_MANUAL:
+            System.out.println("full manual");
             talon1.set(ControlMode.PercentOutput, .1 + im.getShoulderManualHeight());
-            
+
             break;
         case STOW:
-            setHeight(Constants.SHOULDER_MIN_POSITION);
+            setHeight(Constants.SHOULDER_MIN_POSITION - 2.0);
         }
 
         currentPosition = getHeight();

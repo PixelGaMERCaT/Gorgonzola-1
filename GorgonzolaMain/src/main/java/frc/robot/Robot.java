@@ -78,9 +78,7 @@ public class Robot extends TimedRobot {
   
   @Override
   public void autonomousPeriodic() {
-    if (!sandstormMode.over) {
-      sandstormMode.tick();
-    }
+    teleopPeriodic();
   }
 
   /**

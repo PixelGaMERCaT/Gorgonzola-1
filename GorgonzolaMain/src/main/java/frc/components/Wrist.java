@@ -26,7 +26,6 @@ public class Wrist implements Component {
         if (Globals.isProto) {
             talon1.talon.setSensorPhase(true);
             talon2.talon.setSensorPhase(true);
-
         } else {
             talon1.talon.setSensorPhase(true);
             talon2.talon.setSensorPhase(true);
@@ -48,29 +47,29 @@ public class Wrist implements Component {
     }
 
     public void init() {
-        SmartDashboard.putNumber("WristP", Constants.WRIST_KP);
         SmartDashboard.putNumber("WristI", 0);
-        SmartDashboard.putNumber("WristD", Constants.WRIST_KD); 
+        SmartDashboard.putNumber("WristD", Constants.WRIST_KD);
         SmartDashboard.putNumber("WristF", Constants.WRIST_KF);
 
         im = Globals.im;
         logger = Globals.logger;
         shoulder = Globals.shoulder;
         logger.wrist = LogInterface.table("Wrist",
-                new String[] { "Velocity", "Angle", "desangle", "percentout", "difference", "Setpoint",
-                        "encu" },
-                new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
-                        new Decimal(), new Decimal() },
-                new Loggable[] { () -> talon1.getEncoderVelocity(), () -> getAngle(),
-                        () -> angleSetpoint, () -> talon1.talon.getMotorOutputPercent(),
-                        () -> talon1.talon.getClosedLoopError(), () -> talon1.talon.getClosedLoopTarget(),
-                        () -> talon1.getEncoderPosition() });
+                new String[] { "Velocity", "Angle", "desangle", "percentout", "difference", "Setpoint", "encu" },
+                new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
+                        new Decimal() },
+                new Loggable[] { () -> talon1.getEncoderVelocity(), () -> getAngle(), () -> angleSetpoint,
+                        () -> talon1.talon.getMotorOutputPercent(), () -> talon1.talon.getClosedLoopError(),
+                        () -> talon1.talon.getClosedLoopTarget(), () -> talon1.getEncoderPosition() });
     }
 
     double maxVelocity = 0;
+    boolean fromStow = false;
+    boolean fromLow = false;
 
     public void tick() {
-        
+        SmartDashboard.putNumber("WristP", Constants.WRIST_KP);
+
         maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
         SmartDashboard.putNumber("maxvel", maxVelocity);
         SmartDashboard.putNumber("ffd ", talon1.talon.getActiveTrajectoryArbFeedFwd());
@@ -83,26 +82,46 @@ public class Wrist implements Component {
         SmartDashboard.putString("ControlMode", talon1.talon.getControlMode().toString());
         SmartDashboard.putNumber("Angle", getAngle() * 180.0 / Math.PI);
 
-            switch(shoulder.desiredPos){
-                case STOW:
-                    setAngle(Constants.WRIST_STOW_POSITION);
-                    break;
-                case NO_MOVEMENT:
-                    talon1.set(ControlMode.PercentOutput, 0);
-                    break;
-                case POSITION_MANUAL:
-                    setAngle(im.getWristManualPosition());
-                    break;
-                case FULL_MANUAL:
-                    talon1.set(ControlMode.PercentOutput, .1 + im.getWristManualPosition());
-                    break;
-                case BALL_HIGH:
-                    setAngle(-30.0*Math.PI/180.0);
-                case NO_CHANGE:
-                    break;
-                default:
-                    setAngle(-shoulder.getAngle()+Constants.WRIST_GEAR_OFFSET);
+        if (fromStow && shoulder.desiredPos != ArmHeight.STOW) {
+            talon1.talon.config_kP(0, Constants.WRIST_KP);
+            if (shoulder.desiredPos == ArmHeight.HATCH_LOW) {
+                //talon1.talon.config_kD(0, 10.0);
+                System.out.println("setting d");
+                fromLow=true;
             }
+            fromStow = false;
+        }
+        if (fromLow && shoulder.desiredPos != ArmHeight.HATCH_LOW) {
+            //talon1.talon.config_kD(0, Constants.WRIST_KD);
+            fromLow=false;
+        }
+        switch (shoulder.desiredPos) {
+        case STOW:
+
+            if (shoulder.getHeight() > 20) {
+                setAngle(-shoulder.getAngle());
+            } else {
+                talon1.talon.config_kP(0, .75);
+                setAngle(Constants.WRIST_STOW_POSITION);
+            }
+            fromStow = true;
+            break;
+        case NO_MOVEMENT:
+            talon1.set(ControlMode.PercentOutput, 0);
+            break;
+        case POSITION_MANUAL:
+            setAngle(im.getWristManualPosition());
+            break;
+        case FULL_MANUAL:
+            talon1.set(ControlMode.PercentOutput, .1 + im.getWristManualPosition());
+            break;
+        case BALL_HIGH:
+            setAngle(-30.0 * Math.PI / 180.0);
+        case NO_CHANGE:
+            break;
+        default:
+            setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET + (10.0 * im.getWristManualPosition() * Math.PI/180));
+        }
 
     }
 

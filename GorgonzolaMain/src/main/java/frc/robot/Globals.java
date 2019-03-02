@@ -25,9 +25,9 @@ import frc.components.pose.PoseTracker;
  */
 public class Globals {
     public static boolean isNSP = false;
-    public static boolean isAdelost = false; 
-    public static boolean isProto = true;
-    
+    public static boolean isAdelost = false;
+    public static boolean isProto = false;
+
     public static InputManager im;
     public static Drivetrain drivetrain;
     public static Gyro gyro;
@@ -47,22 +47,23 @@ public class Globals {
      */
     public static void init() {
         components = new ArrayList<Component>();
-        compressor=new Compressor(RobotMap.COMPRESSOR);
+        compressor = new Compressor(RobotMap.COMPRESSOR);
         drivetrain = new Drivetrain();
         im = new InputManager();
         logger = new LogInterface();
-        PWMLightController pwmLightController= new PWMLightController(0, 1);
-        compressor.setClosedLoopControl(false);
-        intake=new Intake();
+        PWMLightController pwmLightController = new PWMLightController(0, 1);
+        compressor.setClosedLoopControl(true);
+        intake = new Intake();
         gearShifter = new GearShifter();
         poseTracker = new PoseTracker(50);
         gyro = new Gyro();
         testTable = new NetworkInterface("blue");
-        shoulder=new Shoulder();
-        wrist=new Wrist();
-        climber=new Climber();
+        shoulder = new Shoulder();
+        wrist = new Wrist();
+        climber = new Climber();
         //GYRO IS COMMENTED OUT
-        components.addAll(Arrays.asList(im, pwmLightController, drivetrain, shoulder, wrist,  gearShifter, intake, gyro, poseTracker, climber, logger));
+        components.addAll(Arrays.asList(im, pwmLightController, drivetrain, shoulder, wrist, gearShifter, intake, gyro,
+                poseTracker, climber, logger));
         //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
 
         components.forEach(c -> c.init());
