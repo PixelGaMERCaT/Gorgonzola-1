@@ -96,16 +96,16 @@ public class Wrist implements Component {
         }
         if (im.wristManual) {
             if (im.getArmSafetyButton()) {
-                talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getWristManualPosition());
+                talon1.set(ControlMode.PercentOutput, /*.1*/ + .5 * im.getWristManualPosition());
             }
         } else {
             switch (shoulder.desiredPos) {
             case STOW:
 
-                if (shoulder.getHeight() > 20) {
+                if (shoulder.getHeight() > 50) {
                     setAngle(-shoulder.getAngle());
                 } else if (talon1.getEncoderVelocity()>5) {
-                    talon1.talon.config_kP(0, .75);
+                    talon1.talon.config_kP(0, 3);
                     setAngle(Constants.WRIST_STOW_POSITION);
                 } else {
                     talon1.talon.config_kP(0, Constants.WRIST_KP);

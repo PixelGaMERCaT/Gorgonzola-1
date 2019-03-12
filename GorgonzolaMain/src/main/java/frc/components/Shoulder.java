@@ -29,8 +29,8 @@ public class Shoulder implements Component {
         talon1.initEncoder(Constants.SHOULDER_KP, Constants.SHOULDER_KI, Constants.SHOULDER_KD, Constants.SHOULDER_KF);
         if (Globals.isProto) {
 
-            talon1.talon.setSensorPhase(false);
-            talon2.talon.setSensorPhase(false);
+            talon1.talon.setSensorPhase(true);
+            talon2.talon.setSensorPhase(true);
             talon1.setInverted(false);
             talon2.setInverted(false);
         } else {
@@ -89,7 +89,7 @@ public class Shoulder implements Component {
         }
         if (im.shoulderManual) {
             if (im.getArmSafetyButton()) {
-                talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getShoulderManualHeight());
+                talon1.set(ControlMode.PercentOutput, /*.1 +*/ .5 * im.getShoulderManualHeight());
             }
         } else {
             switch (desiredPos) {
