@@ -29,34 +29,42 @@ public class InputManager implements Component {
             logger.inputManager = LogInterface.table("Input_Manager",
                     new String[] { "forward", "turn", "safetyButton" },
                     new Type[] { new Decimal(), new Decimal(), new Bool() },
-                    new Loggable[] { () -> getForward(), () -> getTurn(), () -> getSafetyButton() });
+                    new Loggable[] { () -> getForward(), () -> getTurn(), () -> getDriveSafetyButton() });
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
+    public boolean shoulderManual=false, wristManual=false;
     /**
      * Updates the robot's arm state so that getArmPosition() can always return the proper position, regardless of overrides.
      */
     public void tick() {
-        if (aux.getRawButtonPressed(ButtonMap.POS_MANUAL_OVERRIDE)) {
-            switch (state) {
+        if (aux.getRawButtonPressed(ButtonMap.SHOULDER_MANUAL_OVERRIDE)) {
+            /*switch (state) {
             case POSITON_MANUAL:
-                state = ArmControlState.AUTO;
+                //state = ArmControlState.AUTO;
+                shoulderManual=false;
                 break;
             default:
-                state = ArmControlState.POSITON_MANUAL;
-            }
+                //state = ArmControlState.POSITON_MANUAL;
+                shoulderManual=true;
+
+            }*/
+            shoulderManual=!shoulderManual;
+            
         }
-        if (aux.getRawButtonPressed(ButtonMap.FULL_MANUAL_OVERRIDE)) {
-            switch (state) {
+        if (aux.getRawButtonPressed(ButtonMap.WRIST_MANUAL_OVERRIDE)) {
+            /*switch (state) {
             case FULL_MANUAL:
-                state = ArmControlState.AUTO;
+                //state = ArmControlState.AUTO;
+                wristManual=false;
                 break;
             default:
-                state = ArmControlState.FULL_MANUAL;
-            }
+                //state = ArmControlState.FULL_MANUAL;
+                wristManual=true;
+            }*/
+            wristManual=!wristManual;
         }
     }
 
@@ -68,7 +76,7 @@ public class InputManager implements Component {
      *         forward/backward axis
      */
     public double getForward() {
-        return getSafetyButton() ? left.getY() : 0;
+        return getDriveSafetyButton() ? left.getY() : 0;
     }
 
     /**
@@ -85,14 +93,14 @@ public class InputManager implements Component {
      * @return a number [-1, 1], with -1 denoting full power left and 1 denoting full power right
      */
     public double getTurn() {
-        return getSafetyButton() ? right.getX() : 0;
+        return getDriveSafetyButton() ? right.getX() : 0;
     }
 
     /**
      * Returns the state of the drive safety button
      * @return true if the drive safety button is being pressed, and false otherwise.
      */
-    public boolean getSafetyButton() {
+    public boolean getDriveSafetyButton() {
         return left.getRawButton(ButtonMap.DRIVE_SAFETY);
     }
 
@@ -101,7 +109,7 @@ public class InputManager implements Component {
      * @return true if the button is being pressed, false otherwise
      */
     public boolean getGearSwitchButton() {
-        return right.getRawButton(ButtonMap.GEAR_SHIFT);
+        return right.getRawButtonPressed(ButtonMap.GEAR_SHIFT);
     }
     /**
      * Gives the desired location of the arm as an ArmPosition
@@ -187,7 +195,9 @@ public class InputManager implements Component {
     public double getShoulderManualHeight() {
         return aux.getRawAxis(ButtonMap.SHOULDER_STICK);
     }
-
+    public boolean getTurnEnable(){
+        return left.getRawButton(10) && left.getRawButton(11) && getDriveSafetyButton();
+    }
     /**
      * Returns a number denoting the position of the wrist within a defined range of
      * the wrist
@@ -242,6 +252,10 @@ public class InputManager implements Component {
                 }
                 if (aux.getRawButton(4)) {
                     return ArmHeight.BALL_HIGH;
+                }
+                int pov = aux.getPOV();
+                if (pov == ButtonMap.BALL_CARGO) {
+                    return ArmHeight.BALL_CARGO;
                 }
             }else {
                 if (aux.getRawButton(1)) {

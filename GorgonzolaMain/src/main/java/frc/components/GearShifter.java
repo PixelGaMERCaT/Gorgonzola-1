@@ -11,7 +11,6 @@ public class GearShifter implements Component {
     private Solenoid switcher;
     private InputManager im;
     private boolean highGear;
-    private boolean buttonPressed = false;
 
     public GearShifter() {
         highGear = false;
@@ -22,26 +21,18 @@ public class GearShifter implements Component {
 
     public void init() {
         im = Globals.im;
-        highGear = false;
     }
-
+    
     public void tick() {
-        if (im.getGearSwitchButton() && !buttonPressed) {
+        if (im.getGearSwitchButton()) {
             highGear = !highGear;
-            buttonPressed = true;
-        } else if (!im.getGearSwitchButton()) {
-            buttonPressed = false;
-        }
-        if (!(Globals.isNSP || Globals.isAdelost)) {
-            switcher.set(highGear);
-
-        }
+        } 
+        switcher.set(highGear);
     }
 
     /**
      * Returns the current gear of the robot
      * @return true if robot is in high gear, false otherwise
-   
      */
     public boolean isHighGear() {
         return highGear;

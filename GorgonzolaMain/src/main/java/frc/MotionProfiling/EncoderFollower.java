@@ -34,6 +34,7 @@ public class EncoderFollower {
                             new Decimal() },
                     new Loggable[] { () -> distance, () -> position, () -> velocity, () -> acceleration,
                             () -> encoderVelocity, () -> outputValue });
+            logger.logger.addTable(logger.motionProfiling);
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -58,6 +59,7 @@ public class EncoderFollower {
         acceleration = seg.acceleration;
         velocity = vel;
         logger.motionProfiling.log(logger.getTick());
+        logger.tick();
         return outputValue;
     }
 

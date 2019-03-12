@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,6 +37,7 @@ public class Robot extends TimedRobot {
     Globals.init();
     sandstormStarter = new SandstormStart();
     sandstormStarter.initSandstormPaths();
+  
   }
 
   /**
@@ -63,7 +65,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     sandstormMode = sandstormStarter.start();
     SmartDashboard.putString("Sandstorm Path: ", sandstormMode.name);
@@ -78,7 +79,10 @@ public class Robot extends TimedRobot {
   
   @Override
   public void autonomousPeriodic() {
-    teleopPeriodic();
+    if (!sandstormMode.over) {
+      Globals.gearShifter.tick();
+      sandstormMode.tick(); //TODO change back to teleop
+    }
   }
 
   /**

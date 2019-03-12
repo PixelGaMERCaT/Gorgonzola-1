@@ -40,11 +40,7 @@ public class Intake implements Component {
 
     public void tick() {
         boolean hatchIntake = im.getHatchButton();
-        System.out.println(hatchIntake);
-        /*
-        venturi.set(hatchIntake);
-        hatchActiveOut.set(im.getClimbKnives());
-        */
+        
         
         if (hatchIntake) { //picking up a hatch
             if (venturiTick > 0) {
@@ -59,13 +55,17 @@ public class Intake implements Component {
             }
             venturiTick--;
             hatchActiveOut.set(false);
-            hatchOutputTimer = 25;
+            hatchOutputTimer = 300;
         } else if (hatchOutputTimer > 0) {
             SmartDashboard.putString("intake", "Outputting hatch");
             leftSuction.set(true);
             rightSuction.set(true);
             venturi.set(false);
+            if (hatchOutputTimer>200){
             hatchActiveOut.set(true);
+            } else {
+                hatchActiveOut.set(false);
+            }
             hatchOutputTimer--;
             venturiTick = 200;
         } else {
@@ -77,9 +77,9 @@ public class Intake implements Component {
             hatchActiveOut.set(false);
         }
         if (im.getBallIntakeOutButton()) {
-            intakeTalon1.set(ControlMode.PercentOutput, 0.5);
+            intakeTalon1.set(ControlMode.PercentOutput, 0.75);
         } else if (im.getBallIntakeInButton()) {
-            intakeTalon1.set(ControlMode.PercentOutput, -0.5);
+            intakeTalon1.set(ControlMode.PercentOutput, -0.75);
         } else {
             intakeTalon1.set(ControlMode.PercentOutput, 0);
         }

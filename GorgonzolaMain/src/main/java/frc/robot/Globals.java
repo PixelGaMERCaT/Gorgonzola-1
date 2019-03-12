@@ -26,7 +26,7 @@ import frc.components.pose.PoseTracker;
 public class Globals {
     public static boolean isNSP = false;
     public static boolean isAdelost = false;
-    public static boolean isProto = false;
+    public static boolean isProto = true;
 
     public static InputManager im;
     public static Drivetrain drivetrain;
@@ -52,7 +52,7 @@ public class Globals {
         im = new InputManager();
         logger = new LogInterface();
         PWMLightController pwmLightController = new PWMLightController(0, 1);
-        compressor.setClosedLoopControl(true);
+        compressor.setClosedLoopControl(false);
         intake = new Intake();
         gearShifter = new GearShifter();
         poseTracker = new PoseTracker(50);
@@ -61,8 +61,7 @@ public class Globals {
         shoulder = new Shoulder();
         wrist = new Wrist();
         climber = new Climber();
-        //GYRO IS COMMENTED OUT
-        components.addAll(Arrays.asList(im, pwmLightController, drivetrain, shoulder, wrist, gearShifter, intake, gyro,
+        components.addAll(Arrays.asList(im, drivetrain, shoulder, wrist, pwmLightController, gearShifter, intake, gyro,
                 poseTracker, climber, logger));
         //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
 
@@ -84,12 +83,5 @@ public class Globals {
         });
     }
 
-    /**
-     * returns whether the robot is in auto
-     * @return true if the robot is in auto, false otherwise
-     */
-    public static boolean isAuto() {
-        return true; //TODO actually return
-    }
 
 }

@@ -78,7 +78,6 @@ public class MotionProfiler implements Component {
     public void run(){
         double leftSpeed= leftFollower.calculate(drivetrain.getLeftPosition(), drivetrain.getLeftVelocity());
         double rightSpeed= rightFollower.calculate(drivetrain.getRightPosition(), drivetrain.getRightVelocity());
-
         double currentHeading= gyro.getNormalizedYaw()-startHeading;
         angleError= Pathfinder.boundHalfDegrees(leftFollower.getHeading()-currentHeading);
         turnOutput=turnController.get();

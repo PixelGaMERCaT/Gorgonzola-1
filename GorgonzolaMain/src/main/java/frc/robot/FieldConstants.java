@@ -12,4 +12,5 @@ public class FieldConstants {
  public static final double LOW_HATCH_HEIGHT = 1.0*12.0 +7.0;
  public static final double MID_HATCH_HEIGHT = 3.0*12.0 +11.0;
  public static final double HIGH_HATCH_HEIGHT = 6.0*12.0 + 3.0;
+ public static final double CARGO_BALL = 64;
 }

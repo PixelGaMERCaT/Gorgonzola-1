@@ -75,7 +75,15 @@ public abstract class TalonManager {
      */
     public int getEncoderVelocity() {
         return talon.getSelectedSensorVelocity(0);
-    }
+    }  
+    
+    /**
+     * Returns the velocity of this Talon's encoder
+     * @return the velocity of this Talon's encoder
+     */
+    public int getEncoderVelocityContextual() {
+        return talon.getSelectedSensorVelocity(0);
+    } 
 
     /**
      * Returns the current being applied by this Talon

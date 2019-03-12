@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Bool;
 import frc.CheeseLog.SQLType.Decimal;
@@ -13,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.Globals;
 import frc.robot.RobotMap;
 import frc.talonmanager.DriveTalonManager;
+
 public class Drivetrain implements Component {
     public DriveTalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
     private InputManager im;
@@ -39,7 +41,6 @@ public class Drivetrain implements Component {
             middleRight.setInverted(true);
             middleLeft.follow(frontLeft);
             middleRight.follow(frontRight);
-            
 
         }
         if (!Globals.isAdelost) {
@@ -74,10 +75,13 @@ public class Drivetrain implements Component {
                             () -> frontRight.getOutputCurrent() });
 
             logger.drivetrain = LogInterface.table("Drivetrain",
-                    new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower" },
-                    new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal() },
+                    new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower", "velRight", "velLeft" },
+                    new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
+                            new Decimal() },
                     new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
-                            () -> frontLeft.getOutputCurrent(), () -> frontRight.getOutputCurrent() });
+                            () -> frontLeft.getOutputCurrent(), () -> frontRight.getOutputCurrent(),
+                            () -> frontRight.getEncoderVelocityContextual(),
+                            () -> frontLeft.getEncoderVelocityContextual() });
 
             logger.turnController = LogInterface.manualTable("Turn_Controller",
                     new String[] { "angle", "output", "setpoint", "enabled" },
@@ -90,6 +94,8 @@ public class Drivetrain implements Component {
         }
         turnController = new PIDController(Constants.TURN_KP, Constants.TURN_KI, Constants.TURN_KD, gyro, o -> {
         });
+        SmartDashboard.putNumber("TurnD", Constants.TURN_KD);
+        SmartDashboard.putNumber("TurnP", Constants.TURN_KP);
         turnController.setAbsoluteTolerance(1);
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-1, 1);
@@ -120,13 +126,22 @@ public class Drivetrain implements Component {
     double tick = 0;
 
     public void tick() {
+        SmartDashboard.putNumber("turnout", turnController.get());
+        SmartDashboard.putNumber("angle", gyro.getNormalizedYaw());
         maxVelocity = Math.max(maxVelocity, Math.abs(frontLeft.getEncoderVelocity()));
         //System.out.println("PositionR "+frontRight.getEncoderPositionContextual());
         //System.out.println("PositionL "+frontLeft.getEncoderPositionContextual());
-        //System.out.println(maxVelocity);
-        
-        driveBasic(im.getForward(), im.getTurn());
-                
+        SmartDashboard.putNumber("maxvelDrive", maxVelocity);
+        if (im.getTurnEnable()) {
+            turnController.setP(SmartDashboard.getNumber("TurnP", Constants.TURN_KP));
+            turnController.setD(SmartDashboard.getNumber("TurnD", Constants.TURN_KD));
+            driveBasic(0, turnController.get());
+        } else {
+            driveBasic(im.getForward(), im.getTurn());
+        }
+        SmartDashboard.putNumber("leftEnc", frontLeft.getEncoderPositionContextual());
+        SmartDashboard.putNumber("rightEnc", frontRight.getEncoderPositionContextual());
+
     }
 
     /**
@@ -135,12 +150,12 @@ public class Drivetrain implements Component {
      * @param turn    A number between -1 (full right) and 1 (full left)
      */
     public void driveBasic(double forward, double turn) {
+
         forward = forward * forward * Math.signum(forward);
         turn = turn * turn * Math.signum(turn);
         frontLeft.set(ControlMode.PercentOutput, forward - turn);
         frontRight.set(ControlMode.PercentOutput, forward + turn);
     }
-
 
     /**
      * A drive method designed for auto; the same as driveBasic but without squaring
@@ -149,7 +164,7 @@ public class Drivetrain implements Component {
      */
     public void autoDrive(double forward, double turn) {
         frontLeft.set(ControlMode.PercentOutput, forward - turn);
-        
+
         frontRight.set(ControlMode.PercentOutput, forward + turn);
     }
 

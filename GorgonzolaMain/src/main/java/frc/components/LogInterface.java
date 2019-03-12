@@ -11,7 +11,7 @@ import frc.CheeseLog.SQLType.*;
  * Wraps logger, allows for specific access of logging functionality.
  */
 public class LogInterface implements Component {
-    private Logger logger;
+    public Logger logger;
     private static DatabaseConnection sqlConnection;
     public Table magicDrive, turnController, drivetrain, inputManager, motionProfiling, gyro, networkTables, shoulder, wrist;
 
@@ -31,7 +31,7 @@ public class LogInterface implements Component {
      * Adds all initialized tables to Logger.
      */
     public void init(){
-            for (Table t : Arrays.asList(inputManager, wrist, shoulder)){
+            for (Table t : Arrays.asList(inputManager, wrist, shoulder, drivetrain, motionProfiling)){
                 try {
                     System.out.println(t);
                     System.out.println(t.getName());

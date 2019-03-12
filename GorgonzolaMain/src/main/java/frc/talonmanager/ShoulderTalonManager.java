@@ -32,7 +32,6 @@ public class ShoulderTalonManager extends TalonManager {
     * @param F the Velocity Feedforward constant
     */
     public void initEncoder(double P, double I, double D, double F) {
-        System.out.println("talon" + talon);
         talon.configFactoryDefault();
         talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, 0);
         //nominal output
@@ -40,7 +39,7 @@ public class ShoulderTalonManager extends TalonManager {
         talon.configMotionCruiseVelocity((int)Constants.SHOULDER_MAX_VELOCITY);
         talon.configNominalOutputForward(0);
         talon.configNominalOutputReverse(0);
-        talon.configPeakOutputForward(1);
+        talon.configPeakOutputForward(.7);
         talon.configPeakOutputReverse(-.4);
         talon.config_kP(0, P);
         talon.config_kI(0, I);

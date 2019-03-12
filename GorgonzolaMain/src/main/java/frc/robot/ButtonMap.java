@@ -47,11 +47,12 @@ public class ButtonMap {
     public static final int BALL_HIGH = 4;
     public static final int AUX_SAFETY = 5;
     public static final int SUCC_TOGGLE_BUTTON = 6;
-    public static final int POS_MANUAL_OVERRIDE = 9;
-    public static final int FULL_MANUAL_OVERRIDE = 10;
+    public static final int SHOULDER_MANUAL_OVERRIDE = 9;
+    public static final int WRIST_MANUAL_OVERRIDE = 10;
     //POV (represents an angle in degrees)
     public static final int BALL_INTAKE = 0;
     public static final int BALL_OUTPUT = 180;
+    public static final int BALL_CARGO = 90;
     
 
 }

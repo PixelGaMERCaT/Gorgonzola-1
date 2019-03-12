@@ -31,13 +31,13 @@ public class Shoulder implements Component {
 
             talon1.talon.setSensorPhase(false);
             talon2.talon.setSensorPhase(false);
-            talon1.setInverted(true);
-            talon2.setInverted(true);
+            talon1.setInverted(false);
+            talon2.setInverted(false);
         } else {
             talon1.talon.setSensorPhase(true);
             talon2.talon.setSensorPhase(true);
-            talon1.setInverted(true);
-            talon2.setInverted(true);
+            talon1.setInverted(false);
+            talon2.setInverted(false);
 
         }
         talon1.talon.configFeedbackNotContinuous(true, 0);
@@ -81,53 +81,62 @@ public class Shoulder implements Component {
         SmartDashboard.putNumber("ShoulderDesHeight", heightToEncU(
                 Constants.SHOULDER_MIN_POSITION + (im.getShoulderManualHeight() * (Constants.SHOULDER_RANGE))));
         SmartDashboard.putNumber("shoulderdiff", talon1.talon.getClosedLoopError());
+        SmartDashboard.putNumber("shouldercurrent", talon1.talon.getOutputCurrent());
         ArmHeight newPos = im.getArmPosition();
         if (newPos != ArmHeight.NO_CHANGE || desiredPos == ArmHeight.FULL_MANUAL
                 || desiredPos == ArmHeight.POSITION_MANUAL) {
             desiredPos = im.getArmPosition();
         }
-        switch (desiredPos) {
-        case NO_MOVEMENT:
-            talon1.set(ControlMode.PercentOutput, 0);
-            break;
-        case HATCH_LOW:
-            setHeight(FieldConstants.LOW_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
-                    + 5.0 * im.getShoulderManualHeight());
-            break;
-        case HATCH_MEDIUM:
-            setHeight(FieldConstants.MID_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
-                    + 5.0 * im.getShoulderManualHeight());
-            break;
-        case HATCH_HIGH:
-            setHeight(FieldConstants.HIGH_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
-                    + 5.0 * im.getShoulderManualHeight());
-            break;
-        case BALL_LOW:
-            setHeight(
-                    FieldConstants.LOW_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL + 5.0 * im.getShoulderManualHeight());
-            break;
-        case BALL_MEDIUM:
-            setHeight(
-                    FieldConstants.MID_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL + 5.0 * im.getShoulderManualHeight());
-            break;
-        case BALL_HIGH:
-            setHeight(Constants.SHOULDER_MAX_POSITION + 5.0 * im.getShoulderManualHeight());
-            break;
-        case GROUND_PICKUP:
-            setHeight(Constants.SHOULDER_MIN_POSITION + 4.0 + 5.0 * im.getShoulderManualHeight());
-            break;
-        case POSITION_MANUAL:
-            setHeight(Constants.SHOULDER_MIN_POSITION
-                    + ((1.0 + im.getShoulderManualHeight()) / 2.0 * (Constants.SHOULDER_RANGE)));
-            break;
-        case FULL_MANUAL:
-            talon1.set(ControlMode.PercentOutput, .1 + .5*im.getShoulderManualHeight());
+        if (im.shoulderManual) {
+            if (im.getArmSafetyButton()) {
+                talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getShoulderManualHeight());
+            }
+        } else {
+            switch (desiredPos) {
+            case BALL_CARGO:
+                setHeight(FieldConstants.CARGO_BALL + 5.0 * im.getShoulderManualHeight());
+                break;
+            case NO_MOVEMENT:
+                talon1.set(ControlMode.PercentOutput, 0);
+                break;
+            case HATCH_LOW:
+                setHeight(FieldConstants.LOW_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
+                        + 5.0 * im.getShoulderManualHeight());
+                break;
+            case HATCH_MEDIUM:
+                setHeight(FieldConstants.MID_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
+                        + 5.0 * im.getShoulderManualHeight());
+                break;
+            case HATCH_HIGH:
+                setHeight(FieldConstants.HIGH_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
+                        + 5.0 * im.getShoulderManualHeight());
+                break;
+            case BALL_LOW:
+                setHeight(FieldConstants.LOW_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL
+                        + 5.0 * im.getShoulderManualHeight());
+                break;
+            case BALL_MEDIUM:
+                setHeight(FieldConstants.MID_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL
+                        + 5.0 * im.getShoulderManualHeight());
+                break;
+            case BALL_HIGH:
+                setHeight(Constants.SHOULDER_MAX_POSITION + 5.0 * im.getShoulderManualHeight());
+                break;
+            case GROUND_PICKUP:
+                setHeight(Constants.SHOULDER_MIN_POSITION + 5.0 + 5.0 * im.getShoulderManualHeight());
+                break;
+            case POSITION_MANUAL:
+                setHeight(Constants.SHOULDER_MIN_POSITION
+                        + ((1.0 + im.getShoulderManualHeight()) / 2.0 * (Constants.SHOULDER_RANGE)));
+                break;
+            case FULL_MANUAL:
+                talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getShoulderManualHeight());
 
-            break;
-        case STOW:
-            setHeight(Constants.SHOULDER_MIN_POSITION - 2.0);
+                break;
+            case STOW:
+                setHeight(Constants.SHOULDER_MIN_POSITION - 2.0);
+            }
         }
-
         currentPosition = getHeight();
 
     }

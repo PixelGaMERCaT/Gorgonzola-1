@@ -14,17 +14,10 @@ import frc.robot.Globals;
 public class Gyro implements Component, PIDSource {
     private AHRS navx;
     private LogInterface logger;
-
+    private double pitchZero;
     public Gyro() {
         try {
-            if (Globals.isNSP) {
-
-                //navx = new AHRS(SPI.Port.kMXP);
-            } else {
-                //navx= new AHRS(SerialPort.Port.kUSB1);
-                System.out.println(getYaw());
-            }
-
+                navx= new AHRS(SPI.Port.kMXP);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,14 +27,16 @@ public class Gyro implements Component, PIDSource {
         logger = Globals.logger;
         try {
             logger.gyro = LogInterface.table("Gyro", new String[] { "yaw" }, new Type[] { new Decimal() },
-                    new Loggable[] { () ->  -0.1086});// getNormalizedYaw() });
+                    new Loggable[] { () ->  navx.getYaw()});// getNormalizedYaw() });
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("problem in initialization of navx");
         }
         System.out.println("init Navx");
-        //navx.zeroYaw();
+        navx.zeroYaw();
+        System.out.println(navx.getYaw());
+        pitchZero=navx.getPitch();
         
     }
 
@@ -51,7 +46,7 @@ public class Gyro implements Component, PIDSource {
      * @return the yaw of the robot relative to its starting position
      */
     public double getYaw() {
-        return 0.1086;//navx.getYaw();
+        return navx.getYaw();
     }
 
     /**
@@ -70,7 +65,22 @@ public class Gyro implements Component, PIDSource {
         yaw = (yaw + 360) % 360;
         return Math.abs(yaw) <= 180 ? yaw : Math.signum(yaw) * -360 + yaw;
     }
+    /**
+     * A method which returns a relative pitch as a double between -180 and 180
+     * @return the normalized pitch of the robot
+     */
+    public double getNormalizedPitch(){
+        double pitch = 0;
+        try {
+            pitch = navx.getPitch();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Problem in getNormalizedPitch");
+        }
+        pitch = (pitch + 360) % 360;
+        return Math.abs(pitch) <= 180 ? pitch : Math.signum(pitch) * -360 + pitch;
 
+    }
     /**
      * Should do nothing; this is always a kDisplacement source
      */

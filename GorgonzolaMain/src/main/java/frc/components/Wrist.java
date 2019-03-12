@@ -86,41 +86,59 @@ public class Wrist implements Component {
             talon1.talon.config_kP(0, Constants.WRIST_KP);
             if (shoulder.desiredPos == ArmHeight.HATCH_LOW) {
                 //talon1.talon.config_kD(0, 10.0);
-                System.out.println("setting d");
-                fromLow=true;
+                fromLow = true;
             }
             fromStow = false;
         }
         if (fromLow && shoulder.desiredPos != ArmHeight.HATCH_LOW) {
             //talon1.talon.config_kD(0, Constants.WRIST_KD);
-            fromLow=false;
+            fromLow = false;
         }
-        switch (shoulder.desiredPos) {
-        case STOW:
-
-            if (shoulder.getHeight() > 20) {
-                setAngle(-shoulder.getAngle());
-            } else {
-                talon1.talon.config_kP(0, .75);
-                setAngle(Constants.WRIST_STOW_POSITION);
+        if (im.wristManual) {
+            if (im.getArmSafetyButton()) {
+                talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getWristManualPosition());
             }
-            fromStow = true;
-            break;
-        case NO_MOVEMENT:
-            talon1.set(ControlMode.PercentOutput, 0);
-            break;
-        case POSITION_MANUAL:
-            setAngle(im.getWristManualPosition());
-            break;
-        case FULL_MANUAL:
-            talon1.set(ControlMode.PercentOutput, .1 + .5*im.getWristManualPosition());
-            break;
-        case BALL_HIGH:
-            setAngle(-30.0 * Math.PI / 180.0);
-        case NO_CHANGE:
-            break;
-        default:
-            setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET + (10.0 * im.getWristManualPosition() * Math.PI/180));
+        } else {
+            switch (shoulder.desiredPos) {
+            case STOW:
+
+                if (shoulder.getHeight() > 20) {
+                    setAngle(-shoulder.getAngle());
+                } else if (talon1.getEncoderVelocity()>5) {
+                    talon1.talon.config_kP(0, .75);
+                    setAngle(Constants.WRIST_STOW_POSITION);
+                } else {
+                    talon1.talon.config_kP(0, Constants.WRIST_KP);
+                    setAngle(Constants.WRIST_STOW_POSITION);
+
+                }
+                fromStow = true;
+                break;
+            case NO_MOVEMENT:
+                talon1.set(ControlMode.PercentOutput, 0);
+                break;
+            case POSITION_MANUAL:
+                setAngle(im.getWristManualPosition());
+                break;
+            case FULL_MANUAL:
+                talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getWristManualPosition());
+                break;
+            case BALL_HIGH:
+                setAngle(-15.0 * Math.PI / 180.0 + 5 * im.getWristManualPosition());
+                break;
+            case BALL_CARGO:
+                if (shoulder.getHeight() > 25) {
+                    setAngle(-shoulder.getAngle() - 33.0 * Math.PI / 180.0);
+                } else {
+                    setAngle(-shoulder.getAngle());
+                }
+                break;
+            case NO_CHANGE:
+                break;
+            default:
+                setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET
+                        + (10.0 * im.getWristManualPosition() * Math.PI / 180));
+            }
         }
 
     }
