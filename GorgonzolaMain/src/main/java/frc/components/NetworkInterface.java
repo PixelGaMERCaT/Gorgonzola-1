@@ -25,7 +25,6 @@ public class NetworkInterface implements Component {
     public NetworkInterface(String tableName) {
         tableValues = new HashMap<String, NetworkTableEntry>();
         table = NetworkTableInstance.getDefault().getTable(tableName);
-        
     }
 
     /**

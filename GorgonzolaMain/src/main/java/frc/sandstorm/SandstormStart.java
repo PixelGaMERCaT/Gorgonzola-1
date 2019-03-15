@@ -37,11 +37,11 @@ public class SandstormStart {
 
     public void initSandstormPaths() { 
 
-        mpTestAuto = new SandstormPath("MP Test Auto");
-        mpTestAuto.add(new MotionProfile(new Waypoint[] {
-            new Waypoint(0, 0, 0),
-            new Waypoint(100, 0, 0)
-        }));
+            mpTestAuto = new SandstormPath("MP Test Auto");
+            mpTestAuto.add(new MotionProfile(new Waypoint[] {
+                new Waypoint(0, 0, 0),
+                new Waypoint(100, 0, 0)
+            }));
 
         autoChooser = new SendableChooser();
         autoChooser.addDefault(mpTestAuto.name, mpTestAuto);

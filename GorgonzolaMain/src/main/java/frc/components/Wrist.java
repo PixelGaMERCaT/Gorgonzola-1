@@ -96,7 +96,7 @@ public class Wrist implements Component {
         }
         if (im.wristManual) {
             if (im.getArmSafetyButton()) {
-                talon1.set(ControlMode.PercentOutput, /*.1*/ + .5 * im.getWristManualPosition());
+                talon1.set(ControlMode.PercentOutput, /*.1 +*/ .5 * im.getWristManualPosition());
             }
         } else {
             switch (shoulder.desiredPos) {
@@ -124,7 +124,7 @@ public class Wrist implements Component {
                 talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getWristManualPosition());
                 break;
             case BALL_HIGH:
-                setAngle(-15.0 * Math.PI / 180.0 + 5 * im.getWristManualPosition());
+                setAngle(-15.0 * Math.PI / 180.0 + 7.0 * im.getWristManualPosition());
                 break;
             case BALL_CARGO:
                 if (shoulder.getHeight() > 25) {

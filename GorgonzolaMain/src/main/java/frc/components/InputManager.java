@@ -78,16 +78,20 @@ public class InputManager implements Component {
     public double getForward() {
         return getDriveSafetyButton() ? left.getY() : 0;
     }
-
+    public boolean getCameraEnable(){
+        return left.getRawButton(ButtonMap.CAMERA_ENABLE);
+    }
     /**
      * Returns whether the hatch toggle button is being pressed
      * @return true if we should be holding a hatch, false otherwise.
      */
-    public boolean getHatchButton() {
+    public boolean getHatchIntakeButton() {
         return aux.getRawButton(ButtonMap.SUCC_TOGGLE_BUTTON);
 
     }
-
+    public boolean getHatchOutputButton(){
+        return aux.getRawButton(8);
+    }
     /**
      * Returns a number from -1 to 1 denoting the amount the robot should be turning
      * @return a number [-1, 1], with -1 denoting full power left and 1 denoting full power right
@@ -195,10 +199,7 @@ public class InputManager implements Component {
     public double getShoulderManualHeight() {
         return aux.getRawAxis(ButtonMap.SHOULDER_STICK);
     }
-    public boolean getTurnEnable(){
-        return left.getRawButton(10) && left.getRawButton(11) && getDriveSafetyButton();
-    }
-    /**
+       /**
      * Returns a number denoting the position of the wrist within a defined range of
      * the wrist
      * @return -1 for the bottom of the wrist's range, 0 for the middle, 1 for the top, etc
@@ -240,7 +241,7 @@ public class InputManager implements Component {
                 return ArmHeight.FULL_MANUAL;
             if (state == ArmControlState.POSITON_MANUAL)
                 return ArmHeight.POSITION_MANUAL;
-            if (aux.getRawButton(ButtonMap.HB_SWITCH)) {
+            if (aux.getRawButton(ButtonMap.HATCH_BALL_SWITCH)) {
                 if (aux.getRawButton(1)) {
                     return ArmHeight.GROUND_PICKUP;
                 }

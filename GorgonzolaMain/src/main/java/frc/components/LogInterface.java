@@ -33,8 +33,8 @@ public class LogInterface implements Component {
     public void init(){
             for (Table t : Arrays.asList(inputManager, wrist, shoulder, drivetrain, motionProfiling)){
                 try {
-                    System.out.println(t);
-                    System.out.println(t.getName());
+                    //System.out.println(t);
+                    //System.out.println(t.getName());
                     logger.addTable(t);
                 } catch (Exception e) {
                     e.printStackTrace();

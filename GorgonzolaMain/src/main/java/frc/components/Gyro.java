@@ -15,31 +15,35 @@ public class Gyro implements Component, PIDSource {
     private AHRS navx;
     private LogInterface logger;
     private double pitchZero;
+    private NetworkInterface robotDataTable;
+
     public Gyro() {
         try {
-                navx= new AHRS(SPI.Port.kMXP);
+            navx = new AHRS(SPI.Port.kMXP);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void init() {
+        robotDataTable=Globals.robotDataTable;
         logger = Globals.logger;
         try {
             logger.gyro = LogInterface.table("Gyro", new String[] { "yaw" }, new Type[] { new Decimal() },
-                    new Loggable[] { () ->  navx.getYaw()});// getNormalizedYaw() });
+                    new Loggable[] { () -> navx.getYaw() });// getNormalizedYaw() });
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("problem in initialization of navx");
         }
-        System.out.println("init Navx");
         navx.zeroYaw();
-        System.out.println(navx.getYaw());
-        pitchZero=navx.getPitch();
-        
-    }
+        pitchZero = navx.getPitch();
 
+    }
+    public void tick(){
+        robotDataTable.setDouble("yaw", getNormalizedYaw());
+        robotDataTable.setDouble("pitch", getNormalizedPitch());
+    }
     /**
      * A method which returns the relative yaw (turn angle) of the robot
      * 
@@ -65,14 +69,15 @@ public class Gyro implements Component, PIDSource {
         yaw = (yaw + 360) % 360;
         return Math.abs(yaw) <= 180 ? yaw : Math.signum(yaw) * -360 + yaw;
     }
+
     /**
      * A method which returns a relative pitch as a double between -180 and 180
      * @return the normalized pitch of the robot
      */
-    public double getNormalizedPitch(){
+    public double getNormalizedPitch() {
         double pitch = 0;
         try {
-            pitch = navx.getPitch();
+            pitch = navx.getPitch()-pitchZero;
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Problem in getNormalizedPitch");
@@ -81,6 +86,7 @@ public class Gyro implements Component, PIDSource {
         return Math.abs(pitch) <= 180 ? pitch : Math.signum(pitch) * -360 + pitch;
 
     }
+
     /**
      * Should do nothing; this is always a kDisplacement source
      */

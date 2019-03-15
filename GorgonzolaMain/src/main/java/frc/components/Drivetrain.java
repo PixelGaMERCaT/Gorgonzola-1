@@ -73,15 +73,17 @@ public class Drivetrain implements Component {
                     new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
                             () -> setpointLeft, () -> setpointRight, () -> frontLeft.getOutputCurrent(),
                             () -> frontRight.getOutputCurrent() });
-
+            //frontLeft.talon.getMotorOutputVoltage();
+             
             logger.drivetrain = LogInterface.table("Drivetrain",
-                    new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower", "velRight", "velLeft" },
+                    new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower", "velRight", "velLeft", "voltLeft", "voltRight" },
                     new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
-                            new Decimal() },
+                            new Decimal(), new Decimal(), new Decimal() },
                     new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
                             () -> frontLeft.getOutputCurrent(), () -> frontRight.getOutputCurrent(),
                             () -> frontRight.getEncoderVelocityContextual(),
-                            () -> frontLeft.getEncoderVelocityContextual() });
+                            () -> frontLeft.getEncoderVelocityContextual(),
+                            () -> frontLeft.talon.getMotorOutputVoltage(),  () -> frontRight.talon.getMotorOutputVoltage()});
 
             logger.turnController = LogInterface.manualTable("Turn_Controller",
                     new String[] { "angle", "output", "setpoint", "enabled" },
@@ -132,11 +134,7 @@ public class Drivetrain implements Component {
         //System.out.println("PositionR "+frontRight.getEncoderPositionContextual());
         //System.out.println("PositionL "+frontLeft.getEncoderPositionContextual());
         SmartDashboard.putNumber("maxvelDrive", maxVelocity);
-        if (im.getTurnEnable()) {
-            turnController.setP(SmartDashboard.getNumber("TurnP", Constants.TURN_KP));
-            turnController.setD(SmartDashboard.getNumber("TurnD", Constants.TURN_KD));
-            driveBasic(0, turnController.get());
-        } else {
+        if (!im.getCameraEnable()){
             driveBasic(im.getForward(), im.getTurn());
         }
         SmartDashboard.putNumber("leftEnc", frontLeft.getEncoderPositionContextual());
@@ -150,7 +148,6 @@ public class Drivetrain implements Component {
      * @param turn    A number between -1 (full right) and 1 (full left)
      */
     public void driveBasic(double forward, double turn) {
-
         forward = forward * forward * Math.signum(forward);
         turn = turn * turn * Math.signum(turn);
         frontLeft.set(ControlMode.PercentOutput, forward - turn);
@@ -218,6 +215,19 @@ public class Drivetrain implements Component {
      */
     public int getRightPosition() {
         return frontRight.getEncoderPosition();
+    }
+     /**
+     * Returns the position of the left encoder
+     */
+    public double getLeftPositionInches() {
+        return frontLeft.getEncoderPositionContextual();
+    }
+
+    /**
+     * returns the position of the right encoder
+     */
+    public double getRightPositionInches() {
+        return frontRight.getEncoderPositionContextual();
     }
 
     /**

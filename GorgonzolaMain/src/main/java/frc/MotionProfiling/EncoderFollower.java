@@ -14,31 +14,17 @@ import jaci.pathfinder.Trajectory;
 public class EncoderFollower {
     private double encoder_offset, encoder_tick_count, inches_per_rotation;
     private double kp, ki, kd, kv, ka;
-    private LogInterface logger;
     private double last_error, heading;
 
     //Logging variables
-    private double distance, position, velocity, acceleration, encoderVelocity, outputValue;
+    public double distance, position, velocity, acceleration, encoderVelocity, outputValue;
     int segment;
     Trajectory trajectory;
 
     public EncoderFollower(Trajectory traj) {
-        this.trajectory=traj;
+        this.trajectory = traj;
         distance = position = velocity = acceleration = encoderVelocity = outputValue = 0;
-        logger = Globals.logger;
-        try {
-            logger.motionProfiling = LogInterface.manualTable("Motion_Profiling",
-                    new String[] { "distance", "position", "velocity", "acceleration", "encoderVelocity",
-                            "outputValue" },
-                    new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
-                            new Decimal() },
-                    new Loggable[] { () -> distance, () -> position, () -> velocity, () -> acceleration,
-                            () -> encoderVelocity, () -> outputValue });
-            logger.logger.addTable(logger.motionProfiling);
-        } catch (Exception e) {
-            e.printStackTrace();
 
-        }
     }
 
     /**
@@ -58,12 +44,9 @@ public class EncoderFollower {
         velocity = seg.velocity;
         acceleration = seg.acceleration;
         velocity = vel;
-        logger.motionProfiling.log(logger.getTick());
-        logger.tick();
         return outputValue;
     }
 
-   
     /**
      * Set a new trajectory to follow, and reset the cumulative errors and segment counts
     */

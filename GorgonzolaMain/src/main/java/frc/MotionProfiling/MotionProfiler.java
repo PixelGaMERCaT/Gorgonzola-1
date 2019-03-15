@@ -3,9 +3,13 @@ package frc.motionprofiling;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import frc.CheeseLog.Loggable;
+import frc.CheeseLog.SQLType.Decimal;
+import frc.CheeseLog.SQLType.Type;
 import frc.components.Component;
 import frc.components.Drivetrain;
 import frc.components.Gyro;
+import frc.components.LogInterface;
 import frc.robot.Globals;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
@@ -20,6 +24,8 @@ public class MotionProfiler implements Component {
     private Gyro gyro;
     private Drivetrain drivetrain;
     private double startHeading, angleError, turnOutput;
+    private LogInterface logger;
+
     public MotionProfiler() {
         drivetrain = Globals.drivetrain;
         gyro = Globals.gyro;
@@ -38,7 +44,8 @@ public class MotionProfiler implements Component {
                     public double pidGet() {
                         return angleError;
                     }
-        }, o -> {});
+                }, o -> {
+                });
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-1, 1);
         turnController.setContinuous(true);
@@ -61,35 +68,55 @@ public class MotionProfiler implements Component {
         Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Config.SAMPLES_FAST, .02,
                 MPConstants.MAX_VELOCITY, MPConstants.MAX_ACCELERATION, MPConstants.MAX_JERK);
         Trajectory mpTrajectory = Pathfinder.generate(path, config);
-        
+
         //Generate the trajectory the left and right treads will be following
         TankModifier modifier = new TankModifier(mpTrajectory).modify(MPConstants.WHEELBASE_WIDTH);
-        leftFollower=new EncoderFollower(modifier.getLeftTrajectory());
-        rightFollower=new EncoderFollower(modifier.getRightTrajectory());
+        leftFollower = new EncoderFollower(modifier.getLeftTrajectory());
+        rightFollower = new EncoderFollower(modifier.getRightTrajectory());
 
         //Configure with Constants from MPConstants.java
-        leftFollower.configureEncoder(drivetrain.getLeftPosition(), MPConstants.TICKS_PER_ROTATION, MPConstants.INCHES_PER_ROTATION);
-        rightFollower.configureEncoder(drivetrain.getRightPosition(), MPConstants.TICKS_PER_ROTATION, MPConstants.INCHES_PER_ROTATION);
-        leftFollower.configurePIDVA(MPConstants.PATH_KP, MPConstants.PATH_KI, MPConstants.PATH_KD, MPConstants.PATH_KV, MPConstants.PATH_KA);
-        rightFollower.configurePIDVA(MPConstants.PATH_KP, MPConstants.PATH_KI, MPConstants.PATH_KD, MPConstants.PATH_KV, MPConstants.PATH_KA);
+        leftFollower.configureEncoder(drivetrain.getLeftPosition(), MPConstants.TICKS_PER_ROTATION,
+                MPConstants.INCHES_PER_ROTATION);
+        rightFollower.configureEncoder(drivetrain.getRightPosition(), MPConstants.TICKS_PER_ROTATION,
+                MPConstants.INCHES_PER_ROTATION);
+        Globals.logger.motionProfiling = LogInterface.manualTable("Motion_Profiling",
+                new String[] { "encDistanceLeft", "segPositionLeft", "velocityLeft", "accelerationLeft",
+                        "encoderVelocityLeft", "outputValueLeft", "encDistanceRight", "segPositionRight",
+                        "velocityRight", "accelerationRight", "encoderVelocityRight", "outputValueRight" },
+                new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
+                        new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal() },
+                new Loggable[] { () -> Globals.drivetrain.getLeftPositionInches(), () -> leftFollower.position,
+                        () -> leftFollower.velocity, () -> leftFollower.acceleration,
+                        () -> leftFollower.encoderVelocity, () -> leftFollower.outputValue,
+                        () -> Globals.drivetrain.getRightPositionInches(), () -> rightFollower.position,
+                        () -> rightFollower.velocity, () -> rightFollower.acceleration,
+                        () -> rightFollower.encoderVelocity, () -> rightFollower.outputValue });
+        logger.logger.addTable(logger.motionProfiling);
+        leftFollower.configurePIDVA(MPConstants.PATH_KP, MPConstants.PATH_KI, MPConstants.PATH_KD, MPConstants.PATH_KV,
+                MPConstants.PATH_KA);
+        rightFollower.configurePIDVA(MPConstants.PATH_KP, MPConstants.PATH_KI, MPConstants.PATH_KD, MPConstants.PATH_KV,
+                MPConstants.PATH_KA);
         turnController.enable();
 
     }
-    public void run(){
-        double leftSpeed= leftFollower.calculate(drivetrain.getLeftPosition(), drivetrain.getLeftVelocity());
-        double rightSpeed= rightFollower.calculate(drivetrain.getRightPosition(), drivetrain.getRightVelocity());
-        double currentHeading= gyro.getNormalizedYaw()-startHeading;
-        angleError= Pathfinder.boundHalfDegrees(leftFollower.getHeading()-currentHeading);
-        turnOutput=turnController.get();
+
+    public void run() {
+        double leftSpeed = leftFollower.calculate(drivetrain.getLeftPosition(), drivetrain.getLeftVelocity());
+        double rightSpeed = rightFollower.calculate(drivetrain.getRightPosition(), drivetrain.getRightVelocity());
+        double currentHeading = gyro.getNormalizedYaw() - startHeading;
+        angleError = Pathfinder.boundHalfDegrees(leftFollower.getHeading() - currentHeading);
+        turnOutput = turnController.get();
         drivetrain.driveMP(leftSpeed, rightSpeed, turnOutput);
+        logger.motionProfiling.log(logger.getTick());
+        logger.tick();
     }
 
-
-    public boolean isFinished(){
+    public boolean isFinished() {
         return leftFollower.isFinished() && rightFollower.isFinished();
     }
 
-    public double getRemainingDuration(){
-        return leftFollower == null || rightFollower == null ? -1 : Math.max(leftFollower.getRemainingDuration(), rightFollower.getRemainingDuration());
+    public double getRemainingDuration() {
+        return leftFollower == null || rightFollower == null ? -1
+                : Math.max(leftFollower.getRemainingDuration(), rightFollower.getRemainingDuration());
     }
 }

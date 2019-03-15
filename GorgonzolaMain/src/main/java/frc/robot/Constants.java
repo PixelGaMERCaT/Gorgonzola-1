@@ -17,7 +17,7 @@ public class Constants {
         // Spooky zone (unchecked)
         // TODO reduce spookiness
         public static final double SHOULDER_TICKS_PER_ROTATION = 1024.0;
-        public static final double SHOULDER_ENCU_ZERO = Globals.isProto ? -510: -508; 
+        public static final double SHOULDER_ENCU_ZERO = Globals.isProto ? -573: -508; 
         public static final double SHOULDER_MIN_POSITION = 12; //inches
         public static final double SHOULDER_MAX_POSITION = 78;
         public static final double SHOULDER_MAX_VELOCITY = 55;

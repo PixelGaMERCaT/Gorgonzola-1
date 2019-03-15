@@ -39,7 +39,7 @@ public class Intake implements Component {
     int hatchOutputTimer = -1;
 
     public void tick() {
-        boolean hatchIntake = im.getHatchButton();
+        boolean hatchIntake = im.getHatchIntakeButton();
         
         
         if (hatchIntake) { //picking up a hatch
@@ -56,7 +56,7 @@ public class Intake implements Component {
             venturiTick--;
             hatchActiveOut.set(false);
             hatchOutputTimer = 300;
-        } else if (hatchOutputTimer > 0) {
+        } else if (hatchOutputTimer > 0 && im.getHatchOutputButton()) {
             SmartDashboard.putString("intake", "Outputting hatch");
             leftSuction.set(true);
             rightSuction.set(true);

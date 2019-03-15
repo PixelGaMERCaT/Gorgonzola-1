@@ -89,7 +89,7 @@ public class Shoulder implements Component {
         }
         if (im.shoulderManual) {
             if (im.getArmSafetyButton()) {
-                talon1.set(ControlMode.PercentOutput, /*.1 +*/ .5 * im.getShoulderManualHeight());
+                talon1.set(ControlMode.PercentOutput, .025 + .5 * im.getShoulderManualHeight());
             }
         } else {
             switch (desiredPos) {
@@ -131,7 +131,6 @@ public class Shoulder implements Component {
                 break;
             case FULL_MANUAL:
                 talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getShoulderManualHeight());
-
                 break;
             case STOW:
                 setHeight(Constants.SHOULDER_MIN_POSITION - 2.0);

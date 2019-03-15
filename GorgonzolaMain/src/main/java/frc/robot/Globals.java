@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.Compressor;
+import frc.components.CameraManager;
 import frc.components.Climber;
 import frc.components.Component;
 import frc.components.Drivetrain;
@@ -31,7 +32,7 @@ public class Globals {
     public static InputManager im;
     public static Drivetrain drivetrain;
     public static Gyro gyro;
-    public static NetworkInterface testTable;
+    public static NetworkInterface robotDataTable;
     public static LogInterface logger;
     public static PoseTracker poseTracker;
     public static GearShifter gearShifter;
@@ -41,7 +42,7 @@ public class Globals {
     public static Intake intake;
     public static Compressor compressor;
     private static ArrayList<Component> components; // Contains all the components in Globals
-
+    private static CameraManager cameraManager;
     /**
      * Initializes all components of globals
      */
@@ -52,19 +53,18 @@ public class Globals {
         im = new InputManager();
         logger = new LogInterface();
         PWMLightController pwmLightController = new PWMLightController(0, 1);
-        compressor.setClosedLoopControl(false);
+        compressor.setClosedLoopControl(true);
         intake = new Intake();
         gearShifter = new GearShifter();
         poseTracker = new PoseTracker(50);
         gyro = new Gyro();
-        testTable = new NetworkInterface("blue");
+        robotDataTable = new NetworkInterface("RobotData");
         shoulder = new Shoulder();
         wrist = new Wrist();
         climber = new Climber();
         components.addAll(Arrays.asList(im, drivetrain, shoulder, wrist, pwmLightController, gearShifter, intake, gyro,
                 poseTracker, climber, logger));
-        //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
-
+                //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
         components.forEach(c -> c.init());
 
     }
