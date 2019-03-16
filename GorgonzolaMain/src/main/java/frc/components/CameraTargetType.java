@@ -1,6 +1,6 @@
 package frc.components;
 
-public enum CameraTarget {
+public enum CameraTargetType {
     PLAYER_STATION, CARGO_SHIP_LEFT, CARGO_SHIP_RIGHT, INNER_ROCKET_LEFT, OUTER_ROCKET_LEFT, CARGO_ROCKET_LEFT, CARGO_ROCKET_RIGHT, INNER_ROCKET_RIGHT, OUTER_ROCKET_RIGHT, HATCH_ROCKET_RIGHT;
     private double angle; //angle of the robot to face it
     static {

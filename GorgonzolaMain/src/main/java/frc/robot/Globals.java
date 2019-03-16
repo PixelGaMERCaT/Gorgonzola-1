@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.components.CameraManager;
 import frc.components.Climber;
 import frc.components.Component;
@@ -80,6 +81,7 @@ public class Globals {
                 System.err.println("Problem ticking " + c);
                 e.printStackTrace();
             }
+            SmartDashboard.putNumber("gyro", gyro.getNormalizedYaw());
         });
     }
 

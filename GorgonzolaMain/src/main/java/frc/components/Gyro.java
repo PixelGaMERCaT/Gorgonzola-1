@@ -40,9 +40,11 @@ public class Gyro implements Component, PIDSource {
         pitchZero = navx.getPitch();
 
     }
+    
     public void tick(){
         robotDataTable.setDouble("yaw", getNormalizedYaw());
-        robotDataTable.setDouble("pitch", getNormalizedPitch());
+        robotDataTable.setDouble("pitch", getNormalizedPitch()); //Tilt forward and back
+        robotDataTable.setDouble("roll", navx.getRoll());
     }
     /**
      * A method which returns the relative yaw (turn angle) of the robot

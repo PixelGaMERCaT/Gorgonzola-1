@@ -24,8 +24,6 @@ public class Constants {
         public static final double SHOULDER_RANGE = SHOULDER_MAX_POSITION-SHOULDER_MIN_POSITION;
         public static final double INTAKE_OFFSET_HATCH=-2.17; //Distance from end of arm to hatch intake/outtake
         public static final double INTAKE_OFFSET_BALL=8.89; //Distance from end of arm to ball intake/outtake
-
-
         public static final double SHOULDER_KP = 15, SHOULDER_KI = 0, SHOULDER_KD = 0, SHOULDER_KF = 1023.0 / SHOULDER_MAX_VELOCITY;
         public static final double WRIST_STOW_POSITION = 155.0*Math.PI/180.0;
         public static final double WRIST_GEAR_OFFSET = 3.6 * Math.PI/180; //Offset for slack in gearbox (radians)
