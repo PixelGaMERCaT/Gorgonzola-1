@@ -31,6 +31,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.vision.VisionThread;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.opencv.core.Mat;
 
 /*
@@ -247,7 +249,11 @@ public final class Main {
     // start image processing on camera 0 if present
     RocketTarget target = new RocketTarget();
 	RocketPipeline pipeline = new RocketPipeline();
-	CVCamera c = new CVCamera(30, 56.0*Math.PI/180.0, 75.0*Math.PI/180.0, 640, 480, 0, 6.25, 0, 0, 0);
+	//CVCamera c = new CVCamera(30, 43.3
+	//		*Math.PI/180.0, 50.0*Math.PI/180.0, 320, 240, 0, 8.0625, 0, 0, 0);
+	SmartDashboard.putNumber("HORIZONTAL FOV", 60.0*Math.PI/180.0);
+	
+	CVCamera c = new CVCamera(50, 57.12*Math.PI/180.0, 54.0*Math.PI/180.0, 320, 240, 0,  6.125, 0, 0, 0);
 	c.initializeCamera(cameras.get(0), "CoprocessorCamera");
 	c.addVisionTarget(target);
 	c.addPipeline(pipeline);
@@ -258,7 +264,7 @@ public final class Main {
     for (;;) {
       try {
         ent.setDouble(Math.random());
-        Thread.sleep(100);
+        Thread.sleep(1000);
       } catch (InterruptedException ex) {
         return;
       }

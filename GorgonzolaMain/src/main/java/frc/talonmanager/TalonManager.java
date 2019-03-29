@@ -73,7 +73,7 @@ public abstract class TalonManager {
      * Returns the velocity of this Talon's encoder
      * @return the velocity of this Talon's encoder
      */
-    public int getEncoderVelocity() {
+    public int  getEncoderVelocity() {
         return talon.getSelectedSensorVelocity(0);
     }  
     
@@ -81,7 +81,7 @@ public abstract class TalonManager {
      * Returns the velocity of this Talon's encoder
      * @return the velocity of this Talon's encoder
      */
-    public int getEncoderVelocityContextual() {
+    public double getEncoderVelocityContextual() {
         return talon.getSelectedSensorVelocity(0);
     } 
 

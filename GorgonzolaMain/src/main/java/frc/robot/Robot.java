@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.components.GearShifter;
 import frc.sandstorm.*;
 
 /**
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     sandstormMode = sandstormStarter.start();
     SmartDashboard.putString("Sandstorm Path: ", sandstormMode.name);
+    Globals.drivetrain.resetEncoders();
   }
   public void disabledInit() {
     
@@ -75,22 +77,32 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     Globals.drivetrain.resetEncoders();
     //Globals.poseTracker.init();
+    starttime=System.currentTimeMillis();
+    avgVel=0;
+    teleopTick=1;
   }
-  
   @Override
   public void autonomousPeriodic() {
     if (!sandstormMode.over) {
       Globals.gearShifter.tick();
-      sandstormMode.tick(); //TODO change back to teleop
+      sandstormMode.tick(); 
+      SmartDashboard.putNumber("leftEnc", Globals.drivetrain.frontLeft.getEncoderPositionContextual());
+      SmartDashboard.putNumber("rightEnc", Globals.drivetrain.frontRight.getEncoderPositionContextual());
+
     }
   }
-
+  double teleopTick=1;
+  double avgVel=0;
+  double starttime=System.currentTimeMillis();
   /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
     Globals.tick();
+    avgVel=(avgVel*(teleopTick-1)+Globals.drivetrain.frontLeft.getEncoderVelocityContextual())/teleopTick;
+    teleopTick++;
+    //System.out.println("driveDistance " +avgVel);
   }
   @Override 
   public void testInit(){

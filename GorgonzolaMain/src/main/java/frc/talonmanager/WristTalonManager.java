@@ -70,7 +70,7 @@ public class WristTalonManager extends TalonManager {
         
         */
         return ((getEncoderPosition() % Constants.WRIST_TICKS_PER_ROTATION - Constants.WRIST_ENCU_ZERO)
-                / Constants.WRIST_TICKS_PER_ROTATION * Math.PI * 2)%(2*Math.PI);
+                / Constants.WRIST_TICKS_PER_ROTATION * Math.PI * 2.0)%(2.0*Math.PI);
     }
 
 }

@@ -1,11 +1,17 @@
-package frc.components;
+package frc.components.arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Decimal;
 import frc.CheeseLog.SQLType.Type;
+import frc.components.ArmHeight;
+import frc.components.Component;
+import frc.components.InputManager;
+import frc.components.LogInterface;
+import frc.components.NetworkInterface;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.Globals;
@@ -20,11 +26,15 @@ public class Shoulder implements Component {
     private InputManager im;
     private double heightSetpoint;
     public ArmHeight desiredPos;
-
+    private Wrist wrist;
+    private NetworkInterface robotDataTable;
+    //private PigeonIMU pidgey;
     public Shoulder() {
         desiredPos = ArmHeight.NO_MOVEMENT;
         talon1 = new ShoulderTalonManager(RobotMap.SHOULDER_TALON_1);
         talon2 = new ShoulderTalonManager(RobotMap.SHOULDER_TALON_2);
+        //pidgey=new PigeonIMU(4);
+
         heightSetpoint = Constants.SHOULDER_MIN_POSITION;
         talon1.initEncoder(Constants.SHOULDER_KP, Constants.SHOULDER_KI, Constants.SHOULDER_KD, Constants.SHOULDER_KF);
         if (Globals.isProto) {
@@ -44,11 +54,12 @@ public class Shoulder implements Component {
         talon2.talon.configFeedbackNotContinuous(true, 0);
 
         talon2.follow(talon1);
+
         currentPosition = getHeight();
     }
 
     public void init() {
-
+        robotDataTable = Globals.robotDataTable;
         im = Globals.im;
         logger = Globals.logger;
         logger.shoulder = LogInterface.table("Shoulder",
@@ -59,13 +70,13 @@ public class Shoulder implements Component {
                 new Loggable[] { () -> talon1.getEncoderVelocity(), () -> getHeight(), () -> heightSetpoint,
                         () -> talon1.talon.getMotorOutputPercent(), () -> talon1.talon.getClosedLoopError(),
                         () -> talon1.talon.getClosedLoopTarget(), () -> talon1.getEncoderPosition() });
-
+        wrist = Globals.wrist;
     }
 
     double maxVelocity = 0;
 
     public void tick() {
-
+        
         /*if (im.getAuxButton(11)) {
             talon1.initEncoder(SmartDashboard.getNumber("WristP", Constants.WRIST_KP),
                     SmartDashboard.getNumber("WristI", 0), SmartDashboard.getNumber("WristD", Constants.WRIST_KD),
@@ -78,14 +89,23 @@ public class Shoulder implements Component {
         SmartDashboard.putNumber("angleShoulder", getAngle() * 180 / Math.PI);
         SmartDashboard.putNumber("heightShoulder", getHeight());
         SmartDashboard.putNumber("shoulder encu", talon1.getEncoderPosition());
-        SmartDashboard.putNumber("ShoulderDesHeight", heightToEncU(
-                Constants.SHOULDER_MIN_POSITION + (im.getShoulderManualHeight() * (Constants.SHOULDER_RANGE))));
         SmartDashboard.putNumber("shoulderdiff", talon1.talon.getClosedLoopError());
         SmartDashboard.putNumber("shouldercurrent", talon1.talon.getOutputCurrent());
+
+        robotDataTable.setDouble("ShoulderAngle", getAngle());
         ArmHeight newPos = im.getArmPosition();
         if (newPos != ArmHeight.NO_CHANGE || desiredPos == ArmHeight.FULL_MANUAL
                 || desiredPos == ArmHeight.POSITION_MANUAL) {
             desiredPos = im.getArmPosition();
+        }
+        /*double[] imuValues=new double[3];
+        pidgey.getYawPitchRoll(imuValues);
+        System.out.println("y:"+imuValues[0]+" p:"+imuValues[1]+" r:"+imuValues[2]);
+        SmartDashboard.putNumber("imuyaw", imuValues[0]);
+        SmartDashboard.putNumber("imupitch", imuValues[1]);
+        SmartDashboard.putNumber("imuyaw", imuValues[3]);*/
+        if (/*imuValues[1]>70*/false){
+            System.out.println("STOPPING ARM");
         }
         if (im.shoulderManual) {
             if (im.getArmSafetyButton()) {
@@ -116,7 +136,7 @@ public class Shoulder implements Component {
                         + 5.0 * im.getShoulderManualHeight());
                 break;
             case BALL_MEDIUM:
-                setHeight(FieldConstants.MID_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL
+                setHeight(FieldConstants.MID_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL + 5.0
                         + 5.0 * im.getShoulderManualHeight());
                 break;
             case BALL_HIGH:
@@ -133,7 +153,12 @@ public class Shoulder implements Component {
                 talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getShoulderManualHeight());
                 break;
             case STOW:
-                setHeight(Constants.SHOULDER_MIN_POSITION - 2.0);
+                if (getHeight() < 25.0 && wrist.getAngle() < 110.0 * Math.PI / 180.0) {
+                    setHeight(getHeight());
+                } else {
+                    setHeight(Constants.SHOULDER_MIN_POSITION - 2.0);
+                }
+                break;
             }
         }
         currentPosition = getHeight();

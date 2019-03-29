@@ -5,6 +5,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Bool;
@@ -25,6 +27,8 @@ public class Drivetrain implements Component {
     private LogInterface logger;
     public double setpointLeft, setpointRight;
     public PIDController turnController;
+    private TipCorrector tipCorrector;
+    private CameraManager cameraManager;
 
     /**
      * The Default constructor for Drivetrain, sets up basic movement and sensor
@@ -59,6 +63,11 @@ public class Drivetrain implements Component {
     }
 
     public void init() {
+        SmartDashboard.putNumber("TurnP", Constants.TURN_KP);
+        SmartDashboard.putNumber("TurnD", Constants.TURN_KD);
+        shifter=Globals.gearShifter;
+        cameraManager = Globals.cameraManager;
+        tipCorrector = Globals.tipCorrector;
         im = Globals.im;
         logger = Globals.logger;
         gyro = Globals.gyro;
@@ -74,16 +83,18 @@ public class Drivetrain implements Component {
                             () -> setpointLeft, () -> setpointRight, () -> frontLeft.getOutputCurrent(),
                             () -> frontRight.getOutputCurrent() });
             //frontLeft.talon.getMotorOutputVoltage();
-             
+
             logger.drivetrain = LogInterface.table("Drivetrain",
-                    new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower", "velRight", "velLeft", "voltLeft", "voltRight" },
+                    new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower", "velRight", "velLeft",
+                            "voltLeft", "voltRight" },
                     new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
                             new Decimal(), new Decimal(), new Decimal() },
                     new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
                             () -> frontLeft.getOutputCurrent(), () -> frontRight.getOutputCurrent(),
                             () -> frontRight.getEncoderVelocityContextual(),
                             () -> frontLeft.getEncoderVelocityContextual(),
-                            () -> frontLeft.talon.getMotorOutputVoltage(),  () -> frontRight.talon.getMotorOutputVoltage()});
+                            () -> frontLeft.talon.getMotorOutputVoltage(),
+                            () -> frontRight.talon.getMotorOutputVoltage() });
 
             logger.turnController = LogInterface.manualTable("Turn_Controller",
                     new String[] { "angle", "output", "setpoint", "enabled" },
@@ -96,8 +107,27 @@ public class Drivetrain implements Component {
         }
         turnController = new PIDController(Constants.TURN_KP, Constants.TURN_KI, Constants.TURN_KD, gyro, o -> {
         });
-        SmartDashboard.putNumber("TurnD", Constants.TURN_KD);
-        SmartDashboard.putNumber("TurnP", Constants.TURN_KP);
+        /*new PIDSource() {
+                                                                                                   
+                                                                                                   @Override
+                                                                                                   public void setPIDSourceType(PIDSourceType pidSource) {
+                                                                                                   }
+                                                                                                   
+                                                                                                   @Override
+                                                                                                   public double pidGet() {
+                                                                                                   try {
+                                                                                                   return cameraManager.getPrimarySightingAnglePose();
+                                                                                                   } catch (Exception e) {
+                                                                                                   e.printStackTrace();
+                                                                                                   return 0;
+                                                                                                   }
+                                                                                                   }
+                                                                                                   
+                                                                                                   @Override
+                                                                                                   public PIDSourceType getPIDSourceType() {
+                                                                                                   return PIDSourceType.kDisplacement;
+                                                                                                   }
+                                                                                                   }*/
         turnController.setAbsoluteTolerance(1);
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-1, 1);
@@ -126,20 +156,47 @@ public class Drivetrain implements Component {
     double maxVelocity = 0;
     double imForward = 0;
     double tick = 0;
+    boolean setPointSet = false;
 
     public void tick() {
         SmartDashboard.putNumber("turnout", turnController.get());
-        SmartDashboard.putNumber("angle", gyro.getNormalizedYaw());
         maxVelocity = Math.max(maxVelocity, Math.abs(frontLeft.getEncoderVelocity()));
         //System.out.println("PositionR "+frontRight.getEncoderPositionContextual());
         //System.out.println("PositionL "+frontLeft.getEncoderPositionContextual());
         SmartDashboard.putNumber("maxvelDrive", maxVelocity);
-        if (!im.getCameraEnable()){
-            driveBasic(im.getForward(), im.getTurn());
+        try {
+            SmartDashboard.putNumber("camera1Angle", cameraManager.getPrimarySightingAnglePose());
+        } catch (Exception e) {
+            //e.printStackTrace();
+
+        }
+        if (!tipCorrector.isCorrecting()) {
+            if (!im.getCameraEnable()) {
+                setPointSet = false;
+                driveBasic(im.getForward(), im.getTurn());
+            } else if (im.getDriveSafetyButton()) {
+                try {
+                    turnController.setP(SmartDashboard.getNumber("TurnP", Constants.TURN_KP));
+                    turnController.setD(SmartDashboard.getNumber("TurnD", Constants.TURN_KD));
+                    //System.out.println("d"+turnController.getD()+ "P"+turnController.getP());
+                    if (!setPointSet) {
+                        setPointSet = true;
+                        setYawSetpoint(cameraManager.getPrimarySightingAnglePose());
+
+                    }
+                    shifter.highGear=false;
+                    driveBasic(im.getForward(), turnController.get());
+                } catch (Exception e) {
+                    System.out.println("Can't Get Sighting angle.");
+                    e.printStackTrace();
+                    driveBasic(im.getForward(), im.getTurn());
+                }
+            }
         }
         SmartDashboard.putNumber("leftEnc", frontLeft.getEncoderPositionContextual());
         SmartDashboard.putNumber("rightEnc", frontRight.getEncoderPositionContextual());
-
+        SmartDashboard.putNumber("dis", SmartDashboard.getNumber("final distance no assist", -108699)
+                + frontLeft.getEncoderPositionContextual());
     }
 
     /**
@@ -161,7 +218,6 @@ public class Drivetrain implements Component {
      */
     public void autoDrive(double forward, double turn) {
         frontLeft.set(ControlMode.PercentOutput, forward - turn);
-
         frontRight.set(ControlMode.PercentOutput, forward + turn);
     }
 
@@ -216,9 +272,10 @@ public class Drivetrain implements Component {
     public int getRightPosition() {
         return frontRight.getEncoderPosition();
     }
-     /**
-     * Returns the position of the left encoder
-     */
+
+    /**
+    * Returns the position of the left encoder
+    */
     public double getLeftPositionInches() {
         return frontLeft.getEncoderPositionContextual();
     }

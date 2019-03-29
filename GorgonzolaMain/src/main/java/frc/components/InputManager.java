@@ -22,7 +22,6 @@ public class InputManager implements Component {
         right = new Joystick(ButtonMap.RIGHT_STICK);
         aux = new Joystick(ButtonMap.AUX_STICK);
     }
-
     public void init() {
         logger = Globals.logger;
         try {
@@ -34,7 +33,7 @@ public class InputManager implements Component {
             e.printStackTrace();
         }
 
-    }
+    } 
     public boolean shoulderManual=false, wristManual=false;
     /**
      * Updates the robot's arm state so that getArmPosition() can always return the proper position, regardless of overrides.
@@ -92,6 +91,13 @@ public class InputManager implements Component {
     public boolean getHatchOutputButton(){
         return aux.getRawButton(8);
     }
+    public boolean getTipOverrideButton(){
+        return getClimbKnives();
+    }
+    public boolean getTipEnableButton(){
+        return right.getRawButton(ButtonMap.TIP_ENABLE);
+    }
+    
     /**
      * Returns a number from -1 to 1 denoting the amount the robot should be turning
      * @return a number [-1, 1], with -1 denoting full power left and 1 denoting full power right

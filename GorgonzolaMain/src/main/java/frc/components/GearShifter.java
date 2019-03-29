@@ -10,7 +10,7 @@ import frc.robot.RobotMap;
 public class GearShifter implements Component {
     private Solenoid switcher;
     private InputManager im;
-    private boolean highGear;
+    public boolean highGear;
 
     public GearShifter() {
         highGear = false;
@@ -28,6 +28,7 @@ public class GearShifter implements Component {
             highGear = !highGear;
         } 
         switcher.set(highGear);
+        //System.out.println("high gear!"+highGear);
     }
 
     /**

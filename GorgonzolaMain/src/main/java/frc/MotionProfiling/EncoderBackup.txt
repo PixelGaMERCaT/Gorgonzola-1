@@ -1,38 +1,20 @@
-package frc.motionprofiling;
-
-import jaci.pathfinder.*;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 /**
- * "Stolen" from Jaci's Pathfinder.
- * Modified to log progress along the way and calculate time remaining
+ * Taken from Jaci's Pathfinder, with added logging functionality
  */
 public class EncoderFollower {
-    private File file;
-    private BufferedWriter bw;
-    private double encoder_offset, encoder_tick_count, wheel_circumference;
+    private double encoder_offset, encoder_tick_count, inches_per_rotation;
     private double kp, ki, kd, kv, ka;
-
     private double last_error, heading;
 
+    //Logging variables
+    public double distance, position, velocity, acceleration, encoderVelocity, outputValue;
     int segment;
     Trajectory trajectory;
 
-    public EncoderFollower(Trajectory traj, String filePath) {
-        this(traj);
-        file = new File(filePath);
-        try {
-            bw = new BufferedWriter(new FileWriter(file));
-            bw.write("Tick, Distance, Position, Velocity, acceleration, Enc_Velocity, Output, Yaw, turnOut, heading");
-            bw.newLine();
-            bw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public EncoderFollower(Trajectory traj) {
+        this.trajectory = traj;
+        distance = position = velocity = acceleration = encoderVelocity = outputValue = 0;
+
     }
 
     /**
@@ -41,40 +23,29 @@ public class EncoderFollower {
      * loop for realignment based on gyroscope input and the desired heading given by this object.
      * @param encoder_tick The amount of ticks the encoder has currently measured.
      * @param vel The current velocity of the encoder
-     * @return  The desired output for your motor controller
+     * @return             The desired output for your motor controller
      */
-    public double calculate(int encoder_tick, double vel, double yaw, double turnOut) {
+    public double calculate(int encoder_tick, double vel) {
         Trajectory.Segment seg = trajectory.get(segment);
-        double calculate_value = calculate(encoder_tick);
-        double distance_covered = encoder_tick;//((encoder_tick - encoder_offset) / encoder_tick_count) * wheel_circumference;
-        
-        try {
-            String line = segment + ", " + distance_covered + ", " + seg.position + ", " + seg.velocity + ", "
-                    + seg.acceleration + ", " + vel + ", " + calculate_value +", "+yaw+ ", "+turnOut+", "+Pathfinder.r2d(seg.heading)+"\n";
-            bw.write(line);
-            bw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return calculate_value;
-    }
-
-    public void closeFile() {
-        try {
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private EncoderFollower(Trajectory traj) {
-        this.trajectory = traj;
+        outputValue = calculate(encoder_tick);
+        distance = ((encoder_tick - encoder_offset) / encoder_tick_count) * inches_per_rotation;
+        // ((<distance travelled in encoder ticks>)/<encoder ticks per revolution>)*<inches travelled per revolution>
+        position = seg.position;
+        System.out.println("pos "+seg.position);
+        velocity = seg.velocity;
+        acceleration = seg.acceleration;
+        encoderVelocity = vel;
+        SmartDashboard.putNumber("MPEncVel", encoderVelocity);
+        SmartDashboard.putNumber("MPSegVel", vel);
+        SmartDashboard.putNumber("MPSegPos", position);
+        SmartDashboard.putNumber("MPEncPos", distance);
+        SmartDashboard.putNumber("MPSegAcc", acceleration);
+        return outputValue;
     }
 
     /**
      * Set a new trajectory to follow, and reset the cumulative errors and segment counts
-     */
+    */
     public void setTrajectory(Trajectory traj) {
         this.trajectory = traj;
         reset();
@@ -103,17 +74,17 @@ public class EncoderFollower {
      * @param initial_position      The initial 'offset' of your encoder. This should be set to the encoder value just
      *                              before you start to track
      * @param ticks_per_revolution  How many ticks per revolution the encoder has
-     * @param wheel_diameter        The diameter of your wheels (or pulleys for track systems) in meters
-     */
-    public void configureEncoder(int initial_position, int ticks_per_revolution, double wheel_diameter) {
+     * @param inches_per_rotation   How many inches you travel per rotation of the wheels
+    */
+    public void configureEncoder(int initial_position, int ticks_per_revolution, double inches_per_rotation) {
         encoder_offset = initial_position;
         encoder_tick_count = ticks_per_revolution;
-        wheel_circumference = wheel_diameter;
+        this.inches_per_rotation = inches_per_rotation;
     }
 
     /**
      * Reset the follower to start again. Encoders must be reconfigured.
-     */
+    */
     public void reset() {
         last_error = 0;
         segment = 0;
@@ -127,7 +98,7 @@ public class EncoderFollower {
      * @return             The desired output for your motor controller
      */
     public double calculate(int encoder_tick) {
-        double distance_covered = encoder_tick;
+        double distance_covered = ((encoder_tick - encoder_offset) / encoder_tick_count) * inches_per_rotation;
         if (segment < trajectory.length()) {
             Trajectory.Segment seg = trajectory.get(segment);
             double error = seg.position - distance_covered;
@@ -152,7 +123,7 @@ public class EncoderFollower {
 
     /**
      * @return the current segment being operated on
-     */
+    */
     public Trajectory.Segment getSegment() {
         return trajectory.get(segment);
     }
@@ -166,8 +137,9 @@ public class EncoderFollower {
 
     /**
      * @return the remaining duration in the current motion profile
-     */
+    */
     public double getRemainingDuration() {
-        return 1000 * (trajectory.length() - segment) * MPConstants.DELTA_TIME;
+        return 1000 * (trajectory.length() - segment);// * MPConstants.DELTA_TIME;
     }
+
 }

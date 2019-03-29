@@ -65,7 +65,8 @@ public class DriveTalonManager extends TalonManager {
      * Returns the velocity of this Talon's encoder in inches
      * @return the velocity of this Talon's encoder
      */
-    public int getEncoderVelocityContextual() {
-        return (int)(((double)talon.getSelectedSensorVelocity(0))/Constants.DRIVE_ENCU_PER_INCH *10.0);
+    public double getEncoderVelocityContextual() {
+        return (((double)talon.getSelectedSensorVelocity(0))/Constants.DRIVE_ENCU_PER_INCH)*10.0;
+
     }
 }

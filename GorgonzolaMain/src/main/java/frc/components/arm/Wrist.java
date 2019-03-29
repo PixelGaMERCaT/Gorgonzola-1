@@ -1,13 +1,16 @@
-package frc.components;
+package frc.components.arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
-import frc.CheeseLog.SQLType.Bool;
 import frc.CheeseLog.SQLType.Decimal;
 import frc.CheeseLog.SQLType.Type;
+import frc.components.ArmHeight;
+import frc.components.Component;
+import frc.components.InputManager;
+import frc.components.LogInterface;
+import frc.components.NetworkInterface;
 import frc.robot.Constants;
 import frc.robot.Globals;
 import frc.robot.RobotMap;
@@ -19,6 +22,7 @@ public class Wrist implements Component {
     private LogInterface logger;
     private InputManager im;
     private Shoulder shoulder;
+    private NetworkInterface robotDataTable;
 
     public Wrist() {
         talon1 = new WristTalonManager(RobotMap.WRIST_TALON_1);
@@ -32,7 +36,6 @@ public class Wrist implements Component {
         }
         talon1.talon.configFeedbackNotContinuous(true, 0);
         talon2.talon.configFeedbackNotContinuous(true, 0);
-
         if (Globals.isProto) {
             talon1.setInverted(false);
             talon2.setInverted(false);
@@ -47,6 +50,7 @@ public class Wrist implements Component {
     }
 
     public void init() {
+        robotDataTable = Globals.robotDataTable;
         SmartDashboard.putNumber("WristI", 0);
         SmartDashboard.putNumber("WristD", Constants.WRIST_KD);
         SmartDashboard.putNumber("WristF", Constants.WRIST_KF);
@@ -69,6 +73,7 @@ public class Wrist implements Component {
 
     public void tick() {
         SmartDashboard.putNumber("WristP", Constants.WRIST_KP);
+        robotDataTable.setDouble("WristAngle", getAngle());
 
         maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
         SmartDashboard.putNumber("maxvel", maxVelocity);
@@ -80,7 +85,7 @@ public class Wrist implements Component {
         SmartDashboard.putNumber("wristPosition", talon1.talon.getSelectedSensorPosition(0));
         //System.out.println("wristps" + talon1.talon.getSelectedSensorPosition(0));
         SmartDashboard.putString("ControlMode", talon1.talon.getControlMode().toString());
-        SmartDashboard.putNumber("Angle", getAngle() * 180.0 / Math.PI);
+        SmartDashboard.putNumber("WristAngle", getAngle() * 180.0 / Math.PI);
 
         if (fromStow && shoulder.desiredPos != ArmHeight.STOW) {
             talon1.talon.config_kP(0, Constants.WRIST_KP);
@@ -104,7 +109,7 @@ public class Wrist implements Component {
 
                 if (shoulder.getHeight() > 50) {
                     setAngle(-shoulder.getAngle());
-                } else if (talon1.getEncoderVelocity()>5) {
+                } else if (talon1.getEncoderVelocity() > 5) {
                     talon1.talon.config_kP(0, 3);
                     setAngle(Constants.WRIST_STOW_POSITION);
                 } else {
@@ -124,7 +129,12 @@ public class Wrist implements Component {
                 talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getWristManualPosition());
                 break;
             case BALL_HIGH:
-                setAngle(-15.0 * Math.PI / 180.0 + 7.0 * im.getWristManualPosition());
+                if (shoulder.getHeight() > 30.0) {
+                    setAngle(-15.0 * Math.PI / 180.0
+                            + Math.min(0, Math.PI / 180.0 * 10.0 * im.getWristManualPosition()));
+                } else {
+                    setAngle(-shoulder.getAngle());
+                }
                 break;
             case BALL_CARGO:
                 if (shoulder.getHeight() > 25) {
@@ -133,11 +143,19 @@ public class Wrist implements Component {
                     setAngle(-shoulder.getAngle());
                 }
                 break;
+            case GROUND_PICKUP:
+                setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET
+                        + ((-15.0 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0));
+                break;
+            case HATCH_HIGH:
+                setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET
+                        + ((20.0 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0));
+                break;
             case NO_CHANGE:
                 break;
             default:
                 setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET
-                        + (10.0 * im.getWristManualPosition() * Math.PI / 180));
+                        + (10.0 * im.getWristManualPosition() * Math.PI / 180.0));
             }
         }
 

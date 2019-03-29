@@ -14,12 +14,12 @@ public class Constants {
         public static final double MAX_TURN_VELOCITY_LOW = 46.961;
         public static final double DRIVE_ENCU_PER_INCH = 2970.3;
 
-        // Spooky zone (unchecked)
-        // TODO reduce spookiness
+
+
         public static final double SHOULDER_TICKS_PER_ROTATION = 1024.0;
-        public static final double SHOULDER_ENCU_ZERO = Globals.isProto ? -573: -508; 
+        public static final double SHOULDER_ENCU_ZERO = Globals.isProto ? -702: -642; 
         public static final double SHOULDER_MIN_POSITION = 12; //inches
-        public static final double SHOULDER_MAX_POSITION = 78;
+        public static final double SHOULDER_MAX_POSITION = 80;
         public static final double SHOULDER_MAX_VELOCITY = 55;
         public static final double SHOULDER_RANGE = SHOULDER_MAX_POSITION-SHOULDER_MIN_POSITION;
         public static final double INTAKE_OFFSET_HATCH=-2.17; //Distance from end of arm to hatch intake/outtake
@@ -28,12 +28,12 @@ public class Constants {
         public static final double WRIST_STOW_POSITION = 155.0*Math.PI/180.0;
         public static final double WRIST_GEAR_OFFSET = 3.6 * Math.PI/180; //Offset for slack in gearbox (radians)
         public static final double WRIST_TICKS_PER_ROTATION = 1024;
-        public static final double WRIST_ENCU_ZERO = Globals.isProto ? -600 : 529;
+        public static final double WRIST_ENCU_ZERO = Globals.isProto ? -515 : 438;
         public static final double WRIST_ANGLE_RANGE = Math.PI;
         public static final double WRIST_MAX_VELOCITY = Globals.isProto ? 80 : 78;
         public static final double WRIST_KP = 10.0, WRIST_KI = 0, WRIST_KD = 0, WRIST_KF = 1023.0 / WRIST_MAX_VELOCITY;
 
-
+        public static final double TIP_PITCH_THRESHOLD=20;
         public static final double CLIMBER_TICKS_PER_ROTATION = 4096;
         public static final double ARM_JOINT_HEIGHT = 43.937;
         public static final double ARM_LENGTH = 38.7;
@@ -44,8 +44,8 @@ public class Constants {
         public static final double MAGIC_KP_LOW = 0, MAGIC_KI_LOW = 0, MAGIC_KD_LOW = 0,
                         MAGIC_KF_LOW = 1023.0 / (MAX_DRIVE_VELOCITY_LOW * DRIVE_ENCU_PER_INCH / 10.0);
 
-        public static final double TURN_KP = .06, TURN_KI = 0, TURN_KD = 0.125;
-
+        public static final double TURN_KP = -.06, TURN_KI = 0, TURN_KD = Globals.isProto ? -0.4: -0.125;
+        //public static final double TURN_KP = -.06, TURN_KI = 0, TURN_KD = -0.125;
         public static final double MAX_CLIMB_VELOCITY=1;
         public static final double CLIMB_KP= 0, CLIMB_KI=0, CLIMB_KD=0, CLIMB_KF=1023/MAX_CLIMB_VELOCITY;
 }

@@ -5,7 +5,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Decimal;
 import frc.CheeseLog.SQLType.Type;
@@ -26,33 +26,41 @@ public class Gyro implements Component, PIDSource {
     }
 
     public void init() {
-        robotDataTable=Globals.robotDataTable;
+        robotDataTable = Globals.robotDataTable;
         logger = Globals.logger;
         try {
-            logger.gyro = LogInterface.table("Gyro", new String[] { "yaw" }, new Type[] { new Decimal() },
-                    new Loggable[] { () -> navx.getYaw() });// getNormalizedYaw() });
+            logger.gyro = LogInterface.table("Gyro", new String[] { "yaw", "pitch" }, new Type[] { new Decimal(), new Decimal() },
+                    new Loggable[] { () -> getNormalizedYaw(), ()->getNormalizedPitch() });// getNormalizedYaw() });
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("problem in initialization of navx");
         }
-        navx.zeroYaw();
-        pitchZero = navx.getPitch();
-
+        zeroYaw();
+        if (Globals.isNSP) {
+            pitchZero = navx.getRoll();
+        } else {
+            pitchZero = navx.getPitch();
+        }
     }
-    
-    public void tick(){
+    public void zeroYaw(){
+        navx.zeroYaw();
+    }
+    public void tick() {
         robotDataTable.setDouble("yaw", getNormalizedYaw());
+        SmartDashboard.putNumber("navxyaw",getNormalizedYaw());
         robotDataTable.setDouble("pitch", getNormalizedPitch()); //Tilt forward and back
         robotDataTable.setDouble("roll", navx.getRoll());
+        SmartDashboard.putNumber("pitch", getNormalizedPitch());
     }
+
     /**
      * A method which returns the relative yaw (turn angle) of the robot
      * 
      * @return the yaw of the robot relative to its starting position
      */
     public double getYaw() {
-        return navx.getYaw();
+        return Globals.isProto ? -navx.getYaw() : navx.getYaw();
     }
 
     /**
@@ -63,7 +71,7 @@ public class Gyro implements Component, PIDSource {
     public double getNormalizedYaw() {
         double yaw = 0;
         try {
-            yaw = navx.getYaw();
+            yaw = getYaw();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Problem in getNormalizedYaw");
@@ -79,7 +87,11 @@ public class Gyro implements Component, PIDSource {
     public double getNormalizedPitch() {
         double pitch = 0;
         try {
-            pitch = navx.getPitch()-pitchZero;
+            if (Globals.isNSP) {
+                pitch = navx.getRoll() - pitchZero;
+            } else {
+                pitch = navx.getPitch() - pitchZero;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Problem in getNormalizedPitch");

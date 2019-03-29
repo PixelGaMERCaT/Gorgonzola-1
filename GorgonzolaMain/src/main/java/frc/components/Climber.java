@@ -13,7 +13,7 @@ public class Climber implements Component {
     private ClimbTalonManager talon1, talon2;
     private InputManager im;
     Solenoid knives;
-
+    private NetworkInterface robotDataTable;
     public Climber() {
         knives = new Solenoid(3);
         talon1 = new ClimbTalonManager(RobotMap.CLIMB_TALON_1);
@@ -23,10 +23,12 @@ public class Climber implements Component {
     }
 
     public void init() {
+        robotDataTable=Globals.robotDataTable;
         im = Globals.im;
     }
 
     public void tick() {
+        robotDataTable.setNumber("CamAngle", 0);//talon1.getEncoderPositionContextual());
         knives.set(im.getClimbKnives());
         SmartDashboard.putNumber("climbps", talon1.getEncoderPosition());
         SmartDashboard.putNumber("Climbvel", talon1.getEncoderVelocity());

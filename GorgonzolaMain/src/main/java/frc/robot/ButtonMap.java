@@ -13,6 +13,7 @@ public class ButtonMap {
     public static final int DRIVE_SAFETY = 1;
     public static final int CAM_MANUAL = 3;
     public static final int KNIFE_DEPLOY = 2;
+    public static final int TIP_ENABLE=11;
     public static final int CAM_AUTO = 2;
     public static final int GEAR_SHIFT = 1;
     public static final int CAMERA_ENABLE=9;
@@ -37,8 +38,8 @@ public class ButtonMap {
     public static final int SHOULDER_MANUAL_OVERRIDE = 9;
     public static final int WRIST_MANUAL_OVERRIDE = 10;
     //POV (represents an angle in degrees)
-    public static final int BALL_INTAKE = 0;
-    public static final int BALL_OUTPUT = 180;
+    public static final int BALL_INTAKE = 180;
+    public static final int BALL_OUTPUT = 0;
     public static final int BALL_CARGO = 90;
     
 

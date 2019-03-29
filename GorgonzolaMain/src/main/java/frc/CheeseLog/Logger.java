@@ -83,6 +83,9 @@ public class Logger {
      * @param t The table to add
      */
     public void addTable(Table t){
+        System.out.println("table "+t);
+        System.out.println("tables"+tables);
+
         tables.put(t.getName(), t);
     }
 

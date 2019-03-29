@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.components.CameraManager;
 import frc.components.Climber;
 import frc.components.Component;
@@ -12,13 +11,14 @@ import frc.components.Drivetrain;
 import frc.components.GearShifter;
 import frc.components.Gyro;
 import frc.components.InputManager;
-import frc.components.Intake;
 import frc.components.LogInterface;
 import frc.components.NetworkInterface;
-import frc.components.Shoulder;
-import frc.components.Wrist;
-import frc.components.lights.PWMLightController;
+import frc.components.TipCorrector;
+import frc.components.arm.Intake;
+import frc.components.arm.Shoulder;
+import frc.components.arm.Wrist;
 import frc.components.pose.PoseTracker;
+import com.mach.LightDrive.*;
 
 /**
  * A class that contains all components of the robot to be accessed. For
@@ -37,13 +37,16 @@ public class Globals {
     public static LogInterface logger;
     public static PoseTracker poseTracker;
     public static GearShifter gearShifter;
+    public static LightDriveCAN lightController;
     public static Shoulder shoulder;
     public static Wrist wrist;
     public static Climber climber;
     public static Intake intake;
+    public static TipCorrector tipCorrector;
     public static Compressor compressor;
     private static ArrayList<Component> components; // Contains all the components in Globals
-    private static CameraManager cameraManager;
+    public static CameraManager cameraManager;
+
     /**
      * Initializes all components of globals
      */
@@ -53,7 +56,7 @@ public class Globals {
         drivetrain = new Drivetrain();
         im = new InputManager();
         logger = new LogInterface();
-        PWMLightController pwmLightController = new PWMLightController(0, 1);
+        lightController = new LightDriveCAN();
         compressor.setClosedLoopControl(true);
         intake = new Intake();
         gearShifter = new GearShifter();
@@ -63,9 +66,11 @@ public class Globals {
         shoulder = new Shoulder();
         wrist = new Wrist();
         climber = new Climber();
-        components.addAll(Arrays.asList(im, drivetrain, shoulder, wrist, pwmLightController, gearShifter, intake, gyro,
-                poseTracker, climber, logger));
-                //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
+        tipCorrector = new TipCorrector();
+        cameraManager = new CameraManager();
+        components.addAll(Arrays.asList(im, drivetrain, tipCorrector, shoulder, wrist, gearShifter, intake, gyro,
+                poseTracker, climber, cameraManager, logger));
+        //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
         components.forEach(c -> c.init());
 
     }
@@ -81,9 +86,13 @@ public class Globals {
                 System.err.println("Problem ticking " + c);
                 e.printStackTrace();
             }
-            SmartDashboard.putNumber("gyro", gyro.getNormalizedYaw());
         });
+        try {
+            lightController.Update();
+            //System.out.println("lights updating");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
 
 }
