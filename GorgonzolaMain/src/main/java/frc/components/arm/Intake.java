@@ -48,13 +48,13 @@ public class Intake implements Component {
             venturi.set(true);
             hatchActiveOut.set(false);
         } else if (im.getHatchOutputButton()) {
-            SmartDashboard.putString("intake", "Outputting hatch");
+            //SmartDashboard.putString("intake", "Outputting hatch");
             leftSuction.set(true);
             rightSuction.set(true);
             venturi.set(false);
             hatchActiveOut.set(true);
         } else {
-            SmartDashboard.putString("intake", "Default State");
+            //SmartDashboard.putString("intake", "Default State");
             venturi.set(false);
             leftSuction.set(false);
             rightSuction.set(false);

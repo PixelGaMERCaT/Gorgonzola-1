@@ -3,6 +3,8 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.mach.LightDrive.LightDriveCAN;
+
 import edu.wpi.first.wpilibj.Compressor;
 import frc.components.CameraManager;
 import frc.components.Climber;
@@ -14,11 +16,11 @@ import frc.components.InputManager;
 import frc.components.LogInterface;
 import frc.components.NetworkInterface;
 import frc.components.TipCorrector;
+import frc.components.arm.ArmIMU;
 import frc.components.arm.Intake;
 import frc.components.arm.Shoulder;
 import frc.components.arm.Wrist;
 import frc.components.pose.PoseTracker;
-import com.mach.LightDrive.*;
 
 /**
  * A class that contains all components of the robot to be accessed. For
@@ -46,13 +48,15 @@ public class Globals {
     public static Compressor compressor;
     private static ArrayList<Component> components; // Contains all the components in Globals
     public static CameraManager cameraManager;
-
+    public static ArmIMU armIMU;
     /**
      * Initializes all components of globals
      */
     public static void init() {
         components = new ArrayList<Component>();
+        cameraManager = new CameraManager();
         compressor = new Compressor(RobotMap.COMPRESSOR);
+        armIMU=new ArmIMU();
         drivetrain = new Drivetrain();
         im = new InputManager();
         logger = new LogInterface();
@@ -63,14 +67,14 @@ public class Globals {
         poseTracker = new PoseTracker(50);
         gyro = new Gyro();
         robotDataTable = new NetworkInterface("RobotData");
+        robotDataTable.setString("StartTime", System.nanoTime()+"");
+
         shoulder = new Shoulder();
         wrist = new Wrist();
         climber = new Climber();
         tipCorrector = new TipCorrector();
-        cameraManager = new CameraManager();
-        components.addAll(Arrays.asList(im, drivetrain, tipCorrector, shoulder, wrist, gearShifter, intake, gyro,
+        components.addAll(Arrays.asList(im, drivetrain, tipCorrector, shoulder, wrist, armIMU, gearShifter, intake, gyro,
                 poseTracker, climber, cameraManager, logger));
-        //components.addAll(Arrays.asList(poseTracker, gearShifter, gyro, im, drivetrain, testTable, logger ));
         components.forEach(c -> c.init());
 
     }

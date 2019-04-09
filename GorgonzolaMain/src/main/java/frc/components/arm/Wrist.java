@@ -51,10 +51,10 @@ public class Wrist implements Component {
 
     public void init() {
         robotDataTable = Globals.robotDataTable;
-        SmartDashboard.putNumber("WristI", 0);
+        /*SmartDashboard.putNumber("WristI", 0);
         SmartDashboard.putNumber("WristD", Constants.WRIST_KD);
         SmartDashboard.putNumber("WristF", Constants.WRIST_KF);
-
+        */
         im = Globals.im;
         logger = Globals.logger;
         shoulder = Globals.shoulder;
@@ -72,20 +72,21 @@ public class Wrist implements Component {
     boolean fromLow = false;
 
     public void tick() {
-        SmartDashboard.putNumber("WristP", Constants.WRIST_KP);
+        //SmartDashboard.putNumber("WristP", Constants.WRIST_KP);
         robotDataTable.setDouble("WristAngle", getAngle());
 
-        maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
+        /*maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
         SmartDashboard.putNumber("maxvel", maxVelocity);
         SmartDashboard.putNumber("ffd ", talon1.talon.getActiveTrajectoryArbFeedFwd());
         SmartDashboard.putNumber("Derivative ", talon1.talon.getErrorDerivative());
         SmartDashboard.putNumber("error", talon1.talon.getClosedLoopError());
         SmartDashboard.putNumber("target", talon1.talon.getClosedLoopTarget());
         SmartDashboard.putNumber("target ??", talon1.talon.getActiveTrajectoryPosition(0));
-        SmartDashboard.putNumber("wristPosition", talon1.talon.getSelectedSensorPosition(0));
         //System.out.println("wristps" + talon1.talon.getSelectedSensorPosition(0));
         SmartDashboard.putString("ControlMode", talon1.talon.getControlMode().toString());
+        */
         SmartDashboard.putNumber("WristAngle", getAngle() * 180.0 / Math.PI);
+        SmartDashboard.putNumber("wristencu", talon1.talon.getSelectedSensorPosition(0));
 
         if (fromStow && shoulder.desiredPos != ArmHeight.STOW) {
             talon1.talon.config_kP(0, Constants.WRIST_KP);
@@ -138,18 +139,18 @@ public class Wrist implements Component {
                 break;
             case BALL_CARGO:
                 if (shoulder.getHeight() > 25) {
-                    setAngle(-shoulder.getAngle() - 33.0 * Math.PI / 180.0);
+                    setAngle(-shoulder.getAngle() - 35.0 * Math.PI / 180.0);
                 } else {
                     setAngle(-shoulder.getAngle());
                 }
                 break;
             case GROUND_PICKUP:
                 setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET
-                        + ((-15.0 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0));
+                        + ((-12.5 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0));
                 break;
             case HATCH_HIGH:
                 setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET
-                        + ((20.0 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0));
+                        + ((10.0 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0));
                 break;
             case NO_CHANGE:
                 break;

@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
     Globals.init();
     sandstormStarter = new SandstormStart();
     sandstormStarter.initSandstormPaths();
-  
+
   }
 
   /**
@@ -71,42 +71,39 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Sandstorm Path: ", sandstormMode.name);
     Globals.drivetrain.resetEncoders();
   }
+
   public void disabledInit() {
-    
+
   }
+
   public void teleopInit() {
     Globals.drivetrain.resetEncoders();
-    //Globals.poseTracker.init();
-    starttime=System.currentTimeMillis();
-    avgVel=0;
-    teleopTick=1;
+
   }
+
   @Override
   public void autonomousPeriodic() {
     if (!sandstormMode.over) {
       Globals.gearShifter.tick();
-      sandstormMode.tick(); 
+      sandstormMode.tick();
       SmartDashboard.putNumber("leftEnc", Globals.drivetrain.frontLeft.getEncoderPositionContextual());
       SmartDashboard.putNumber("rightEnc", Globals.drivetrain.frontRight.getEncoderPositionContextual());
-
     }
+    //teleopPeriodic();
   }
-  double teleopTick=1;
-  double avgVel=0;
-  double starttime=System.currentTimeMillis();
+
   /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
     Globals.tick();
-    avgVel=(avgVel*(teleopTick-1)+Globals.drivetrain.frontLeft.getEncoderVelocityContextual())/teleopTick;
-    teleopTick++;
-    //System.out.println("driveDistance " +avgVel);
   }
-  @Override 
-  public void testInit(){
+
+  @Override
+  public void testInit() {
   }
+
   /**
    * This function is called periodically during test mode.
    */

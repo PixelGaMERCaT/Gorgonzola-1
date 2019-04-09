@@ -31,7 +31,7 @@ public class MotionProfiler implements Component {
                 drivetrain = Globals.drivetrain;
                 gyro = Globals.gyro;
                 logger = Globals.logger;
-                turnController = new PIDController(MPConstants.TURN_KP, MPConstants.TURN_KI, MPConstants.TURN_KD,
+                turnController = new PIDController(MPConstants.TURN_KP, MPConstants.TURN_KI, MPConstants.TURN_KD, MPConstants.TURN_KF,
                                 new PIDSource() {
                                         @Override
                                         public void setPIDSourceType(PIDSourceType pidSource) {
@@ -68,7 +68,7 @@ public class MotionProfiler implements Component {
                 Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC, Config.SAMPLES_FAST,
                                 MPConstants.DELTA_TIME, MPConstants.MAX_VELOCITY, MPConstants.MAX_ACCELERATION,
                                 MPConstants.MAX_JERK);
-                SmartDashboard.putNumber("MAX_VEL", MPConstants.MAX_VELOCITY);
+                //SmartDashboard.putNumber("MAX_VEL", MPConstants.MAX_VELOCITY);
                 Trajectory mpTrajectory = Pathfinder.generate(path, config);
                 //Generate the trajectory the left and right treads will be following
                 TankModifier modifier = new TankModifier(mpTrajectory).modify(MPConstants.WHEELBASE_WIDTH);
@@ -117,7 +117,7 @@ public class MotionProfiler implements Component {
                                 turnOutput);
                 drivetrain.driveMP(leftSpeed, rightSpeed, turnOutput);
                 //logger.motionProfiling.log(logger.getTick());
-                SmartDashboard.putNumber("velocity", drivetrain.frontLeft.getEncoderVelocityContextual());
+                //SmartDashboard.putNumber("velocity", drivetrain.frontLeft.getEncoderVelocityContextual());
                 logger.tick();
         }
 

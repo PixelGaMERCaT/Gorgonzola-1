@@ -16,7 +16,7 @@ public class ButtonMap {
     public static final int TIP_ENABLE=11;
     public static final int CAM_AUTO = 2;
     public static final int GEAR_SHIFT = 1;
-    public static final int CAMERA_ENABLE=9;
+    public static final int CAMERA_ENABLE=3;
     
     
     //Operator:

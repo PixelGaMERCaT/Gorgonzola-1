@@ -2,6 +2,7 @@ package frc.components.arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
@@ -28,17 +29,15 @@ public class Shoulder implements Component {
     public ArmHeight desiredPos;
     private Wrist wrist;
     private NetworkInterface robotDataTable;
-    //private PigeonIMU pidgey;
+    private ArmIMU imu;
+
     public Shoulder() {
         desiredPos = ArmHeight.NO_MOVEMENT;
         talon1 = new ShoulderTalonManager(RobotMap.SHOULDER_TALON_1);
         talon2 = new ShoulderTalonManager(RobotMap.SHOULDER_TALON_2);
-        //pidgey=new PigeonIMU(4);
-
         heightSetpoint = Constants.SHOULDER_MIN_POSITION;
         talon1.initEncoder(Constants.SHOULDER_KP, Constants.SHOULDER_KI, Constants.SHOULDER_KD, Constants.SHOULDER_KF);
         if (Globals.isProto) {
-
             talon1.talon.setSensorPhase(true);
             talon2.talon.setSensorPhase(true);
             talon1.setInverted(false);
@@ -52,9 +51,8 @@ public class Shoulder implements Component {
         }
         talon1.talon.configFeedbackNotContinuous(true, 0);
         talon2.talon.configFeedbackNotContinuous(true, 0);
-
         talon2.follow(talon1);
-
+        imu=Globals.armIMU;
         currentPosition = getHeight();
     }
 
@@ -64,19 +62,19 @@ public class Shoulder implements Component {
         logger = Globals.logger;
         logger.shoulder = LogInterface.table("Shoulder",
                 new String[] { "ShoulderVelocity", "ShoulderAngle", "ShoulderDesHeight", "Shoulderpercentout",
-                        "Shoulderdifference", "Setpoint", "Shoulderencu" },
+                        "Shoulderdifference", "Setpoint", "Shoulderencu", "ShoulderIMUAngle" },
                 new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
-                        new Decimal() },
+                        new Decimal(), new Decimal() },
                 new Loggable[] { () -> talon1.getEncoderVelocity(), () -> getHeight(), () -> heightSetpoint,
                         () -> talon1.talon.getMotorOutputPercent(), () -> talon1.talon.getClosedLoopError(),
-                        () -> talon1.talon.getClosedLoopTarget(), () -> talon1.getEncoderPosition() });
+                        () -> talon1.talon.getClosedLoopTarget(), () -> talon1.getEncoderPosition(), ()->imu.getArmAngle() });
         wrist = Globals.wrist;
     }
 
     double maxVelocity = 0;
 
     public void tick() {
-        
+
         /*if (im.getAuxButton(11)) {
             talon1.initEncoder(SmartDashboard.getNumber("WristP", Constants.WRIST_KP),
                     SmartDashboard.getNumber("WristI", 0), SmartDashboard.getNumber("WristD", Constants.WRIST_KD),
@@ -84,28 +82,24 @@ public class Shoulder implements Component {
             System.out.println("Wristp" + SmartDashboard.getNumber("WristP", -1));
         }*/
         ///maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
-        // System.out.println("angle " + Math.toDegrees(getAngle()));
         // System.out.println(talon1.talon.getSelectedSensorPosition());
+        /*SmartDashboard.putNumber("shoulderdiff", talon1.talon.getClosedLoopError());
+        SmartDashboard.putNumber("shouldercurrent", talon1.talon.getOutputCurrent());
+        */
         SmartDashboard.putNumber("angleShoulder", getAngle() * 180 / Math.PI);
+
         SmartDashboard.putNumber("heightShoulder", getHeight());
         SmartDashboard.putNumber("shoulder encu", talon1.getEncoderPosition());
-        SmartDashboard.putNumber("shoulderdiff", talon1.talon.getClosedLoopError());
-        SmartDashboard.putNumber("shouldercurrent", talon1.talon.getOutputCurrent());
-
         robotDataTable.setDouble("ShoulderAngle", getAngle());
         ArmHeight newPos = im.getArmPosition();
         if (newPos != ArmHeight.NO_CHANGE || desiredPos == ArmHeight.FULL_MANUAL
                 || desiredPos == ArmHeight.POSITION_MANUAL) {
             desiredPos = im.getArmPosition();
         }
-        /*double[] imuValues=new double[3];
-        pidgey.getYawPitchRoll(imuValues);
-        System.out.println("y:"+imuValues[0]+" p:"+imuValues[1]+" r:"+imuValues[2]);
-        SmartDashboard.putNumber("imuyaw", imuValues[0]);
-        SmartDashboard.putNumber("imupitch", imuValues[1]);
-        SmartDashboard.putNumber("imuyaw", imuValues[3]);*/
-        if (/*imuValues[1]>70*/false){
+
+        if (imu.shouldIMUSave()) {
             System.out.println("STOPPING ARM");
+            //desiredPos = ArmHeight.NO_MOVEMENT;
         }
         if (im.shoulderManual) {
             if (im.getArmSafetyButton()) {
@@ -124,7 +118,7 @@ public class Shoulder implements Component {
                         + 5.0 * im.getShoulderManualHeight());
                 break;
             case HATCH_MEDIUM:
-                setHeight(FieldConstants.MID_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
+                setHeight(FieldConstants.MID_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH + 1
                         + 5.0 * im.getShoulderManualHeight());
                 break;
             case HATCH_HIGH:
@@ -136,7 +130,7 @@ public class Shoulder implements Component {
                         + 5.0 * im.getShoulderManualHeight());
                 break;
             case BALL_MEDIUM:
-                setHeight(FieldConstants.MID_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL + 5.0
+                setHeight(FieldConstants.MID_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL + 3.0
                         + 5.0 * im.getShoulderManualHeight());
                 break;
             case BALL_HIGH:
@@ -156,7 +150,7 @@ public class Shoulder implements Component {
                 if (getHeight() < 25.0 && wrist.getAngle() < 110.0 * Math.PI / 180.0) {
                     setHeight(getHeight());
                 } else {
-                    setHeight(Constants.SHOULDER_MIN_POSITION - 2.0);
+                    setHeight(Constants.SHOULDER_MIN_POSITION - 5.0);
                 }
                 break;
             }

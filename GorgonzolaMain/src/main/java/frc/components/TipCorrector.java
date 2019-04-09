@@ -26,10 +26,11 @@ public class TipCorrector implements Component {
     private Gyro gyro;
     private InputManager im;
     private boolean correcting;
-
+    private NetworkInterface robotDataTable;
     public TipCorrector() {
         override = false;
         correcting = false;
+        
     }
 
     public void init() {
@@ -37,10 +38,11 @@ public class TipCorrector implements Component {
         shoulder = Globals.shoulder;
         drivetrain = Globals.drivetrain;
         gyro = Globals.gyro;
+        robotDataTable=Globals.robotDataTable;
     }
 
     public void tick() {
-
+        robotDataTable.setDouble("TipActive", override ? 0 : correcting ? 1 : 2);
         if (im.getTipOverrideButton()) {
             override = true;
         } else if (im.getTipEnableButton()) {
@@ -48,7 +50,7 @@ public class TipCorrector implements Component {
         }
         if (!override) {
             if (gyro.getNormalizedPitch() > Constants.TIP_PITCH_THRESHOLD) {
-                drivetrain.autoDrive(1.0, 0);
+                //drivetrain.autoDrive(1.0, 0);
                 System.out.println("OVERRIDING PITCH " + gyro.getNormalizedPitch());
                 correcting = true;
 
@@ -56,7 +58,7 @@ public class TipCorrector implements Component {
                 Globals.lightController.SetColor(2, Color.RED);
             } else if (gyro.getNormalizedPitch() < -Constants.TIP_PITCH_THRESHOLD) {
                 correcting = true;
-                drivetrain.autoDrive(-1.0, 0);
+                //drivetrain.autoDrive(-1.0, 0);
                 System.out.println("OVERRIDING PITCH " + gyro.getNormalizedPitch());
                 Globals.lightController.SetColor(1, Color.RED);
                 Globals.lightController.SetColor(2, Color.RED);

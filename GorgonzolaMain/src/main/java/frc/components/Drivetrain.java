@@ -96,39 +96,17 @@ public class Drivetrain implements Component {
                             () -> frontLeft.talon.getMotorOutputVoltage(),
                             () -> frontRight.talon.getMotorOutputVoltage() });
 
-            logger.turnController = LogInterface.manualTable("Turn_Controller",
+            logger.turnController = LogInterface.table("Turn_Controller",
                     new String[] { "angle", "output", "setpoint", "enabled" },
                     new Type[] { new Decimal(), new Decimal(), new Decimal(), new Bool() },
                     new Loggable[] { () -> gyro.getYaw(), () -> turnController.get(),
                             () -> turnController.getSetpoint(), () -> turnController.isEnabled() });
-            //TODO use turncontroller table
         } catch (Exception e) {
             e.printStackTrace();
         }
         turnController = new PIDController(Constants.TURN_KP, Constants.TURN_KI, Constants.TURN_KD, gyro, o -> {
         });
-        /*new PIDSource() {
-                                                                                                   
-                                                                                                   @Override
-                                                                                                   public void setPIDSourceType(PIDSourceType pidSource) {
-                                                                                                   }
-                                                                                                   
-                                                                                                   @Override
-                                                                                                   public double pidGet() {
-                                                                                                   try {
-                                                                                                   return cameraManager.getPrimarySightingAnglePose();
-                                                                                                   } catch (Exception e) {
-                                                                                                   e.printStackTrace();
-                                                                                                   return 0;
-                                                                                                   }
-                                                                                                   }
-                                                                                                   
-                                                                                                   @Override
-                                                                                                   public PIDSourceType getPIDSourceType() {
-                                                                                                   return PIDSourceType.kDisplacement;
-                                                                                                   }
-                                                                                                   }*/
-        turnController.setAbsoluteTolerance(1);
+        turnController.setAbsoluteTolerance(0);
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-1, 1);
         turnController.setContinuous(true);
@@ -163,7 +141,9 @@ public class Drivetrain implements Component {
         maxVelocity = Math.max(maxVelocity, Math.abs(frontLeft.getEncoderVelocity()));
         //System.out.println("PositionR "+frontRight.getEncoderPositionContextual());
         //System.out.println("PositionL "+frontLeft.getEncoderPositionContextual());
-        SmartDashboard.putNumber("maxvelDrive", maxVelocity);
+        //SmartDashboard.putNumber("maxvelDrive", maxVelocity);
+        SmartDashboard.putNumber("navx ", gyro.getNormalizedYaw());
+        
         try {
             SmartDashboard.putNumber("camera1Angle", cameraManager.getPrimarySightingAnglePose());
         } catch (Exception e) {
@@ -182,9 +162,9 @@ public class Drivetrain implements Component {
                     if (!setPointSet) {
                         setPointSet = true;
                         setYawSetpoint(cameraManager.getPrimarySightingAnglePose());
-
+                        System.out.println(cameraManager.getPrimarySightingAnglePose()+ " "+ gyro.getNormalizedYaw());
                     }
-                    shifter.highGear=false;
+                    shifter.lowGear=true;
                     driveBasic(im.getForward(), turnController.get());
                 } catch (Exception e) {
                     System.out.println("Can't Get Sighting angle.");
@@ -193,10 +173,10 @@ public class Drivetrain implements Component {
                 }
             }
         }
-        SmartDashboard.putNumber("leftEnc", frontLeft.getEncoderPositionContextual());
-        SmartDashboard.putNumber("rightEnc", frontRight.getEncoderPositionContextual());
-        SmartDashboard.putNumber("dis", SmartDashboard.getNumber("final distance no assist", -108699)
-                + frontLeft.getEncoderPositionContextual());
+        //SmartDashboard.putNumber("leftEnc", frontLeft.getEncoderPositionContextual());
+        //SmartDashboard.putNumber("rightEnc", frontRight.getEncoderPositionContextual());
+        //SmartDashboard.putNumber("dis", SmartDashboard.getNumber("final distance no assist", -108699)
+        //        + frontLeft.getEncoderPositionContextual());
     }
 
     /**

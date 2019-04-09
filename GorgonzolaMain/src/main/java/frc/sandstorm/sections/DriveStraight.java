@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.PIDController;
 import frc.components.Drivetrain;
 import frc.components.Gyro;
 import frc.robot.Constants;
-import frc.robot.Globals;
 import frc.sandstorm.SandstormSection;
+import frc.robot.Globals;
 
 /**
  * Add your docs here.

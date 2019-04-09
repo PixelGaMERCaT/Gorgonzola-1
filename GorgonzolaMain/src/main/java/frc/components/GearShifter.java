@@ -10,10 +10,10 @@ import frc.robot.RobotMap;
 public class GearShifter implements Component {
     private Solenoid switcher;
     private InputManager im;
-    public boolean highGear;
+    public boolean lowGear;
 
     public GearShifter() {
-        highGear = false;
+        lowGear = false;
         if (!(Globals.isNSP)) {
             switcher = new Solenoid(RobotMap.GEAR_SHIFT);
         }
@@ -25,9 +25,9 @@ public class GearShifter implements Component {
     
     public void tick() {
         if (im.getGearSwitchButton()) {
-            highGear = !highGear;
+            lowGear = !lowGear;
         } 
-        switcher.set(highGear);
+        switcher.set(lowGear);
         //System.out.println("high gear!"+highGear);
     }
 
@@ -36,6 +36,6 @@ public class GearShifter implements Component {
      * @return true if robot is in high gear, false otherwise
      */
     public boolean isHighGear() {
-        return highGear;
+        return lowGear;
     }
 }

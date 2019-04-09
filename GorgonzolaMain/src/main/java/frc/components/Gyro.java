@@ -5,7 +5,6 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Decimal;
 import frc.CheeseLog.SQLType.Type;
@@ -48,10 +47,10 @@ public class Gyro implements Component, PIDSource {
     }
     public void tick() {
         robotDataTable.setDouble("yaw", getNormalizedYaw());
-        SmartDashboard.putNumber("navxyaw",getNormalizedYaw());
+        //SmartDashboard.putNumber("navxyaw",getNormalizedYaw());
         robotDataTable.setDouble("pitch", getNormalizedPitch()); //Tilt forward and back
         robotDataTable.setDouble("roll", navx.getRoll());
-        SmartDashboard.putNumber("pitch", getNormalizedPitch());
+        //SmartDashboard.putNumber("pitch", getNormalizedPitch());
     }
 
     /**
@@ -60,8 +59,9 @@ public class Gyro implements Component, PIDSource {
      * @return the yaw of the robot relative to its starting position
      */
     public double getYaw() {
-        return Globals.isProto ? -navx.getYaw() : navx.getYaw();
+        return Globals.isProto ? -navx.getYaw() : -navx.getYaw();
     }
+    
 
     /**
      * A method which returns the relative yaw as a double between -180 and 180
