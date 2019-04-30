@@ -1,6 +1,9 @@
 package frc.components;
 
+import java.awt.Color;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.components.lights.LightController;
 import frc.components.pose.PoseTracker;
 import frc.robot.Globals;
 import frc.sandstorm.SandstormPath;
@@ -12,6 +15,7 @@ public class CameraManager implements Component {
     private SandstormPath mpTestAuto;
     private Gyro gyro;
     private PoseTracker poseTracker;
+    LightController lightController;
 
     public CameraManager() {
         cameraDataTable = new NetworkInterface("CameraData");
@@ -19,9 +23,25 @@ public class CameraManager implements Component {
         robotDataTable = Globals.robotDataTable;
     }
 
+    public void tick() {
+        try {
+            if (getSightingCount() > 0) {
+                lightController.setArmColor(Color.GREEN);
+            } else {
+                lightController.setArmColor(Color.RED);
+            }
+        } catch (Exception e) {
+            lightController.setArmColor(Color.RED);
+        }
+
+    }
+
+    
+
     public void init() {
         gyro = Globals.gyro;
         poseTracker = Globals.poseTracker;
+        lightController = Globals.lightController;
     }
 
     public void initPath() {
@@ -45,25 +65,29 @@ public class CameraManager implements Component {
         return CameraTargetType.PLAYER_STATION;
     }
 
-
     /**
-     * Uses posetracker to get the angle of the primary sighting relative to the robot when the frame was taken.
+     * Uses posetracker to get the angle of the primary sighting relative to the
+     * robot when the frame was taken.
+     * 
      * @return the angle in degrees
      */
     public double getPrimarySightingAnglePose() throws Exception {
-        long timestamp = getPrimarySightingTimestamp();
+        //long timestamp = getPrimarySightingTimestamp();
         double sightingAngle = getPrimarySightingAngle();
-        double robotPastHeading = gyro.getNormalizedYaw();//poseTracker.get(timestamp).heading;
-        SmartDashboard.putNumber("camera2Angle",poseTracker.get(timestamp).heading+sightingAngle);
-        System.out.println("st"+timestamp);
-        System.out.println("pt"+System.nanoTime());//poseTracker.get(timestamp).time);
-        SmartDashboard.putNumber("timestampdiff", ((double)(timestamp-System.nanoTime()))*Math.pow(10.0,-9));
-        //System.out.println("gyro pose: " +robotPastHeading+ "\n"+"sightingPose: "+(robotPastHeading+sightingAngle));
+        SmartDashboard.putNumber("sAngle", sightingAngle);
+        double robotPastHeading = gyro.getNormalizedYaw();// poseTracker.get(timestamp).heading;
+        SmartDashboard.putNumber("heading", robotPastHeading);
+        //SmartDashboard.putNumber("camera2Angle", poseTracker.get(timestamp).heading + sightingAngle);
+        //System.out.println("st" + timestamp);
+        //System.out.println("pt" + System.nanoTime());// poseTracker.get(timestamp).time);
+        //SmartDashboard.putNumber("timestampdiff", ((double) (timestamp - System.nanoTime())) * Math.pow(10.0, -9));
+        // System.out.println("gyro pose: " +robotPastHeading+ "\n"+"sightingPose:
+        // "+(robotPastHeading+sightingAngle));[]\
         return robotPastHeading + sightingAngle;
     }
 
     public int getPrimarySighting() throws Exception {
-        //return (int) (cameraDataTable.get("PrimarySighting").getDouble());
+        // return (int) (cameraDataTable.get("PrimarySighting").getDouble());
         return 0;
     }
 
@@ -71,7 +95,7 @@ public class CameraManager implements Component {
         try {
             return Long.parseLong(cameraDataTable.get("Timestamp" + getPrimarySighting()).getString());
         } catch (Exception e) {
-            //e.printStackTrace();
+            // e.printStackTrace();
             return Long.parseLong(cameraDataTable.get("Timestamp0").getString());
 
         }
@@ -95,5 +119,9 @@ public class CameraManager implements Component {
             return cameraDataTable.get("Sighting 0").getDoubleArray()[0];
 
         }
+    }
+
+    public double getSightingCount() throws Exception {
+        return cameraDataTable.get("numberOfEntries").getDouble();
     }
 }

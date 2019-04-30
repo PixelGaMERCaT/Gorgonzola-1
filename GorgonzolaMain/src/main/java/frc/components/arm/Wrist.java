@@ -102,6 +102,7 @@ public class Wrist implements Component {
         }
         if (im.wristManual) {
             if (im.getArmSafetyButton()) {
+                //System.out.println("running this");
                 talon1.set(ControlMode.PercentOutput, /*.1 +*/ .5 * im.getWristManualPosition());
             }
         } else {
@@ -111,7 +112,7 @@ public class Wrist implements Component {
                 if (shoulder.getHeight() > 50) {
                     setAngle(-shoulder.getAngle());
                 } else if (talon1.getEncoderVelocity() > 5) {
-                    talon1.talon.config_kP(0, 3);
+                    talon1.talon.config_kP(0, 1);
                     setAngle(Constants.WRIST_STOW_POSITION);
                 } else {
                     talon1.talon.config_kP(0, Constants.WRIST_KP);
@@ -131,11 +132,17 @@ public class Wrist implements Component {
                 break;
             case BALL_HIGH:
                 if (shoulder.getHeight() > 30.0) {
-                    setAngle(-15.0 * Math.PI / 180.0
-                            + Math.min(0, Math.PI / 180.0 * 10.0 * im.getWristManualPosition()));
+                    setAngle(0.0 * Math.PI / 180.0 + Math.PI / 180.0 * 10.0 * im.getWristManualPosition());
                 } else {
-                    setAngle(-shoulder.getAngle());
+                    setAngle(-shoulder.getAngle()); //TODO Math.PI / 180.0 * 10.0 * im.getWristManualPosition()
                 }
+                break;
+            case BALL_LOW:
+                setAngle(-shoulder.getAngle() + (15.0 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0);
+                break;
+
+            case BALL_MEDIUM:
+                setAngle(-shoulder.getAngle() + (25.0 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0);
                 break;
             case BALL_CARGO:
                 if (shoulder.getHeight() > 25) {
@@ -146,7 +153,7 @@ public class Wrist implements Component {
                 break;
             case GROUND_PICKUP:
                 setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET
-                        + ((-12.5 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0));
+                        + ((-3.0 + 10.0 * im.getWristManualPosition()) * Math.PI / 180.0));
                 break;
             case HATCH_HIGH:
                 setAngle(-shoulder.getAngle() + Constants.WRIST_GEAR_OFFSET

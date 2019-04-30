@@ -83,13 +83,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    if (!sandstormMode.over) {
-      Globals.gearShifter.tick();
-      sandstormMode.tick();
-      SmartDashboard.putNumber("leftEnc", Globals.drivetrain.frontLeft.getEncoderPositionContextual());
-      SmartDashboard.putNumber("rightEnc", Globals.drivetrain.frontRight.getEncoderPositionContextual());
-    }
-    //teleopPeriodic();
+    // if (!sandstormMode.over) {
+    //   Globals.gearShifter.tick();
+    //   sandstormMode.tick();
+    //   SmartDashboard.putNumber("leftEnc", Globals.drivetrain.frontLeft.getEncoderPositionContextual());
+    //   SmartDashboard.putNumber("rightEnc", Globals.drivetrain.frontRight.getEncoderPositionContextual());
+    // }
+    teleopPeriodic();
   }
 
   /**

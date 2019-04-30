@@ -1,4 +1,4 @@
-package frc.motionprofiling;
+package frc.MotionProfiling;
 
 import frc.robot.Constants;
 

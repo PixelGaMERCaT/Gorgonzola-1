@@ -48,7 +48,7 @@ public class Gyro implements Component, PIDSource {
     public void tick() {
         robotDataTable.setDouble("yaw", getNormalizedYaw());
         //SmartDashboard.putNumber("navxyaw",getNormalizedYaw());
-        robotDataTable.setDouble("pitch", getNormalizedPitch()); //Tilt forward and back
+        robotDataTable.setDouble("pitch", -getNormalizedPitch()); //Tilt forward and back
         robotDataTable.setDouble("roll", navx.getRoll());
         //SmartDashboard.putNumber("pitch", getNormalizedPitch());
     }

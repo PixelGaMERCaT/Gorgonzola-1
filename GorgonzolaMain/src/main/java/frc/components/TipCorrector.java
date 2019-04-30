@@ -50,28 +50,32 @@ public class TipCorrector implements Component {
         }
         if (!override) {
             if (gyro.getNormalizedPitch() > Constants.TIP_PITCH_THRESHOLD) {
-                //drivetrain.autoDrive(1.0, 0);
+                //drivetrain.autoDrive(-1, 0);
                 System.out.println("OVERRIDING PITCH " + gyro.getNormalizedPitch());
                 correcting = true;
 
-                Globals.lightController.SetColor(1, Color.RED);
-                Globals.lightController.SetColor(2, Color.RED);
+                //Globals.lightController.setColor(1, Color.RED);
+                //Globals.lightController.setColor(2, Color.RED);
+                Globals.lightController.setMastColor(Color.RED);
             } else if (gyro.getNormalizedPitch() < -Constants.TIP_PITCH_THRESHOLD) {
                 correcting = true;
-                //drivetrain.autoDrive(-1.0, 0);
+                //drivetrain.autoDrive(1, 0);
                 System.out.println("OVERRIDING PITCH " + gyro.getNormalizedPitch());
-                Globals.lightController.SetColor(1, Color.RED);
-                Globals.lightController.SetColor(2, Color.RED);
+                Globals.lightController.setMastColor(Color.RED);
+                //Globals.lightController.setColor(1, Color.RED);
+                //Globals.lightController.setColor(2, Color.RED);
             } else {
                 correcting = false;
-                Globals.lightController.SetColor(1, Color.YELLOW);
-                Globals.lightController.SetColor(2, Color.YELLOW);
+                Globals.lightController.setMastColor(Color.YELLOW);
+                //Globals.lightController.setColor(1, Color.YELLOW);
+                //Globals.lightController.setColor(2, Color.YELLOW);
             }
 
         } else {
             correcting = false;
-            Globals.lightController.SetColor(1, Color.BLUE);
-            Globals.lightController.SetColor(2, Color.BLUE);
+            Globals.lightController.setMastColor(Color.BLUE);
+            //Globals.lightController.setColor(1, Color.BLUE);
+            //Globals.lightController.setColor(2, Color.BLUE);
         }
     }
 

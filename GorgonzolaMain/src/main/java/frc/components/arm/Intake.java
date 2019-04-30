@@ -74,7 +74,7 @@ public class Intake implements Component {
 
             }
         } else if (im.getBallIntakeInButton()) {
-            intakeTalon1.set(ControlMode.PercentOutput, 1);
+            intakeTalon1.set(ControlMode.PercentOutput, .8);
         } else {
             intakeTalon1.set(ControlMode.PercentOutput, 0.17);
         }

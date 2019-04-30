@@ -10,8 +10,8 @@ package frc.components.arm;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.components.Component;
+import frc.components.Gyro;
 import frc.components.InputManager;
 import frc.robot.Constants;
 import frc.robot.Globals;
@@ -23,7 +23,8 @@ public class ArmIMU implements Component {
     private PigeonIMU pidgey;
     private Shoulder shoulder;
     private InputManager im;
-    private boolean imuOverride = false;
+    public boolean imuOverride = false;
+    private Gyro gyro;
 
     public ArmIMU() {
 
@@ -31,6 +32,7 @@ public class ArmIMU implements Component {
     public void init() {
         shoulder=Globals.shoulder;
         im=Globals.im;
+        gyro=Globals.gyro;
         pidgey = new PigeonIMU(Globals.climber.talon2.talon);
         pidgey.enterCalibrationMode(CalibrationMode.Temperature);
     }
@@ -57,12 +59,10 @@ public class ArmIMU implements Component {
     }
 
     public boolean shouldIMUSave(){
-        double angle=shoulder.getAngle();
-        SmartDashboard.putNumber("imuroll", getArmAngle());
-        SmartDashboard.putNumber("imuroll2", 48.0-getArmAngle());
+        double encoderAngle=shoulder.getAngle();
         if (imuOverride || isCalibrating()){
             return false;
         }
-        return false;// Math.toDegrees(angle)-getArmAngle()>Constants.ARM_EMERGENCY_THRESHOLD;
+        return Math.abs(Math.toDegrees(encoderAngle)-getArmAngle()-gyro.getNormalizedPitch())>Constants.ARM_EMERGENCY_THRESHOLD;
     }
 }

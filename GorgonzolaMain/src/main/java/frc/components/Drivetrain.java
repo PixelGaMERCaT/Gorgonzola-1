@@ -20,11 +20,12 @@ import frc.talonmanager.DriveTalonManager;
 public class Drivetrain implements Component {
     public DriveTalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
     private InputManager im;
-    private Compressor compressor;
+
     public double currentLeftPosition, currentRightPosition;
     private Gyro gyro;
     private GearShifter shifter;
     private LogInterface logger;
+    private NetworkInterface robotDataTable;
     public double setpointLeft, setpointRight;
     public PIDController turnController;
     private TipCorrector tipCorrector;
@@ -65,11 +66,12 @@ public class Drivetrain implements Component {
     public void init() {
         SmartDashboard.putNumber("TurnP", Constants.TURN_KP);
         SmartDashboard.putNumber("TurnD", Constants.TURN_KD);
-        shifter=Globals.gearShifter;
+        shifter = Globals.gearShifter;
         cameraManager = Globals.cameraManager;
         tipCorrector = Globals.tipCorrector;
         im = Globals.im;
         logger = Globals.logger;
+        robotDataTable=Globals.robotDataTable;
         gyro = Globals.gyro;
         currentLeftPosition = frontLeft.getEncoderPosition();
         currentRightPosition = frontRight.getEncoderPosition();
@@ -135,7 +137,9 @@ public class Drivetrain implements Component {
     double imForward = 0;
     double tick = 0;
     boolean setPointSet = false;
-
+    boolean tankDrive = false;
+    boolean tankDriveSet = false;
+    double setpoint;
     public void tick() {
         SmartDashboard.putNumber("turnout", turnController.get());
         maxVelocity = Math.max(maxVelocity, Math.abs(frontLeft.getEncoderVelocity()));
@@ -143,7 +147,7 @@ public class Drivetrain implements Component {
         //System.out.println("PositionL "+frontLeft.getEncoderPositionContextual());
         //SmartDashboard.putNumber("maxvelDrive", maxVelocity);
         SmartDashboard.putNumber("navx ", gyro.getNormalizedYaw());
-        
+
         try {
             SmartDashboard.putNumber("camera1Angle", cameraManager.getPrimarySightingAnglePose());
         } catch (Exception e) {
@@ -153,7 +157,11 @@ public class Drivetrain implements Component {
         if (!tipCorrector.isCorrecting()) {
             if (!im.getCameraEnable()) {
                 setPointSet = false;
-                driveBasic(im.getForward(), im.getTurn());
+                if (tankDrive) {
+                    tankDrive(im.getForward(), im.getRightForward());
+                } else {
+                    driveBasic(im.getForward(), im.getTurn());
+                }
             } else if (im.getDriveSafetyButton()) {
                 try {
                     turnController.setP(SmartDashboard.getNumber("TurnP", Constants.TURN_KP));
@@ -162,21 +170,40 @@ public class Drivetrain implements Component {
                     if (!setPointSet) {
                         setPointSet = true;
                         setYawSetpoint(cameraManager.getPrimarySightingAnglePose());
-                        System.out.println(cameraManager.getPrimarySightingAnglePose()+ " "+ gyro.getNormalizedYaw());
+                        setpoint=turnController.getSetpoint();
+                        System.out.println(cameraManager.getPrimarySightingAnglePose() + " " + gyro.getNormalizedYaw());
+                    } else {
+                        turnController.setSetpoint(setpoint-10.0*im.getTurn());
                     }
-                    shifter.lowGear=true;
+                    shifter.highGear = false;
                     driveBasic(im.getForward(), turnController.get());
                 } catch (Exception e) {
                     System.out.println("Can't Get Sighting angle.");
-                    e.printStackTrace();
-                    driveBasic(im.getForward(), im.getTurn());
+                    setYawSetpoint(gyro.getNormalizedYaw());
+                    System.out.println("setting setpoint"+ turnController.getSetpoint());
+                    setpoint=turnController.getSetpoint();
+                    setPointSet=true;
+                    //e.printStackTrace();
                 }
+            }
+            if (im.getTankDriveOverride() && !tankDriveSet) {
+                tankDrive = !tankDrive;
+                robotDataTable.setBoolean("tankDrive", true);
+                tankDriveSet = true;
+            } else if (!im.getTankDriveOverride()) {
+                robotDataTable.setBoolean("tankDrive", false);
+                tankDriveSet = false;
             }
         }
         //SmartDashboard.putNumber("leftEnc", frontLeft.getEncoderPositionContextual());
         //SmartDashboard.putNumber("rightEnc", frontRight.getEncoderPositionContextual());
         //SmartDashboard.putNumber("dis", SmartDashboard.getNumber("final distance no assist", -108699)
         //        + frontLeft.getEncoderPositionContextual());
+    }
+
+    private void tankDrive(double left, double right) {
+        frontLeft.set(ControlMode.PercentOutput, left);
+        frontRight.set(ControlMode.PercentOutput, right);
     }
 
     /**

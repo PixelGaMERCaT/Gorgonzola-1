@@ -8,7 +8,7 @@
 package frc.sandstorm.sections;
 
 import frc.components.Drivetrain;
-import frc.motionprofiling.MotionProfiler;
+import frc.MotionProfiling.MotionProfiler;
 import frc.robot.Globals;
 import frc.sandstorm.SandstormSection;
 import jaci.pathfinder.Waypoint;

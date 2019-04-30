@@ -20,8 +20,8 @@ public class ButtonMap {
     
     
     //Operator:
-    public static final int SHOULDER_STICK = 1;
-    public static final int WRIST_STICK = 3;
+    public static final int SHOULDER_STICK = 3;
+    public static final int WRIST_STICK = 1;
     
     
     public static final int STOW = 1;
@@ -42,5 +42,7 @@ public class ButtonMap {
     public static final int BALL_OUTPUT = 0;
     public static final int BALL_CARGO = 90;
     
+    //RAINBOW
+    public static final int RAINBOW_BUTTON = 7;
 
 }

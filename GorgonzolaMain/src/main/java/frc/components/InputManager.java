@@ -12,7 +12,7 @@ import frc.robot.Globals;
  * A component that parses input from the driverstation (joysticks, etc)
  */
 public class InputManager implements Component {
-    private LogInterface logger;
+    private LogInterface logger;                            
     private Joystick left, right, aux;
     private ArmControlState state;
 
@@ -27,9 +27,9 @@ public class InputManager implements Component {
         logger = Globals.logger;
         try {
             logger.inputManager = LogInterface.table("Input_Manager",
-                    new String[] { "forward", "turn", "safetyButton" },
-                    new Type[] { new Decimal(), new Decimal(), new Bool() },
-                    new Loggable[] { () -> getForward(), () -> getTurn(), () -> getDriveSafetyButton() });
+                    new String[] { "forward", "turn", "safetyButton", "shoulderjoy", "wristjoy"},
+                    new Type[] { new Decimal(), new Decimal(), new Bool(), new Decimal(), new Decimal() },
+                    new Loggable[] { () -> getForward(), () -> getTurn(), () -> getDriveSafetyButton(), ()->getShoulderManualHeight(), ()->getWristManualPosition() });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,7 +65,9 @@ public class InputManager implements Component {
     public boolean getCameraEnable() {
         return right.getRawButton(ButtonMap.CAMERA_ENABLE);
     }
-
+    public double getRightForward(){
+        return getDriveSafetyButton() ? right.getY() : 0;
+    }
     public boolean imuOveridden = false;
 
     public boolean getIMUOverride() {
@@ -228,6 +230,17 @@ public class InputManager implements Component {
 
     public boolean getBallIntakeOutButton() {
         return aux.getPOV() == ButtonMap.BALL_OUTPUT;
+    }
+
+    /**
+     * Returns whether the automatic (motion magic) climb button is being pressed
+     * @return true if the button is being pressed, false otherwise
+     */
+    public boolean getRainbowButton() {
+        return right.getRawButton(ButtonMap.RAINBOW_BUTTON);
+    }
+    public boolean getTankDriveOverride(){
+        return right.getRawButton(8) && right.getRawButton(9) && left.getRawButton(8) && left.getRawButton(9);
     }
 
 }

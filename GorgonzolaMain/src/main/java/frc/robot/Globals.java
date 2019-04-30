@@ -20,6 +20,7 @@ import frc.components.arm.ArmIMU;
 import frc.components.arm.Intake;
 import frc.components.arm.Shoulder;
 import frc.components.arm.Wrist;
+import frc.components.lights.LightController;
 import frc.components.pose.PoseTracker;
 
 /**
@@ -30,8 +31,7 @@ import frc.components.pose.PoseTracker;
 public class Globals {
     public static boolean isNSP = false;
     public static boolean isAdelost = false;
-    public static boolean isProto = true;
-
+    public static boolean isProto = false;
     public static InputManager im;
     public static Drivetrain drivetrain;
     public static Gyro gyro;
@@ -39,7 +39,7 @@ public class Globals {
     public static LogInterface logger;
     public static PoseTracker poseTracker;
     public static GearShifter gearShifter;
-    public static LightDriveCAN lightController;
+    public static LightController lightController;
     public static Shoulder shoulder;
     public static Wrist wrist;
     public static Climber climber;
@@ -60,21 +60,20 @@ public class Globals {
         drivetrain = new Drivetrain();
         im = new InputManager();
         logger = new LogInterface();
-        lightController = new LightDriveCAN();
+        lightController = new LightController();
         compressor.setClosedLoopControl(true);
         intake = new Intake();
         gearShifter = new GearShifter();
         poseTracker = new PoseTracker(50);
         gyro = new Gyro();
         robotDataTable = new NetworkInterface("RobotData");
-        robotDataTable.setString("StartTime", System.nanoTime()+"");
-
+        
         shoulder = new Shoulder();
         wrist = new Wrist();
         climber = new Climber();
         tipCorrector = new TipCorrector();
         components.addAll(Arrays.asList(im, drivetrain, tipCorrector, shoulder, wrist, armIMU, gearShifter, intake, gyro,
-                poseTracker, climber, cameraManager, logger));
+                poseTracker, climber, cameraManager, logger, lightController));
         components.forEach(c -> c.init());
 
     }
@@ -91,12 +90,12 @@ public class Globals {
                 e.printStackTrace();
             }
         });
-        try {
-            lightController.Update();
-            //System.out.println("lights updating");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // try {
+        //     lightController.Update();
+        //     //System.out.println("lights updating");
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
     }
 
 }
