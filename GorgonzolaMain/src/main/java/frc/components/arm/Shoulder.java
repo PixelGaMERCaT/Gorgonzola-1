@@ -22,7 +22,6 @@ import frc.talonmanager.ShoulderTalonManager;
 public class Shoulder implements Component {
     public double height, armlength;
     private ShoulderTalonManager talon1, talon2;
-    private double currentPosition;
     private LogInterface logger;
     private InputManager im;
     private double heightSetpoint;
@@ -53,7 +52,6 @@ public class Shoulder implements Component {
         talon2.talon.configFeedbackNotContinuous(true, 0);
         talon2.follow(talon1);
         imu=Globals.armIMU;
-        currentPosition = getHeight();
     }
 
     public void init() {
@@ -155,7 +153,6 @@ public class Shoulder implements Component {
                 break;
             }
         }
-        currentPosition = getHeight();
 
     }
 
