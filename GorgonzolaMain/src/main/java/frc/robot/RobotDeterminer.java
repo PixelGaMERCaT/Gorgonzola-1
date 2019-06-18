@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Scanner;
 /**                                          UNUSED CLASS
  * A class built to determine what robot we are running our code on. Reads a flag stored on the RoboRIO.
- * 
  */
 public class RobotDeterminer {
     /**

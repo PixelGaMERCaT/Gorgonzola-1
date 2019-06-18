@@ -15,7 +15,7 @@ import java.io.IOException;
 public class EncoderFollower {
     private File logFile; //logfile to write to
     private BufferedWriter logWriter; //BufferedWriter to write with
-    private double kp, ki, kd, kv, ka;
+    private double kp, kd, kv, ka;
 
     private double last_error, heading;
 
@@ -92,7 +92,6 @@ public class EncoderFollower {
      */
     public void configurePIDVA(double kp, double ki, double kd, double kv, double ka) {
         this.kp = kp;
-        this.ki = ki;
         this.kd = kd;
         this.kv = kv;
         this.ka = ka;
@@ -106,9 +105,6 @@ public class EncoderFollower {
      * @param wheel_diameter        The diameter of your wheels (or pulleys for track systems) in meters
      */
     public void configureEncoder(int initial_position, int ticks_per_revolution, double wheel_diameter) {
-        encoder_offset = initial_position;
-        encoder_tick_count = ticks_per_revolution;
-        wheel_circumference = wheel_diameter;
     }
 
     /**
