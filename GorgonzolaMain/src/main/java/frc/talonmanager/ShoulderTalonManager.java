@@ -11,7 +11,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 import frc.robot.Constants;
 /**
- * Wraps and sets up Talons and encoders
+ * Wraps and sets up Talons and encoders for shoulder talons
  */
 public class ShoulderTalonManager extends TalonManager {
 
@@ -35,23 +35,21 @@ public class ShoulderTalonManager extends TalonManager {
         talon.configFactoryDefault();
         talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, 0);
         talon.configFeedbackNotContinuous(true, 0);
-        //nominal output
         talon.configMotionAcceleration((int)Constants.SHOULDER_MAX_VELOCITY);
         talon.configMotionCruiseVelocity((int)Constants.SHOULDER_MAX_VELOCITY);
         talon.configNominalOutputForward(0);
         talon.configNominalOutputReverse(0);
-        talon.configPeakOutputForward(.8);//.7
-        talon.configPeakOutputReverse(-.6); //-.6
+        talon.configPeakOutputForward(.8);
+        talon.configPeakOutputReverse(-.6);
         talon.config_kP(0, P);
         talon.config_kI(0, I);
         talon.config_kD(0, D);
         talon.config_kF(0, F);
-        talon.configMotionSCurveStrength(3);
     }
 
     /**
      * Returns the encoder position in the context of the type of talon that this is.
-     * @return absolute encoder position to the angle (in radians) of the arm
+     * @return the angle (in radians) of the shoulder, with positive being upwards and zero being horizontal.
      */
     public double getEncoderPositionContextual() {
         /*
@@ -63,8 +61,8 @@ public class ShoulderTalonManager extends TalonManager {
         * 2pi (τ)            -- converts the values from "percentage of a rotation" to radians
         
         */
-        return (getEncoderPosition() % Constants.SHOULDER_TICKS_PER_ROTATION - Constants.SHOULDER_ENCU_ZERO)
-                / Constants.SHOULDER_TICKS_PER_ROTATION * Math.PI * 2;
+        return (getEncoderPosition() % Constants.SHOULDER_ENCU_PER_ROTATION - Constants.SHOULDER_ENCU_ZERO)
+                / Constants.SHOULDER_ENCU_PER_ROTATION * Math.PI * 2;
     }
 
 }

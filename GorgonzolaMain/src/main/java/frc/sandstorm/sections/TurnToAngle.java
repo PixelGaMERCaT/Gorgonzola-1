@@ -15,18 +15,24 @@ import frc.robot.Globals;
 import frc.sandstorm.SandstormSection;
 
 /**
- * Add your docs here.
+ * A SandstormSection allowing the robot to turn to a given angle using a PID loop.
  */
 public class TurnToAngle extends SandstormSection {
-    double angle;
-    Drivetrain drive;
-    PIDController turnController;
-    Gyro gyro;
+    private double angle;
+    private Drivetrain drivetrain;
+    private PIDController turnController;
+    private Gyro gyro;
 
-    public TurnToAngle(double angle, double time) {
-        this.angle = angle;
+    /**
+     * Constructs a TurnToAngle object with the given parameters.
+     * @param targetYaw the desired angle, in degrees, for the robot to turn to
+     * @param time the amount of time this section should last.
+     */
+
+    public TurnToAngle(double targetYaw, double time) {
+        this.angle = targetYaw;
         this.duration = time;
-        drive = Globals.drivetrain;
+        drivetrain = Globals.drivetrain;
         gyro = Globals.gyro;
         turnController = new PIDController(Constants.TURN_KP, Constants.TURN_KI, Constants.TURN_KD, gyro, o -> {
         });
@@ -45,7 +51,8 @@ public class TurnToAngle extends SandstormSection {
         turnController.enable();
     }
 
-    @Override public void end() {
+    @Override
+    public void end() {
         turnController.disable();
     }
 
@@ -53,8 +60,9 @@ public class TurnToAngle extends SandstormSection {
         return turnController.onTarget();
     }
 
-    @Override public void update() {
-        drive.autoDrive(0, turnController.get());
+    @Override
+    public void tick() {
+        drivetrain.autoDrive(0, turnController.get());
     }
 
 }

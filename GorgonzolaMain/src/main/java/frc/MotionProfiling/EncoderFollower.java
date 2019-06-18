@@ -8,13 +8,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
+ * Runs PID loop on tread position for motion profiling
  * "Stolen" from Jaci's Pathfinder.
- * Modified to log progress along the way and calculate time remaining
+ * Modified to log progress along the way and calculate time remaining.
  */
 public class EncoderFollower {
-    private File file;
-    private BufferedWriter bw;
-    private double encoder_offset, encoder_tick_count, wheel_circumference;
+    private File logFile; //logfile to write to
+    private BufferedWriter logWriter; //BufferedWriter to write with
     private double kp, ki, kd, kv, ka;
 
     private double last_error, heading;
@@ -24,12 +24,12 @@ public class EncoderFollower {
 
     public EncoderFollower(Trajectory traj, String filePath) {
         this(traj);
-        file = new File(filePath);
+        logFile = new File(filePath);
         try {
-            bw = new BufferedWriter(new FileWriter(file));
-            bw.write("Tick, Distance, Position, Velocity, acceleration, Enc_Velocity, Output, Yaw, turnOut, heading");
-            bw.newLine();
-            bw.flush();
+            logWriter = new BufferedWriter(new FileWriter(logFile));
+            logWriter.write("Tick, Distance, Position, Velocity, acceleration, Enc_Velocity, Output, Yaw, turnOut, heading");
+            logWriter.newLine();
+            logWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,8 +51,8 @@ public class EncoderFollower {
         try {
             String line = segment + ", " + distance_covered + ", " + seg.position + ", " + seg.velocity + ", "
                     + seg.acceleration + ", " + vel + ", " + calculate_value +", "+yaw+ ", "+turnOut+", "+Pathfinder.r2d(seg.heading)+"\n";
-            bw.write(line);
-            bw.flush();
+            logWriter.write(line);
+            logWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,7 +62,7 @@ public class EncoderFollower {
 
     public void closeFile() {
         try {
-            bw.close();
+            logWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

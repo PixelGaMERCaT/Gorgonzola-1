@@ -5,20 +5,19 @@ import java.util.HashMap;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.networktables.NetworkTableValue;
 
 /**
- * Allows interfacing with Networktables; wraps NetworkTable
+ * Allows interacting with Networktables more easily; wraps NetworkTable and sets up
+ * an easy interface
  */
 public class NetworkInterface implements Component {
-    private HashMap<String, NetworkTableEntry> tableValues; // contains the respective table entries for each name
-    private NetworkTable table;
+    private HashMap<String, NetworkTableEntry> tableValues; // A mapping of entry keys to table entries.
+    private NetworkTable table; //The table this NetworkInterface interfaces with.
 
     /**
      * A basic constructor for a NetworkInterface, initializes internal variables
-     * and a table named as tableName
-     * 
+     * and a table named tableName
      * @param tableName the name of the table this NetworkTable instance will
      *                  represent
      */
@@ -28,29 +27,15 @@ public class NetworkInterface implements Component {
     }
 
     /**
-     * Adds a key to the table
+     * Adds a key to the table.
+     * @param key the name of the entry to put in the table
      */
     private void put(String key) {
         tableValues.put(key, table.getEntry(key));
     }
-    
-    /**
-     * Returns the value associated with a given key
-     * 
-     * @param key The key of the object in NetworkTables
-     * @return the value in the table at that location, as a NetworkTableValue
-     * @throws Exception If the value does not exist in the table
-     */
-    public NetworkTableValue get(String key) throws Exception {
-        if (!tableValues.containsKey(key)) {
-            tableValues.put(key, table.getEntry(key));
-        }
-        return tableValues.get(key).getValue();
-    }
-    
+
     /**
      * Sets the given key as a boolean; implicitly defines table values
-     * 
      * @param key   The key in the table
      * @param value The boolean value to set key to
      */
@@ -188,5 +173,88 @@ public class NetworkInterface implements Component {
             put(key);
         }
         tableValues.get(key).setValue(value);
+    }
+
+    /**
+    * Returns the value associated with a given key
+    * @param key The key of the object in NetworkTables
+    * @return the value in the table at that location as a NetworkTableValue
+    * @throws Exception If the value does not exist in the table
+    */
+    public NetworkTableValue get(String key) throws Exception {
+        if (!tableValues.containsKey(key)) {
+            tableValues.put(key, table.getEntry(key));
+        }
+        return tableValues.get(key).getValue();
+    }
+
+    /**
+     * Gets the given key as a boolean
+     * @param key   The key in the table
+     * @return The boolean value that key's entry is set to
+     * @throws Exception if the key does not exist as a boolean
+     */
+    public boolean getBoolean(String key) throws Exception {
+        return this.get(key).getBoolean();
+    }
+
+    /**
+     * Gets the given key as a boolean array
+     * @param key   The key in the table
+     * @return The boolean array value that key's entry is set to
+     * @throws Exception if the key does not exist as a boolean array
+     */
+    public boolean[] getBooleanArray(String key) throws Exception {
+        return this.get(key).getBooleanArray();
+    }
+
+    /**
+    * Gets the given key as a double
+    * @param key   The key in the table
+    * @return The double value that key's entry is set to
+    * @throws Exception if the key does not exist as a double
+    */
+    public double getDouble(String key) throws Exception {
+        return this.get(key).getDouble();
+    }
+
+    /**
+    * Gets the given key as a double array
+    * @param key   The key in the table
+    * @return The double array value that key's entry is set to
+    * @throws Exception if the key does not exist as a double array
+    */
+    public double[] getDoubleArray(String key) throws Exception {
+        return this.get(key).getDoubleArray();
+    }
+
+    /**
+    * Gets the given key as a raw value
+    * @param key   The key in the table
+    * @return The raw value that key's entry is set to
+    * @throws Exception if the key does not exist
+    */
+    public byte[] getRaw(String key) throws Exception {
+        return this.get(key).getRaw();
+    }
+
+    /**
+    * Gets the given key as a String value
+    * @param key   The key in the table
+    * @return The String value that key's entry is set to
+    * @throws Exception if the key does not exist as a String
+    */
+    public String getString(String key) throws Exception {
+        return this.get(key).getString();
+    }
+
+    /**
+    * Gets the given key as a String array
+    * @param key   The key in the table
+    * @return The String array value that key's entry is set to
+    * @throws Exception if the key does not exist as a String array
+    */
+    public String[] getStringArray(String key) throws Exception {
+        return this.get(key).getStringArray();
     }
 }

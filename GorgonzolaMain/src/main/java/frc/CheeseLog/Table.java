@@ -1,6 +1,5 @@
 package frc.CheeseLog;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import frc.CheeseLog.Output.DatabaseConnection;
@@ -8,7 +7,6 @@ import frc.CheeseLog.Output.OutputManager;
 import frc.CheeseLog.Output.OutputMethod;
 import frc.CheeseLog.SQLType.Int;
 import frc.CheeseLog.SQLType.Type;
-import frc.CheeseLog.SQLType.Varchar;
 
 /**
  * Code interface for a logging table.

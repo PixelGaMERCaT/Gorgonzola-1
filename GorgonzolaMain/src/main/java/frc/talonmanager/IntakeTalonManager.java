@@ -1,10 +1,13 @@
 package frc.talonmanager;
-
+/**
+ * Wraps and manages ball Intake talons
+ */
 public class IntakeTalonManager extends TalonManager {
     public IntakeTalonManager(int idx){
         super(idx);
         this.type=TalonType.INTAKE;
     }
+
     @Override
     public void initEncoder(double P, double I, double D, double F) {
         System.err.println("Attempt to get config encoder on an intake talon");

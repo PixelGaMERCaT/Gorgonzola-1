@@ -1,166 +1,133 @@
 package frc.components.arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
+import frc.CheeseLog.SQLType.Bool;
 import frc.CheeseLog.SQLType.Decimal;
+import frc.CheeseLog.SQLType.Int;
 import frc.CheeseLog.SQLType.Type;
-import frc.components.ArmHeight;
 import frc.components.Component;
 import frc.components.InputManager;
 import frc.components.LogInterface;
 import frc.components.NetworkInterface;
 import frc.robot.Constants;
-import frc.robot.FieldConstants;
 import frc.robot.Globals;
 import frc.robot.RobotMap;
 import frc.talonmanager.ShoulderTalonManager;
 
+/**
+ * Controls the shoulder (stationary joint) of the arm.
+ * Uses button input to convert desired setpoint heights to encoder values, then uses magic profiling 
+ * on the TalonSRX to move the shoulder to that point.
+ */
 public class Shoulder implements Component {
-    public double height, armlength;
     private ShoulderTalonManager talon1, talon2;
     private LogInterface logger;
-    private InputManager im;
-    private double heightSetpoint;
-    public ArmHeight desiredPos;
+    private InputManager inputManager;
+    public ArmPosition desiredPosition; //the desired position of the arm
     private Wrist wrist;
     private NetworkInterface robotDataTable;
-    private ArmIMU imu;
+    private boolean armSaveOverride; //Indicates whether the automatic arm save has been overridden
+    private int unresponsiveTickCount; //Indicates the number of ticks the shoulder has been unresponsive
 
     public Shoulder() {
-        desiredPos = ArmHeight.NO_MOVEMENT;
+        unresponsiveTickCount = 0;
+        desiredPosition = ArmPosition.NO_MOVEMENT;
         talon1 = new ShoulderTalonManager(RobotMap.SHOULDER_TALON_1);
         talon2 = new ShoulderTalonManager(RobotMap.SHOULDER_TALON_2);
-        heightSetpoint = Constants.SHOULDER_MIN_POSITION;
         talon1.initEncoder(Constants.SHOULDER_KP, Constants.SHOULDER_KI, Constants.SHOULDER_KD, Constants.SHOULDER_KF);
         if (Globals.isProto) {
-            talon1.talon.setSensorPhase(true);
-            talon2.talon.setSensorPhase(true);
+            talon1.setSensorPhase(true);
+            talon2.setSensorPhase(true);
             talon1.setInverted(false);
             talon2.setInverted(false);
         } else {
-            talon1.talon.setSensorPhase(true);
-            talon2.talon.setSensorPhase(true);
+            talon1.setSensorPhase(true);
+            talon2.setSensorPhase(true);
             talon1.setInverted(false);
             talon2.setInverted(false);
-
         }
-        talon1.talon.configFeedbackNotContinuous(true, 0);
-        talon2.talon.configFeedbackNotContinuous(true, 0);
         talon2.follow(talon1);
-        imu=Globals.armIMU;
     }
 
     public void init() {
         robotDataTable = Globals.robotDataTable;
-        im = Globals.im;
+        inputManager = Globals.inputManager;
         logger = Globals.logger;
-        logger.shoulder = LogInterface.table("Shoulder",
-                new String[] { "ShoulderVelocity", "ShoulderAngle", "ShoulderDesHeight", "Shoulderpercentout",
-                        "Shoulderdifference", "Setpoint", "Shoulderencu", "ShoulderIMUAngle" },
-                new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
-                        new Decimal(), new Decimal() },
-                new Loggable[] { () -> talon1.getEncoderVelocity(), () -> getHeight(), () -> heightSetpoint,
-                        () -> talon1.talon.getMotorOutputPercent(), () -> talon1.talon.getClosedLoopError(),
-                        () -> talon1.talon.getClosedLoopTarget(), () -> talon1.getEncoderPosition(), ()->imu.getArmAngle() });
         wrist = Globals.wrist;
+
+        logger.shoulder = LogInterface.createTable("Shoulder",
+                new String[] { "ShoulderVelocity", "ShoulderAngle", "ShoulderHeight", "Shoulderpercentout",
+                        "ShoulderError", "ShoulderEncuSetpoint", "ShoulderEncu", "ShoulderSaveTick",
+                        "ShouldShoulderSave", "ShoulderSaveOverride" },
+                new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
+                        new Decimal(), new Int(), new Bool(), new Bool() },
+                new Loggable[] { () -> talon1.getEncoderVelocity(), () -> getAngle(), () -> getHeight(),
+                        () -> talon1.getMotorOutputPercent(), () -> talon1.getClosedLoopError(),
+                        () -> talon1.getClosedLoopTarget(), () -> talon1.getEncoderPosition(),
+                        () -> unresponsiveTickCount, () -> shouldSave(), () -> armSaveOverride });
+
     }
 
-    double maxVelocity = 0;
-
     public void tick() {
-
-        /*if (im.getAuxButton(11)) {
-            talon1.initEncoder(SmartDashboard.getNumber("WristP", Constants.WRIST_KP),
-                    SmartDashboard.getNumber("WristI", 0), SmartDashboard.getNumber("WristD", Constants.WRIST_KD),
-                    SmartDashboard.getNumber("WristF", Constants.WRIST_KF));
-            System.out.println("Wristp" + SmartDashboard.getNumber("WristP", -1));
-        }*/
-        ///maxVelocity = Math.max(maxVelocity, Math.abs(talon1.getEncoderVelocity()));
-        // System.out.println(talon1.talon.getSelectedSensorPosition());
-        /*SmartDashboard.putNumber("shoulderdiff", talon1.talon.getClosedLoopError());
-        SmartDashboard.putNumber("shouldercurrent", talon1.talon.getOutputCurrent());
-        */
-        SmartDashboard.putNumber("angleShoulder", getAngle() * 180 / Math.PI);
-
-        SmartDashboard.putNumber("heightShoulder", getHeight());
-        SmartDashboard.putNumber("shoulder encu", talon1.getEncoderPosition());
+        armSaveOverride = inputManager.getShoulderSaveOverride();
         robotDataTable.setDouble("ShoulderAngle", getAngle());
-        ArmHeight newPos = im.getArmPosition();
-        if (newPos != ArmHeight.NO_CHANGE || desiredPos == ArmHeight.FULL_MANUAL
-                || desiredPos == ArmHeight.POSITION_MANUAL) {
-            desiredPos = im.getArmPosition();
+        ArmPosition newPosition = inputManager.getArmPosition();
+
+        if (newPosition != ArmPosition.NO_CHANGE || desiredPosition == ArmPosition.FULL_MANUAL) {
+            //Only update the position if there is a change (between auto states or from manual to auto)
+            desiredPosition = newPosition;
         }
 
-        if (imu.shouldIMUSave()) {
+        if (shouldSave() && !armSaveOverride) {
+            //If we detect something wrong with the arm, stop moving
             System.out.println("STOPPING ARM");
-            //desiredPos = ArmHeight.NO_MOVEMENT;
-        }
-        if (im.shoulderManual) {
-            if (im.getArmSafetyButton()) {
-                talon1.set(ControlMode.PercentOutput, .025 + .5 * im.getShoulderManualHeight());
-            }
+            robotDataTable.setBoolean("armStop", true);
+            desiredPosition = ArmPosition.NO_MOVEMENT;
         } else {
-            switch (desiredPos) {
-            case BALL_CARGO:
-                setHeight(FieldConstants.CARGO_BALL + 5.0 * im.getShoulderManualHeight());
-                break;
-            case NO_MOVEMENT:
-                talon1.set(ControlMode.PercentOutput, 0);
-                break;
-            case HATCH_LOW:
-                setHeight(FieldConstants.LOW_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
-                        + 5.0 * im.getShoulderManualHeight());
-                break;
-            case HATCH_MEDIUM:
-                setHeight(FieldConstants.MID_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH + 1
-                        + 5.0 * im.getShoulderManualHeight());
-                break;
-            case HATCH_HIGH:
-                setHeight(FieldConstants.HIGH_HATCH_HEIGHT + Constants.INTAKE_OFFSET_HATCH
-                        + 5.0 * im.getShoulderManualHeight());
-                break;
-            case BALL_LOW:
-                setHeight(FieldConstants.LOW_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL
-                        + 5.0 * im.getShoulderManualHeight());
-                break;
-            case BALL_MEDIUM:
-                setHeight(FieldConstants.MID_PORT_HEIGHT + Constants.INTAKE_OFFSET_BALL + 3.0
-                        + 5.0 * im.getShoulderManualHeight());
-                break;
-            case BALL_HIGH:
-                setHeight(Constants.SHOULDER_MAX_POSITION + 5.0 * im.getShoulderManualHeight());
-                break;
-            case GROUND_PICKUP:
-                setHeight(Constants.SHOULDER_MIN_POSITION + 5.0 + 5.0 * im.getShoulderManualHeight());
-                break;
-            case POSITION_MANUAL:
-                setHeight(Constants.SHOULDER_MIN_POSITION
-                        + ((1.0 + im.getShoulderManualHeight()) / 2.0 * (Constants.SHOULDER_RANGE)));
-                break;
-            case FULL_MANUAL:
-                talon1.set(ControlMode.PercentOutput, .1 + .5 * im.getShoulderManualHeight());
-                break;
-            case STOW:
-                if (getHeight() < 25.0 && wrist.getAngle() < 110.0 * Math.PI / 180.0) {
-                    setHeight(getHeight());
-                } else {
-                    setHeight(Constants.SHOULDER_MIN_POSITION - 5.0);
-                }
-                break;
+            robotDataTable.setBoolean("armStop", false);
+        }
+        robotDataTable.setBoolean("armOverride", armSaveOverride);
+
+        switch (desiredPosition) {
+        case NO_CHANGE:
+        case NO_MOVEMENT:
+            talon1.set(ControlMode.PercentOutput, 0);
+            break;
+        case FULL_MANUAL:
+            talon2.set(ControlMode.PercentOutput, .1 + .5 * inputManager.getShoulderManualPosition());
+            break;
+        case STOW:
+            if (getHeight() < 25.0 && wrist.getAngle() < 110.0 * Math.PI / 180.0) {
+                setHeight(getHeight());
+            } else {
+                setHeight(Constants.SHOULDER_MIN_POSITION - 4.0);
             }
+            break;
+        default:
+            setHeight(desiredPosition.getShoulderHeight() + 5.0 * inputManager.getShoulderManualPosition());
         }
 
     }
 
     /**
-     * Sets the shoulder height to a position between its lowest height and its
+     * Determines whether the encoder is likely broken by comparing the speed of the shoulder to the power the shoulder is being given
+     */
+    private boolean shouldSave() {
+        if (Math.abs(talon1.getMotorOutputPercent()) > .75 && Math.abs(talon1.getEncoderVelocity()) < 5) {
+            unresponsiveTickCount++;
+        } else {
+            unresponsiveTickCount = 0;
+        }
+        return unresponsiveTickCount > 15;
+    }
+
+    /**
+     * Sets the shoulder's desired height to a position between its lowest height and its
      * highest height
      * 
-     * @param height
+     * @param height the height to set the shoulder to
      */
     public void setHeight(double height) {
         height = Math.min(height, Constants.SHOULDER_MAX_POSITION);
@@ -190,13 +157,12 @@ public class Shoulder implements Component {
      * Converts arm height to Encoder units of the absolute encoder on the shoulder
      * joint
      * 
-     * @param height
-     *                   the height in inches of the end of the arm off the ground
+     * @param height the height in inches of the end of the arm off the ground
      * @return the encoder units of that height
      */
-    public double heightToEncU(double height) {
+    private double heightToEncU(double height) {
         return Math.asin((height - Constants.ARM_JOINT_HEIGHT) / Constants.ARM_LENGTH) / (2 * Math.PI)
-                * Constants.SHOULDER_TICKS_PER_ROTATION + Constants.SHOULDER_ENCU_ZERO;
+                * Constants.SHOULDER_ENCU_PER_ROTATION + Constants.SHOULDER_ENCU_ZERO;
     }
 
 }

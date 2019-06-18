@@ -8,16 +8,14 @@
 package frc.talonmanager;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+
 import frc.robot.Constants;
+
 /**
- * Wraps and sets up Talons and encoders
+ * Wraps and sets up Talons and encoders for Drivetrain talons
  */
 public class DriveTalonManager extends TalonManager {
 
-    /**
-     * Initializes the Talon
-     * @param idx The index of the talon
-     */
     public DriveTalonManager(int idx) {
         super(idx);
         this.type = TalonType.DRIVETRAIN;
@@ -55,18 +53,14 @@ public class DriveTalonManager extends TalonManager {
      * @return This encoder's signed movement so far, in inches.
      */
     public double getEncoderPositionContextual() {
-
         return getEncoderPosition() / Constants.DRIVE_ENCU_PER_INCH;
-
     }
 
-    
     /**
-     * Returns the velocity of this Talon's encoder in inches
+     * Returns the velocity of this Talon's encoder in inches per second
      * @return the velocity of this Talon's encoder
      */
     public double getEncoderVelocityContextual() {
-        return (((double)talon.getSelectedSensorVelocity(0))/Constants.DRIVE_ENCU_PER_INCH)*10.0;
-
+        return (((double) talon.getSelectedSensorVelocity(0)) / Constants.DRIVE_ENCU_PER_INCH) * 10.0;
     }
 }

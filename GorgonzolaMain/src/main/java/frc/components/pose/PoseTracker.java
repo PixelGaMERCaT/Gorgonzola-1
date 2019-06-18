@@ -8,25 +8,39 @@ import frc.components.Gyro;
 import frc.robot.Globals;
 
 /**
-* Keeps a log of poses from previous timestamps, acts as a stack (LIFO with self-overwriting)
-* @author Grant Matteo
+* Keeps a log of poses from previous timestamps, can be thought of as a record of past robot positions.
+* acts as a stack (LIFO with self-overwriting).
+* @author Jeff
 */
 public class PoseTracker implements Component {
-    public Pose[] poses;
-    public int size; //the size of the buffer of poses
-    private int index; //the index of the oldest Pose (also <the index of the most recent pose>+1)
     private Gyro gyro;
-
     private Drivetrain drivetrain;
-    public static long tickTime = 20000000; //The number of nanoseconds between ticks (estimated)
+
+    private Pose[] poses;
+    private int size; //the size of the buffer of poses
+    private int oldestPoseIndex; //the index of the oldest Pose (also <the index of the most recent pose>+1)
+    private long tickTime; //The number of nanoseconds between ticks (predicted)
 
     /**
-     * Constructor for a Posetracker
-     * @param size the number of Poses it should store
+     * Constructor for a PoseTracker. Assumes 50 poses stored per second
+     * @param size the number of Poses it should store (at a rate of 50 poses per second)
      */
     public PoseTracker(int size) {
-        index = 0;
+        oldestPoseIndex = 0;
         this.size = size;
+        this.tickTime = 20000000; //50 ticks per second
+        poses = new Pose[size];
+    }
+
+    /**
+     * Constructor for a PoseTracker
+     * @param size the number of Poses it should store
+     * @param tickTime the number of nanoSeconds between ticks. For robots, that's roughly 20000000.
+     */
+    public PoseTracker(int size, long tickTime) {
+        oldestPoseIndex = 0;
+        this.size = size;
+        this.tickTime = tickTime;
         poses = new Pose[size];
     }
 
@@ -35,19 +49,20 @@ public class PoseTracker implements Component {
         drivetrain = Globals.drivetrain;
         Arrays.fill(poses, new Pose(System.nanoTime(), gyro.getYaw(), drivetrain.getLeftPosition(),
                 drivetrain.getRightPosition()));
-        index++;
+        oldestPoseIndex++;
     }
+
     /**
      * Adds a new pose to the top of the stack
      */
     public void tick() {
-        poses[index] = new Pose(System.nanoTime(), gyro.getYaw(), drivetrain.getLeftPosition(),
+        poses[oldestPoseIndex] = new Pose(System.nanoTime(), gyro.getYaw(), drivetrain.getLeftPosition(),
                 drivetrain.getRightPosition());
 
         //Take the weighted average of the past average tickTime and the most recent tickTime
-        tickTime = (tickTime * (size - 1) + (getFromIndex(-1).time - getFromIndex(-2).time)) / size;
-        index++;
-        index %= size;
+        tickTime = (tickTime * (size - 1) + (getFromIndex(-1).timestamp - getFromIndex(-2).timestamp)) / size;
+        oldestPoseIndex++;
+        oldestPoseIndex %= size;
 
     }
 
@@ -58,11 +73,11 @@ public class PoseTracker implements Component {
      */
     public Pose get(long timestamp) {
         Pose mostRecentPose = getFromIndex(-1);
-        long timeChange = mostRecentPose.time - timestamp;
+        long timeChange = mostRecentPose.timestamp - timestamp;
         if (timeChange > tickTime * size) {
             //if it's too far back, return the farthest back we can get
             System.err.println("Requested pose out of bounds (too far back). Returning oldest pose");
-            return poses[index];
+            return poses[oldestPoseIndex];
         } else if (timeChange < 0) {
             //if it's too far forward, return the most recent Pose
             System.err.println("Requested pose out of bounds (too far forward). Returning most recent pose.");
@@ -72,15 +87,17 @@ public class PoseTracker implements Component {
         //Get the best guess we can based on how long ago the timestamp was
         int guessIndex = -1 * (int) (timeChange / tickTime) - 1;
 
+        //Determine which way we need to move from our guess to find the right timestamp
         int direction = findBestDirection(guessIndex, timestamp);
+
         if (direction != 0) {
             do {
+                // Move in that direction until we've found the best Pose
                 guessIndex += direction;
             } while (compare(guessIndex, guessIndex + direction, timestamp));
         }
-        Pose closestPose = getFromIndex(guessIndex);
-        System.out.println(closestPose.time - timestamp);
-        return closestPose;
+        return getFromIndex(guessIndex);
+        
     }
 
     /**
@@ -91,8 +108,8 @@ public class PoseTracker implements Component {
      * @return true if the secondIndex is closer, false otherwise.
      */
     private boolean compare(int firstIndex, int secondIndex, long timestamp) {
-        return Math.abs(getFromIndex(firstIndex).time - timestamp) > Math
-                .abs(getFromIndex(secondIndex).time - timestamp);
+        return Math.abs(getFromIndex(firstIndex).timestamp - timestamp) > Math
+                .abs(getFromIndex(secondIndex).timestamp - timestamp);
 
     }
 
@@ -105,14 +122,14 @@ public class PoseTracker implements Component {
     private int findBestDirection(int guessIndex, long timestamp) {
         Pose guessPose = getFromIndex(guessIndex);
 
-        if (Math.abs(guessPose.time - timestamp) > Math.abs(getFromIndex(guessIndex - 1).time - timestamp)) {
-            if (Math.abs(getFromIndex(guessIndex - 1).time - timestamp) > Math
-                    .abs(getFromIndex(guessIndex + 1).time - timestamp)) {
+        if (Math.abs(guessPose.timestamp - timestamp) > Math.abs(getFromIndex(guessIndex - 1).timestamp - timestamp)) {
+            if (Math.abs(getFromIndex(guessIndex - 1).timestamp - timestamp) > Math
+                    .abs(getFromIndex(guessIndex + 1).timestamp - timestamp)) {
                 return 1;
             }
             return -1;
         }
-        if (Math.abs(guessPose.time - timestamp) > Math.abs(getFromIndex(guessIndex + 1).time - timestamp)) {
+        if (Math.abs(guessPose.timestamp - timestamp) > Math.abs(getFromIndex(guessIndex + 1).timestamp - timestamp)) {
             return 1;
         }
         return 0;
@@ -127,8 +144,7 @@ public class PoseTracker implements Component {
      */
 
     private Pose getFromIndex(int location) {
-
-        location = (location % size + index + size) % size;
+        location = (location % size + oldestPoseIndex + size) % size;
         return poses[location];
     }
 }

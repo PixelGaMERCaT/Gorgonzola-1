@@ -1,7 +1,7 @@
 package frc.components;
  /**
-  * A basic component of the robot. Contains three methods, all of which can be overridden.
-  * Example: Drivetrain
+  * A basic component of the robot. Contains two methods, both of which can be overridden.
+  * Example: Drivetrain uses init() to reset its encoders (and do more setup) and tick() to control the treads.
   */
 public interface Component {
     /**
@@ -9,7 +9,7 @@ public interface Component {
      */
     public default void init(){}
     /**
-     * Updates the constituent pieces of this component; for example, the tick() method for the Drivetrain makes the wheels spin
+     * Updates the constituent pieces of this component
      */
     public default void tick() {}
 

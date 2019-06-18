@@ -1,15 +1,17 @@
 package frc.components.pose;
 
+/**
+* An object that stores data about the robot's state at a certain timestamp
+*/
 public class Pose {
-    /**
-     * An object that stores data about the robot at a certain timestamp
-     */
-    public long time;
+
+    public long timestamp; //The time the Pose was recorded
     public double heading, encoderLeft, encoderRight; // Information to be stored
-    public Pose(long time, double heading, double encoderLeft, double encoderRight){
-        this.time=time;
-        this.heading=heading;
-        this.encoderLeft=encoderLeft;
-        this.encoderRight=encoderRight;
+
+    public Pose(long timestamp, double heading, double encoderDistanceLeft, double encoderDistanceRight) {
+        this.timestamp = timestamp;
+        this.heading = heading;
+        this.encoderLeft = encoderDistanceLeft;
+        this.encoderRight = encoderDistanceRight;
     }
 }

@@ -3,10 +3,6 @@ package frc.motionprofiling;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.CheeseLog.Loggable;
-import frc.CheeseLog.SQLType.Decimal;
-import frc.CheeseLog.SQLType.Type;
 import frc.components.Component;
 import frc.components.Drivetrain;
 import frc.components.Gyro;
@@ -17,7 +13,9 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory.Config;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.modifiers.TankModifier;
-
+/**
+ * A component designed to control the robot during autonomous periods in order to follow a Motion profiled path
+ */
 public class MotionProfiler implements Component {
         private Waypoint[] path;
         private EncoderFollower leftFollower, rightFollower;
@@ -68,7 +66,6 @@ public class MotionProfiler implements Component {
                 Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC, Config.SAMPLES_FAST,
                                 MPConstants.DELTA_TIME, MPConstants.MAX_VELOCITY, MPConstants.MAX_ACCELERATION,
                                 MPConstants.MAX_JERK);
-                //SmartDashboard.putNumber("MAX_VEL", MPConstants.MAX_VELOCITY);
                 Trajectory mpTrajectory = Pathfinder.generate(path, config);
                 //Generate the trajectory the left and right treads will be following
                 TankModifier modifier = new TankModifier(mpTrajectory).modify(MPConstants.WHEELBASE_WIDTH);
@@ -79,23 +76,6 @@ public class MotionProfiler implements Component {
                                 MPConstants.INCHES_PER_ROTATION);
                 rightFollower.configureEncoder(drivetrain.getRightPosition(), MPConstants.TICKS_PER_ROTATION,
                                 MPConstants.INCHES_PER_ROTATION);
-                /*logger.motionProfiling = LogInterface.manualTable("Motion_Profiling",
-                new String[] { "encDistanceLeft", "segPositionLeft", "velocityLeft", "accelerationLeft",
-                        "encoderVelocityLeft", "outputValueLeft", "encDistanceRight", "segPositionRight",
-                        "velocityRight", "accelerationRight", "encoderVelocityRight", "outputValueRight" },
-                new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
-                        new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal() },
-                new Loggable[] { () -> Globals.drivetrain.getLeftPositionInches() / 2.0,
-                        () -> leftFollower.position / 2.0, () -> leftFollower.velocity / 2.0,
-                        () -> leftFollower.acceleration / 2.0,
-                        () -> drivetrain.frontLeft.getEncoderVelocityContextual(), () -> leftFollower.outputValue / 2.0,
-                        () -> Globals.drivetrain.getRightPositionInches() / 2.0, () -> rightFollower.position / 2.0,
-                        () -> rightFollower.velocity / 2.0, () -> rightFollower.acceleration / 2.0,
-                        () -> drivetrain.frontRight.getEncoderVelocityContextual(),
-                        () -> rightFollower.outputValue / 2.0 });
-                System.out.println("logger.MP " + logger.motionProfiling);
-                logger.logger.addTable(logger.motionProfiling);
-                */
                 leftFollower.configurePIDVA(MPConstants.PATH_KP, MPConstants.PATH_KI, MPConstants.PATH_KD,
                                 MPConstants.PATH_KV, MPConstants.PATH_KA);
                 rightFollower.configurePIDVA(MPConstants.PATH_KP, MPConstants.PATH_KI, MPConstants.PATH_KD,
@@ -104,27 +84,33 @@ public class MotionProfiler implements Component {
                 turnController.enable();
 
         }
-
+        /**
+         * Drives the robot based on the current motion profile, position, and angle.
+         */
         public void run() {
                 double currentHeading = gyro.getNormalizedYaw() - startHeading;
                 angleError = Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading()) - currentHeading);
                 turnOutput = turnController.get();
                 double leftSpeed = leftFollower.calculate((int) drivetrain.getLeftPositionInches(),
-                                drivetrain.frontLeft.getEncoderVelocityContextual(), gyro.getNormalizedYaw(),
+                                drivetrain.getLeftPositionInches(), gyro.getNormalizedYaw(),
                                 turnOutput);
                 double rightSpeed = rightFollower.calculate((int) drivetrain.getRightPositionInches(),
-                                drivetrain.frontRight.getEncoderVelocityContextual(), gyro.getNormalizedYaw(),
+                                drivetrain.getRightPositionInches(), gyro.getNormalizedYaw(),
                                 turnOutput);
                 drivetrain.driveMP(leftSpeed, rightSpeed, turnOutput);
-                //logger.motionProfiling.log(logger.getTick());
-                //SmartDashboard.putNumber("velocity", drivetrain.frontLeft.getEncoderVelocityContextual());
                 logger.tick();
         }
-
+        /**
+         * Determines if the path has finished.
+         * @return true if the path has finished, false if it has not.
+         */
         public boolean isFinished() {
                 return leftFollower.isFinished() && rightFollower.isFinished();
         }
-
+        /**
+         * Determines the amount of time (in seconds) left until this path is over.
+         * @return the time, or -1 if the MotionProfiler was not set up properly.
+         */
         public double getRemainingDuration() {
                 return leftFollower == null || rightFollower == null ? -1
                                 : Math.max(leftFollower.getRemainingDuration(), rightFollower.getRemainingDuration());

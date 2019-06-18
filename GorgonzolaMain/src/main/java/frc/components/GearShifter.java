@@ -5,30 +5,29 @@ import frc.robot.Globals;
 import frc.robot.RobotMap;
 
 /**
- * A wrapper for the Gear shifter solenoid; allows for access to the current gear.
+ * Controls what gear the Drivetrain of the robot is in; 
  */
 public class GearShifter implements Component {
-    private Solenoid switcher;
-    private InputManager im;
-    public boolean lowGear;
+    private Solenoid gearShifter;
+    private InputManager inputManager;
+    private boolean highGear; //true if the robot is in high gear, false otherwise.
 
     public GearShifter() {
-        lowGear = false;
+        highGear = false;
         if (!(Globals.isNSP)) {
-            switcher = new Solenoid(RobotMap.GEAR_SHIFT);
+            gearShifter = new Solenoid(RobotMap.GEAR_SHIFT_SOLENOID);
         }
     }
 
     public void init() {
-        im = Globals.im;
+        inputManager = Globals.inputManager;
     }
     
     public void tick() {
-        if (im.getGearSwitchButton()) {
-            lowGear = !lowGear;
+        if (inputManager.getGearShiftButton()) {
+            highGear = !highGear;
         } 
-        switcher.set(lowGear);
-        //System.out.println("high gear!"+highGear);
+        gearShifter.set(highGear);
     }
 
     /**
@@ -36,6 +35,13 @@ public class GearShifter implements Component {
      * @return true if robot is in high gear, false otherwise
      */
     public boolean isHighGear() {
-        return lowGear;
+        return highGear;
+    }
+    /**
+     * Sets the gear to the desired gear
+     * @param highGear true if we wish to switch to high gear, false otherwise.
+     */
+    public void setGear(boolean highGear){
+        this.highGear=highGear;
     }
 }

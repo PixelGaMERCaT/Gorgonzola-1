@@ -15,22 +15,32 @@ import frc.sandstorm.SandstormSection;
 import frc.robot.Globals;
 
 /**
- * Add your docs here.
+ * A SandstormSection that drives forward while maintaining a certain yaw angle
  */
 public class DriveStraight extends SandstormSection {
-    double forward;
-    Drivetrain drive;
-    PIDController turnController;
-    Gyro gyro;
+    private Drivetrain drivetrain;
+    private PIDController turnController;
+    private Gyro gyro;
 
-    public DriveStraight(double forward, double time) {
+    private double forward; //constant forward power
+    private double targetYaw;
+
+    /**
+     * Constructs a DriveStraight object with the given parameters.
+     * @param forward a constant forward power to be applied every tick for the duration of this section.
+     * @param targetYaw the desired angle, in degrees, for the robot to travel at during this section.
+     * @param time the amount of time this section should last.
+     */
+
+    public DriveStraight(double forward, double targetYaw, double time) {
         this.forward = forward;
+        this.targetYaw = targetYaw;
         this.duration = time;
-        drive = Globals.drivetrain;
+        drivetrain = Globals.drivetrain;
         gyro = Globals.gyro;
         turnController = new PIDController(Constants.TURN_KP, Constants.TURN_KI, Constants.TURN_KD, gyro, o -> {
         });
-        turnController.setAbsoluteTolerance(1);
+        turnController.setAbsoluteTolerance(0);
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-1, 1);
         turnController.setContinuous(true);
@@ -39,18 +49,21 @@ public class DriveStraight extends SandstormSection {
         turnController.setContinuous(true);
     }
 
-    @Override public void init() {
+    @Override
+    public void init() {
         super.init();
-        turnController.setSetpoint(0);
+        turnController.setSetpoint(targetYaw);
         turnController.enable();
     }
 
-    @Override public void end() {
+    @Override
+    public void end() {
         turnController.disable();
     }
 
-    @Override public void update() {
-        drive.autoDrive(forward, turnController.get());
+    @Override
+    public void tick() {
+        drivetrain.autoDrive(forward, turnController.get());
     }
 
 }

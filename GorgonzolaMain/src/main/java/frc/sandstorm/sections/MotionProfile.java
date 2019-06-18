@@ -7,41 +7,43 @@
 
 package frc.sandstorm.sections;
 
-import frc.components.Drivetrain;
 import frc.motionprofiling.MotionProfiler;
-import frc.robot.Globals;
 import frc.sandstorm.SandstormSection;
 import jaci.pathfinder.Waypoint;
+
 /**
- * Add your docs here.
+ * A SandstormSection that follows a defined Motion Profile.
  */
 public class MotionProfile extends SandstormSection {
-    Waypoint[] points;
-    Drivetrain drive;
-    MotionProfiler mp;
+    private Waypoint[] points;
+    private MotionProfiler mp;
 
-    public MotionProfile(Waypoint[] points) {
+    /**
+    * Constructs a MotionProfile section.
+    * @param points a list of Jaci WayPoint objects, each denoting an x, y, and angle value. 
+    */
+    public MotionProfile(Waypoint... points) {
         this.duration = -1;
-        drive = Globals.drivetrain;
         mp = new MotionProfiler();
         this.points = points;
     }
 
-    @Override public void end() {
-        drive.resetEncoders();
-    }
+    
 
-    @Override public void init() {
+    @Override
+    public void init() {
         super.init();
         mp.setPath(points);
         mp.init();
     }
 
-    @Override public boolean customFinish() {
+    @Override
+    public boolean customFinish() {
         return mp.isFinished();
     }
 
-    @Override public void update() {
+    @Override
+    public void tick() {
         mp.run();
     }
 

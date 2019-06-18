@@ -1,45 +1,35 @@
 package frc.components;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 import frc.robot.Globals;
 import frc.robot.RobotMap;
-import frc.talonmanager.ClimbTalonManager;
 
+/**
+ * Defines the Climber (device that allows the robot to climb onto Hab 2).
+ * This consists of a solenoid that is activated to drop two plastic "knives"
+ * at the front of the robot, allowing us to drive up the Hab 2 wall.
+ * 
+ * In the past, it additionally consisted of a CAM that could move to push the robot forward onto HAB 3.
+ */
 public class Climber implements Component {
-    public ClimbTalonManager talon1, talon2;
-    private InputManager im;
-    Solenoid knives;
+
+    private InputManager inputManager;
+    private Solenoid knifeDropper;
     private NetworkInterface robotDataTable;
+
+    
     public Climber() {
-        knives = new Solenoid(3);
-        talon1 = new ClimbTalonManager(RobotMap.CLIMB_TALON_1);
-        talon1.initEncoder(Constants.CLIMB_KP, Constants.CLIMB_KI, Constants.CLIMB_KD, Constants.CLIMB_KF);
-        talon2 = new ClimbTalonManager(RobotMap.CLIMB_TALON_2);
-        talon2.follow(talon1);
+        knifeDropper = new Solenoid(RobotMap.CLIMB_KNIFE_SOLENOID);
     }
 
     public void init() {
-        robotDataTable=Globals.robotDataTable;
-        im = Globals.im;
+        robotDataTable = Globals.robotDataTable;
+        inputManager = Globals.inputManager;
+        robotDataTable.setNumber("CamAngle", 0); //The angle of the cam, always 0 now :'(
+
     }
-
+    
     public void tick() {
-        robotDataTable.setNumber("CamAngle", 0);//talon1.getEncoderPositionContextual());
-        knives.set(im.getClimbKnives());
-        //SmartDashboard.putNumber("climbps", talon1.getEncoderPosition());
-        //SmartDashboard.putNumber("Climbvel", talon1.getEncoderVelocity());
-
-        if (im.getAutoClimbButton()) {
-            talon1.set(ControlMode.MotionMagic, 1024);
-        } else if (im.getManualClimbButton()) {
-            talon1.set(ControlMode.PercentOutput, im.getClimb());
-        } else {
-            talon1.set(ControlMode.PercentOutput, 0);
-        }
-
+        knifeDropper.set(inputManager.getClimbDeployButton());
     }
 }

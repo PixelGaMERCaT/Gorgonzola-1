@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import frc.robot.Constants;
 
 /**
- * Wraps and sets up Talons and encoders
+ * Wraps and sets up Talons and encoders for Wrist talons
  */
 public class WristTalonManager extends TalonManager {
    
@@ -22,8 +22,7 @@ public class WristTalonManager extends TalonManager {
      */
     public WristTalonManager(int idx) {
         super(idx);
-
-        this.type = type.WRIST;
+        this.type = TalonType.WRIST;
     }
 
     /**
@@ -42,22 +41,19 @@ public class WristTalonManager extends TalonManager {
         talon.configNominalOutputReverse(0);
         talon.configPeakOutputForward(1);
         talon.configPeakOutputReverse(-1);
+        talon.configFeedbackNotContinuous(true, 0);
         talon.config_kP(0, P);
-        
         talon.config_kI(0, I);
         talon.config_kD(0, D);
         talon.config_kF(0, F);
-        talon.configMotionSCurveStrength(2);
     }
 
     
     /**
      * Returns the encoder position in the context of the type of talon that this is.
-     * DRIVETRAIN -- Converts distance travelled to inches
-     * SHOULDER -- Converts absolute encoder position to the angle (in radians) of the arm
-     * WRIST -- Converts absolute encoder position to angle (in radians) of the wrist
-     * CLIMBER -- Converts encoder position to angle (in radians) of the climber, with its starting angle being 0.
-     * @return one of the above values, depending on what this.type was set to. 
+     * Converts absolute encoder position to angle (in radians) of the wrist with positive being upwards
+     * and at the same angle as the Shoulder being zero.
+     * @return the angle, in radians 
      */
     public double getEncoderPositionContextual() {
         /*
@@ -69,8 +65,8 @@ public class WristTalonManager extends TalonManager {
         * 2pi (τ)            -- converts the values from "percentage of a rotation" to radians
         
         */
-        return ((getEncoderPosition() % Constants.WRIST_TICKS_PER_ROTATION - Constants.WRIST_ENCU_ZERO)
-                / Constants.WRIST_TICKS_PER_ROTATION * Math.PI * 2.0)%(2.0*Math.PI);
+        return ((getEncoderPosition() % Constants.WRIST_ENCU_PER_ROTATION - Constants.WRIST_ENCU_ZERO)
+                / Constants.WRIST_ENCU_PER_ROTATION * Math.PI * 2.0)%(2.0*Math.PI);
     }
 
 }

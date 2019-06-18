@@ -35,8 +35,6 @@ public class Logger {
      * out or user friendly yet. Many features will require a call to getTable and methods from the
      * table object returned.
      *
-     * TODO: Add support for adding columns to explicitly defined tables
-     * TODO: Add support for adding columns to multiple tables at one time
      * @param tableName Name of the table to add a column to (and create, if necessary)
      * @param columnName The name of the column to add
      * @param columnType The datatype of the column to add

@@ -3,11 +3,7 @@ package frc.components;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Bool;
 import frc.CheeseLog.SQLType.Decimal;
@@ -17,86 +13,68 @@ import frc.robot.Globals;
 import frc.robot.RobotMap;
 import frc.talonmanager.DriveTalonManager;
 
+/**
+ * Responsible for managing the drivebase (treads) of the robot, along with the drive sensors.
+ */
 public class Drivetrain implements Component {
-    public DriveTalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
-    private InputManager im;
-    private Compressor compressor;
-    public double currentLeftPosition, currentRightPosition;
+    private DriveTalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
+    private InputManager inputManager;
     private Gyro gyro;
     private GearShifter shifter;
     private LogInterface logger;
-    public double setpointLeft, setpointRight;
+    private NetworkInterface robotDataTable;
     public PIDController turnController;
     private TipCorrector tipCorrector;
     private CameraManager cameraManager;
 
-    /**
-     * The Default constructor for Drivetrain, sets up basic movement and sensor
-     * functionality
-     */
+    private boolean cameraSetpointSet = false; //Indicates whether the Camera's turn setpoint has been set yet for a given auto-align
+    private boolean tankDrive = false; //Indicates whether the tank drive override has been engaged
+    private double cameraYawSetpoint; //The setpoint, in degrees, that the robot should turn to to face a camera sighting.
+
     public Drivetrain() {
         frontLeft = new DriveTalonManager(RobotMap.FRONT_LEFT_TALON);
         frontRight = new DriveTalonManager(RobotMap.FRONT_RIGHT_TALON);
         backLeft = new DriveTalonManager(RobotMap.BACK_LEFT_TALON);
         backRight = new DriveTalonManager(RobotMap.BACK_RIGHT_TALON);
-        if (!(Globals.isNSP || Globals.isAdelost)) {
+        if (!Globals.isNSP) {
             middleLeft = new DriveTalonManager(RobotMap.MIDDLE_LEFT_TALON);
             middleRight = new DriveTalonManager(RobotMap.MIDDLE_RIGHT_TALON);
             middleRight.setInverted(true);
             middleLeft.follow(frontLeft);
             middleRight.follow(frontRight);
-
         }
-        if (!Globals.isAdelost) {
-            backRight.setInverted(true);
-            frontRight.setInverted(true);
-        }
+        backRight.setInverted(true);
+        frontRight.setInverted(true);
 
         backLeft.follow(frontLeft);
         backRight.follow(frontRight);
-        frontLeft.initEncoder(Constants.MAGIC_KP_LOW, Constants.MAGIC_KI_LOW, Constants.MAGIC_KD_LOW,
-                -Constants.MAGIC_KF_LOW);
-        frontRight.initEncoder(Constants.MAGIC_KP_LOW, Constants.MAGIC_KI_LOW, Constants.MAGIC_KD_LOW,
-                -Constants.MAGIC_KF_LOW);
+        frontLeft.initEncoder(0, 0, 0, 0);
+        frontRight.initEncoder(0, 0, 0, 0);
         resetEncoders();
 
     }
 
     public void init() {
-        SmartDashboard.putNumber("TurnP", Constants.TURN_KP);
-        SmartDashboard.putNumber("TurnD", Constants.TURN_KD);
-        shifter=Globals.gearShifter;
+        shifter = Globals.gearShifter;
         cameraManager = Globals.cameraManager;
         tipCorrector = Globals.tipCorrector;
-        im = Globals.im;
+        inputManager = Globals.inputManager;
         logger = Globals.logger;
+        robotDataTable = Globals.robotDataTable;
         gyro = Globals.gyro;
-        currentLeftPosition = frontLeft.getEncoderPosition();
-        currentRightPosition = frontRight.getEncoderPosition();
         try {
-            logger.magicDrive = LogInterface.manualTable("Magic_Drive",
-                    new String[] { "encoderLeft", "encoderRight", "setpointLeft", "setpointRight", "currentLeft",
-                            "currentRight" },
-                    new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
-                            new Decimal() },
-                    new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
-                            () -> setpointLeft, () -> setpointRight, () -> frontLeft.getOutputCurrent(),
-                            () -> frontRight.getOutputCurrent() });
-            //frontLeft.talon.getMotorOutputVoltage();
-
-            logger.drivetrain = LogInterface.table("Drivetrain",
-                    new String[] { "encoderLeft", "encoderRight", "leftPower", "rightPower", "velRight", "velLeft",
-                            "voltLeft", "voltRight" },
+            logger.drivetrain = LogInterface.createTable("Drivetrain",
+                    new String[] { "disLeft", "disRight", "leftPower", "rightPower", "velRight", "velLeft",
+                            "PercentLeft", "PercentRight" },
                     new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
                             new Decimal(), new Decimal(), new Decimal() },
-                    new Loggable[] { () -> frontLeft.getEncoderPosition(), () -> frontRight.getEncoderPosition(),
-                            () -> frontLeft.getOutputCurrent(), () -> frontRight.getOutputCurrent(),
-                            () -> frontRight.getEncoderVelocityContextual(),
-                            () -> frontLeft.getEncoderVelocityContextual(),
-                            () -> frontLeft.talon.getMotorOutputVoltage(),
-                            () -> frontRight.talon.getMotorOutputVoltage() });
+                    new Loggable[] { () -> frontLeft.getEncoderPositionContextual(),
+                            () -> frontRight.getEncoderPositionContextual(), () -> frontLeft.getOutputCurrent(),
+                            () -> frontRight.getOutputCurrent(), () -> frontRight.getEncoderVelocityContextual(),
+                            () -> frontLeft.getEncoderVelocityContextual(), () -> frontLeft.getMotorOutputPercent(),
+                            () -> frontRight.getMotorOutputPercent() });
 
-            logger.turnController = LogInterface.table("Turn_Controller",
+            logger.turnController = LogInterface.createTable("Turn_Controller",
                     new String[] { "angle", "output", "setpoint", "enabled" },
                     new Type[] { new Decimal(), new Decimal(), new Decimal(), new Bool() },
                     new Loggable[] { () -> gyro.getYaw(), () -> turnController.get(),
@@ -118,70 +96,73 @@ public class Drivetrain implements Component {
     public void resetEncoders() {
         frontLeft.resetEncoder();
         frontRight.resetEncoder();
-        setpointLeft = 0;
-        setpointRight = 0;
     }
 
     /**
      * Sets the setpoint for the Turn PID controller.
-     * @param angle the setpoint
+     * @param angle the setpoint, in degrees
      */
-    public void setYawSetpoint(double angle) {
+    public void setTurnSetpoint(double angle) {
         turnController.setSetpoint(angle);
         turnController.enable();
     }
 
-    double maxVelocity = 0;
-    double imForward = 0;
-    double tick = 0;
-    boolean setPointSet = false;
-
     public void tick() {
-        SmartDashboard.putNumber("turnout", turnController.get());
-        maxVelocity = Math.max(maxVelocity, Math.abs(frontLeft.getEncoderVelocity()));
-        //System.out.println("PositionR "+frontRight.getEncoderPositionContextual());
-        //System.out.println("PositionL "+frontLeft.getEncoderPositionContextual());
-        //SmartDashboard.putNumber("maxvelDrive", maxVelocity);
-        SmartDashboard.putNumber("navx ", gyro.getNormalizedYaw());
-        
-        try {
-            SmartDashboard.putNumber("camera1Angle", cameraManager.getPrimarySightingAnglePose());
-        } catch (Exception e) {
-            //e.printStackTrace();
 
-        }
         if (!tipCorrector.isCorrecting()) {
-            if (!im.getCameraEnable()) {
-                setPointSet = false;
-                driveBasic(im.getForward(), im.getTurn());
-            } else if (im.getDriveSafetyButton()) {
+            if (!inputManager.getAutoAlignButton()) {
+                //Normal Conditions:
+                cameraSetpointSet = false;
+                if (tankDrive) {
+                    //Tank Drive Override:
+                    tankDrive(inputManager.getPrimaryJoyY(), inputManager.getSecondaryJoyY());
+                } else {
+                    //Normal Drive (default):
+                    driveBasic(inputManager.getPrimaryJoyY(), inputManager.getSecondaryJoyX());
+                }
+            } else if (inputManager.getDriveSafetyButton()) {
+                //Auto-Align to Target:
                 try {
-                    turnController.setP(SmartDashboard.getNumber("TurnP", Constants.TURN_KP));
-                    turnController.setD(SmartDashboard.getNumber("TurnD", Constants.TURN_KD));
-                    //System.out.println("d"+turnController.getD()+ "P"+turnController.getP());
-                    if (!setPointSet) {
-                        setPointSet = true;
-                        setYawSetpoint(cameraManager.getPrimarySightingAnglePose());
-                        System.out.println(cameraManager.getPrimarySightingAnglePose()+ " "+ gyro.getNormalizedYaw());
+                    if (!cameraSetpointSet) {
+                        //Set yawSetpoint to the absolute angle of the sighting
+                        cameraSetpointSet = true;
+                        cameraYawSetpoint = cameraManager.getPrimarySightingAngle();
                     }
-                    shifter.lowGear=true;
-                    driveBasic(im.getForward(), turnController.get());
+                    //Turn to yawSetpoint (with manual adjustment)
+                    setTurnSetpoint(cameraYawSetpoint - 10.0 * inputManager.getSecondaryJoyX());
+                    shifter.setGear(false);
+                    driveBasic(inputManager.getPrimaryJoyY(), turnController.get());
                 } catch (Exception e) {
                     System.out.println("Can't Get Sighting angle.");
-                    e.printStackTrace();
-                    driveBasic(im.getForward(), im.getTurn());
+                    cameraSetpointSet = false;
+                    driveBasic(inputManager.getPrimaryJoyY(), inputManager.getSecondaryJoyX());
                 }
             }
+
+            //Set Tank Drive override:
+            if (inputManager.getTankDriveOverride()) {
+                tankDrive = !tankDrive;
+                robotDataTable.setBoolean("tankDrive", true);
+            } else {
+                robotDataTable.setBoolean("tankDrive", false);
+            }
         }
-        //SmartDashboard.putNumber("leftEnc", frontLeft.getEncoderPositionContextual());
-        //SmartDashboard.putNumber("rightEnc", frontRight.getEncoderPositionContextual());
-        //SmartDashboard.putNumber("dis", SmartDashboard.getNumber("final distance no assist", -108699)
-        //        + frontLeft.getEncoderPositionContextual());
     }
 
     /**
-     * A basic percent-based drive method. Moves the treads of the robot
-     * @param forward A number between -1 (full backward) and 1 (full forward)
+     * Drives the two sides of the robot independently.
+     * @param left the amount of power (-1 being full forward, 1 being full backward) to apply to the left side of the robot
+     * @param right the amount of power (-1 being full forward, 1 being full backward) to apply to the right side of the robot
+     */
+    private void tankDrive(double left, double right) {
+        frontLeft.set(ControlMode.PercentOutput, left);
+        frontRight.set(ControlMode.PercentOutput, right);
+    }
+
+    /**
+     * A basic percent-based drive method. Moves the treads of the robot. 
+     * Squares the input values to provide smoother driving
+     * @param forward A number between -1 (full forward) and 1 (full backward)
      * @param turn    A number between -1 (full right) and 1 (full left)
      */
     public void driveBasic(double forward, double turn) {
@@ -202,86 +183,6 @@ public class Drivetrain implements Component {
     }
 
     /**
-     * A Motion Magic-based movement option. Works similarly to driveBasic, but
-     * resists unwanted change in motion.
-     * 
-     * @param forward A number between -1 (full backward) and 1 (full forward)
-     * @param turn    A number between -1 (full right) and 1 (full left)
-     */
-
-    public void magicDrive(double forward, double turn) {
-
-        /*forward = forward * forward * Math.signum(forward);
-        turn = turn * turn * Math.signum(turn); //TODO Experiment with not minning, try something with a drive ratio
-        *///TODO Check for problems with driving forward close to max and trying to turn; try separate turn distance
-        currentLeftPosition = frontLeft.getEncoderPosition();
-        currentRightPosition = frontRight.getEncoderPosition();
-        turn = 0; //TODO REMOVE
-        setpointLeft += (forward * Constants.MAX_DRIVE_VELOCITY_LOW / 50.0 * Constants.DRIVE_ENCU_PER_INCH
-                - turn * Constants.MAX_TURN_VELOCITY_LOW);
-        setpointRight += (forward * Constants.MAX_DRIVE_VELOCITY_LOW / 50.0 * Constants.DRIVE_ENCU_PER_INCH
-                + turn * Constants.MAX_TURN_VELOCITY_LOW);
-        System.out.println("Forward" + (forward * Constants.MAX_DRIVE_VELOCITY_LOW * Constants.DRIVE_ENCU_PER_INCH));
-        System.out.println("turn" + turn);
-        /*
-        if (Math.abs(setPointLeft - currentLeftPosition) > 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS) {
-        setPointLeft = Math.signum(setPointLeft - currentLeftPosition) * 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS
-        + currentLeftPosition;
-        }
-        
-        if (Math.abs(setPointRight - currentRightPosition) > 4096 * Constants.MAGIC_DRIVE_MAX_ROTATIONS) {
-        setPointRight = Math.signum(setPointRight - currentRightPosition) * 4096
-        * Constants.MAGIC_DRIVE_MAX_ROTATIONS + currentRightPosition;
-        }*/
-
-        frontLeft.set(ControlMode.MotionMagic, setpointLeft);
-        frontRight.set(ControlMode.MotionMagic, setpointRight);
-        logger.magicDrive.log(logger.getTick());
-    }
-
-    /**
-     * Returns the position of the left encoder
-     */
-    public int getLeftPosition() {
-        return frontLeft.getEncoderPosition();
-    }
-
-    /**
-     * returns the position of the right encoder
-     */
-    public int getRightPosition() {
-        return frontRight.getEncoderPosition();
-    }
-
-    /**
-    * Returns the position of the left encoder
-    */
-    public double getLeftPositionInches() {
-        return frontLeft.getEncoderPositionContextual();
-    }
-
-    /**
-     * returns the position of the right encoder
-     */
-    public double getRightPositionInches() {
-        return frontRight.getEncoderPositionContextual();
-    }
-
-    /**
-     * Returns the velocity of the left encoder
-     */
-    public int getLeftVelocity() {
-        return frontLeft.getEncoderVelocity();
-    }
-
-    /**
-     * returns the velocity of the right encoder
-     */
-    public int getRightVelocity() {
-        return frontRight.getEncoderVelocity();
-    }
-
-    /**
      * Drives the robot foward based on Motion profiling output
      * @param left the power to apply to the left side of the robot
      * @param right the power to apply to the right side of the robot
@@ -291,4 +192,47 @@ public class Drivetrain implements Component {
         frontLeft.set(ControlMode.PercentOutput, left - turn);
         frontRight.set(ControlMode.PercentOutput, right + turn);
     }
+
+    /**
+     * Returns the position of the left encoder in native units
+     */
+    public int getLeftPosition() {
+        return frontLeft.getEncoderPosition();
+    }
+
+    /**
+     * returns the position of the right encoder in native units
+     */
+    public int getRightPosition() {
+        return frontRight.getEncoderPosition();
+    }
+
+    /**
+    * Returns the position of the left encoder in inches travelled
+    */
+    public double getLeftPositionInches() {
+        return frontLeft.getEncoderPositionContextual();
+    }
+
+    /**
+     * returns the position of the right encoder in inches travelled
+     */
+    public double getRightPositionInches() {
+        return frontRight.getEncoderPositionContextual();
+    }
+
+    /**
+     * Returns the velocity of the left encoder in native units per 100ms
+     */
+    public int getLeftVelocity() {
+        return frontLeft.getEncoderVelocity();
+    }
+
+    /**
+     * returns the velocity of the right encoder in native units per 100ms
+     */
+    public int getRightVelocity() {
+        return frontRight.getEncoderVelocity();
+    }
+
 }

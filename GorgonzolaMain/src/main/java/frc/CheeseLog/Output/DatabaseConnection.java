@@ -2,8 +2,6 @@ package frc.CheeseLog.Output;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Properties;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
