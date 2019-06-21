@@ -126,7 +126,7 @@ public class Drivetrain implements Component {
                     if (!cameraSetpointSet) {
                         //Set yawSetpoint to the absolute angle of the sighting
                         cameraSetpointSet = true;
-                        cameraYawSetpoint = cameraManager.getPrimarySightingAngle();
+                        cameraYawSetpoint = cameraManager.getPrimarySightingAngleAbsolute();
                     }
                     //Turn to yawSetpoint (with manual adjustment)
                     setTurnSetpoint(cameraYawSetpoint - 10.0 * inputManager.getSecondaryJoyX());

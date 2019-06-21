@@ -9,17 +9,17 @@ public class Constants {
         //Encoder unit value for 0 degrees (level with ground) for shoulder.
         //ABSOLUTELY ESSENTIAL FOR ARM CONTROL. MUST BE SET USING A PHONE OR
         //ELECTRONIC LEVEL BEFORE SETPOINTS ARE ATTEMPTED. 
-        public static final double SHOULDER_ENCU_ZERO = Globals.isProto ? -522 : -596;
+        public static final double SHOULDER_ENCU_ZERO = Globals.isProto ? -522 : -481;
 
         //Encoder unit value for 0 degrees (level with the current shoulder angle) of the wrist
         //ABSOLUTELY ESSENTIAL FOR ARM CONTROL. MUST BE SET USING A PHONE OR ELECTRONIC LEVEL
         //BEFORE SETPOINTS ARE ATTEMPTED.
-        public static final double WRIST_ENCU_ZERO = Globals.isProto ? -518 : 476;
+        public static final double WRIST_ENCU_ZERO = Globals.isProto ? -518 : 449;
 
         //How far, in degrees, the robot has to tip to trigger tip correction
         public static final double TIP_PITCH_THRESHOLD = 20;
         
-
+ 
         //Conversion calculated from gear ratios. Converts drivetrain encoder units (ENCU or ticks) to inches
         public static final double DRIVE_ENCU_PER_INCH = 2970.3;
 
