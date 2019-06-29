@@ -2,6 +2,7 @@ package frc.components.arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Decimal;
 import frc.CheeseLog.SQLType.Type;
@@ -38,7 +39,7 @@ public class Wrist implements Component {
             talon1.setSensorPhase(true);
             talon2.setSensorPhase(true);
             talon1.setInverted(true);
-            talon2.setInverted(false);
+            talon2.setInverted(true);
         }
         talon1.initEncoder(Constants.WRIST_KP, Constants.WRIST_KI, Constants.WRIST_KD, Constants.WRIST_KF);
         talon2.follow(talon1);
@@ -58,6 +59,7 @@ public class Wrist implements Component {
     }
 
     public void tick() {
+        SmartDashboard.putNumber("Wrist Angle", Math.toDegrees(getAngle()));
         robotDataTable.setDouble("WristAngle", getAngle());
 
         if (fromStow && shoulder.desiredPosition != ArmPosition.STOW) {

@@ -2,6 +2,7 @@ package frc.components.arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.CheeseLog.Loggable;
 import frc.CheeseLog.SQLType.Bool;
 import frc.CheeseLog.SQLType.Decimal;
@@ -72,6 +73,7 @@ public class Shoulder implements Component {
     }
 
     public void tick() {
+        SmartDashboard.putNumber("Shoulder Angle", Math.toDegrees(getAngle()));
         armSaveOverride = inputManager.getShoulderSaveOverride();
         robotDataTable.setDouble("ShoulderAngle", getAngle());
         ArmPosition newPosition = inputManager.getArmPosition();
@@ -97,7 +99,7 @@ public class Shoulder implements Component {
             talon1.set(ControlMode.PercentOutput, 0);
             break;
         case FULL_MANUAL:
-            talon2.set(ControlMode.PercentOutput, .1 + .5 * inputManager.getShoulderManualPosition());
+            talon2.set(ControlMode.PercentOutput, /*.1*/ + .5 * inputManager.getShoulderManualPosition());
             break;
         case STOW:
             if (getHeight() < 25.0 && wrist.getAngle() < 110.0 * Math.PI / 180.0) {

@@ -29,12 +29,12 @@ public enum ArmPosition {
         //shoulder heights:
         GROUND_PICKUP.shoulderHeight = 1.0 * 12.0 + 8.25;
         BALL_LOW.shoulderHeight = 3.0 * 12.0 + 0.65;
-        BALL_MEDIUM.shoulderHeight = 4.0 * 12.0 + 7.5;
+        BALL_MEDIUM.shoulderHeight = 5.0 * 12.0 + 3.5;
         BALL_HIGH.shoulderHeight = 6.0 * 12.0 + 11.5;
         BALL_CARGO.shoulderHeight = 4.0 * 12.0 + 11.0;
 
-        HATCH_LOW.shoulderHeight = 1.0 * 12.0 + 10.8;
-        HATCH_MEDIUM.shoulderHeight = 5.0 * 12.0 + 4.7;
+        HATCH_LOW.shoulderHeight = 1.0 * 12.0 + 6.8;
+        HATCH_MEDIUM.shoulderHeight = 4.0 * 12.0 + 8.7;
         HATCH_HIGH.shoulderHeight = 6.0 * 12.0 + 9.8;
 
         STOW.shoulderHeight=Constants.SHOULDER_MIN_POSITION;
