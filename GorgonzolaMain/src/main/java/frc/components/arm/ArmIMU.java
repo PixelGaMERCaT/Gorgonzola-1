@@ -17,7 +17,7 @@ import frc.robot.RobotMap;
  * Defines a gyro (IMU) mounted on the arm of the robot. 
  * Originally intended to check and improve readings from the encoder
  * REMOVED FROM CODE DUE TO LACK OF RELIABILITY AND DIFFICULTY OF MOUNTING
- * 
+ * @author Jeff
  */
 @Deprecated
 public class ArmIMU implements Component {

@@ -13,7 +13,8 @@ import frc.sandstorm.sections.Drive;
 
 /**
  * A set of Sandstorm Sections that run sequentially.
- */
+ * @author Jeff
+ */ 
 public class SandstormPath extends SandstormSection {
     private ArrayList<SandstormSection> sections = new ArrayList<SandstormSection>();
     private String name;

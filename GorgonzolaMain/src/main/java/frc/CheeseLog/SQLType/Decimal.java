@@ -13,7 +13,7 @@ public class Decimal implements Type {
         if(o instanceof java.lang.Double || o instanceof Float)
             return true;
         try {
-            double i = java.lang.Double.parseDouble(o.toString());
+            java.lang.Double.parseDouble(o.toString());
         } catch (Exception e){
             return false;
         }

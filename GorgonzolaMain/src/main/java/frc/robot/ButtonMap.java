@@ -2,7 +2,8 @@ package frc.robot;
 
 /**
  * A class containing all the IDs for joystick input
- */
+ * @author Jeff
+ */ 
 public class ButtonMap {
     //Joystick IDs:
     public static final int LEFT_STICK = 0;

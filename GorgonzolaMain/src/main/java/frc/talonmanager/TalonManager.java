@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 /**
  * Wraps and sets up Talons and encoders
+ * @author Jeff
  */
 public abstract class TalonManager {
     public TalonSRX talon;

@@ -15,7 +15,8 @@ import frc.talonmanager.DriveTalonManager;
 
 /**
  * Responsible for managing the drivebase (treads) of the robot, along with the drive sensors.
- */
+ * @author Jeff
+ */ 
 public class Drivetrain implements Component {
     private DriveTalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
     private InputManager inputManager;
@@ -126,7 +127,7 @@ public class Drivetrain implements Component {
                     if (!cameraSetpointSet) {
                         //Set yawSetpoint to the absolute angle of the sighting
                         cameraSetpointSet = true;
-                        cameraYawSetpoint = cameraManager.getPrimarySightingAngle();
+                        cameraYawSetpoint = cameraManager.getPrimarySightingAngleAbsolute();
                     }
                     //Turn to yawSetpoint (with manual adjustment)
                     setTurnSetpoint(cameraYawSetpoint - 10.0 * inputManager.getSecondaryJoyX());

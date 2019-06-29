@@ -3,7 +3,8 @@ package frc.CheeseLog.Output;
 /**
  * A template for output methods for logging.
  * Default output methods for logging to a file and a database are included.
- */
+ * @author Jeff
+ */ 
 public interface OutputMethod {
     /**
      * Should do whatever is necessary to initialize a logging table.

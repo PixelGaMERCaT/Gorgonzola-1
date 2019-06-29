@@ -4,7 +4,8 @@ import java.text.SimpleDateFormat;
 
 /**
  * Matches datetime objects. This is intended to be used only for the timestamp column
- */
+ * @author Jeff
+ */ 
 public class DateTime implements Type {
     /**
      * Determines if an object matches a sql timestamp

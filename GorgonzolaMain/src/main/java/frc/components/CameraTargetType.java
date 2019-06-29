@@ -1,6 +1,7 @@
 package frc.components;
 /**               UNUSED ENUM
  * Defines the type of camera target, as well as some properties of that target relative to the field.
+ * @author Jeff
  */
 public enum CameraTargetType {
     PLAYER_STATION, CARGO_SHIP_LEFT, CARGO_SHIP_RIGHT, INNER_ROCKET_LEFT, OUTER_ROCKET_LEFT, CARGO_ROCKET_LEFT, CARGO_ROCKET_RIGHT, INNER_ROCKET_RIGHT, OUTER_ROCKET_RIGHT, HATCH_ROCKET_RIGHT;

@@ -6,7 +6,8 @@ import frc.robot.RobotMap;
 
 /**
  * Controls what gear the Drivetrain of the robot is in; 
- */
+ * @author Jeff
+ */ 
 public class GearShifter implements Component {
     private Solenoid gearShifter;
     private InputManager inputManager;

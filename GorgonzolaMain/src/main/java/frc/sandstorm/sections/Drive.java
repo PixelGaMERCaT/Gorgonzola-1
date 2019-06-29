@@ -11,7 +11,8 @@ import frc.sandstorm.*;
 import frc.components.*;
 /**
  * A basic SandstormSection that drives at a constant forward and turn rate.
- */
+ * @author Jeff
+ */ 
 public class Drive extends SandstormSection {
     private double forward, turn; //Constant forward and turn outputs
     private Drivetrain drivetrain;

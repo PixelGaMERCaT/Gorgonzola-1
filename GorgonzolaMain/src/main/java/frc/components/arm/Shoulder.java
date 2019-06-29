@@ -20,7 +20,8 @@ import frc.talonmanager.ShoulderTalonManager;
  * Controls the shoulder (stationary joint) of the arm.
  * Uses button input to convert desired setpoint heights to encoder values, then uses magic profiling 
  * on the TalonSRX to move the shoulder to that point.
- */
+ * @author Jeff
+ */ 
 public class Shoulder implements Component {
     private ShoulderTalonManager talon1, talon2;
     private LogInterface logger;

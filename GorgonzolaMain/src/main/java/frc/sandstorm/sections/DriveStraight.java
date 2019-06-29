@@ -16,7 +16,8 @@ import frc.robot.Globals;
 
 /**
  * A SandstormSection that drives forward while maintaining a certain yaw angle
- */
+ * @author Jeff
+ */ 
 public class DriveStraight extends SandstormSection {
     private Drivetrain drivetrain;
     private PIDController turnController;

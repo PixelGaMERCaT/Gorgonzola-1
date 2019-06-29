@@ -24,6 +24,7 @@ import frc.components.pose.PoseTracker;
  * A class that contains all components of the robot to be accessed. For
  * example, Drivetrain accesses Globals.inputManager for joystick
  * information
+ * @author Jeff
  */
 public class Globals {
     public static boolean isNSP = false; //True if the robot the code is running on is "Not Spare Parts"

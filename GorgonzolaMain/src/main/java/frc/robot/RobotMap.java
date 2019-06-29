@@ -3,7 +3,8 @@ package frc.robot;
 /**
  * A class containing all of the constants used to ID things on the robot
  * Example: all solenoid ID's are stored below
- */
+ * @author Jeff
+ */ 
 public class RobotMap {
 
     //DRIVE TALONS:

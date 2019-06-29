@@ -15,6 +15,7 @@ import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.modifiers.TankModifier;
 /**
  * A component designed to control the robot during autonomous periods in order to follow a Motion profiled path
+ * @author Jeff
  */
 public class MotionProfiler implements Component {
         private Waypoint[] path;

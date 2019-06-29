@@ -2,7 +2,8 @@ package frc.CheeseLog.SQLType;
 
 /**
  * Represents a string of up to a maximum length. By default this is 255 characters, but this can be changed
- */
+ * @author Jeff
+ */ 
 public class Varchar implements Type {
     int length;
 

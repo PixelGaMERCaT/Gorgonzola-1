@@ -13,7 +13,8 @@ import jaci.pathfinder.Waypoint;
 
 /**
  * A SandstormSection that follows a defined Motion Profile.
- */
+ * @author Jeff
+ */ 
 public class MotionProfile extends SandstormSection {
     private Waypoint[] points;
     private MotionProfiler mp;

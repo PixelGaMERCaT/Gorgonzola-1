@@ -3,6 +3,7 @@ package frc.CheeseLog;
 /**
  * There are three types of tables: automatic, manual, and criteria tables.
  * When a table is created, its mode must be specified.
+ * @author Jeff
  */
 public enum LoggingMode {
     /**

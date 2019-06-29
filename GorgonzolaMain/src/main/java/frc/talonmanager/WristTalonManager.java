@@ -13,7 +13,8 @@ import frc.robot.Constants;
 
 /**
  * Wraps and sets up Talons and encoders for Wrist talons
- */
+ * @author Jeff
+ */ 
 public class WristTalonManager extends TalonManager {
    
     /**

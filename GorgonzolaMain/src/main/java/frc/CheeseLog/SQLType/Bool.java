@@ -2,7 +2,8 @@ package frc.CheeseLog.SQLType;
 
 /**
  * Represents a boolean value. Can accept boolean objects, strings matching true or false, or 0 or 1
- */
+ * @author Jeff
+ */ 
 public class Bool implements Type {
 
     /**

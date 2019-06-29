@@ -8,7 +8,8 @@ import java.util.HashMap;
 
 /**
  * Driver class for the logging system.
- */
+ * @author Jeff
+ */ 
 public class Logger {
     int tick = -1;
     HashMap<String, HashMap<String, Type>> implicitTables = new HashMap<>();

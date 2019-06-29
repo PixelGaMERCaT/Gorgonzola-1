@@ -10,7 +10,8 @@ import frc.robot.RobotMap;
  * at the front of the robot, allowing us to drive up the Hab 2 wall.
  * 
  * In the past, it additionally consisted of a CAM that could move to push the robot forward onto HAB 3.
- */
+ * @author Jeff
+ */ 
 public class Climber implements Component {
 
     private InputManager inputManager;

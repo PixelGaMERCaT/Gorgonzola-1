@@ -12,7 +12,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import frc.robot.Constants;
 /**
  * Wraps and sets up Talons and encoders for shoulder talons
- */
+ * @author Jeff
+ */ 
 public class ShoulderTalonManager extends TalonManager {
 
     /**

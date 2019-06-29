@@ -3,7 +3,8 @@ package frc.robot;
 /**
  * A class built to contain general constants, especially those used for general
  * calculations within code
- */
+ * @author Jeff
+ */ 
 public class Constants {
 
         //Encoder unit value for 0 degrees (level with ground) for shoulder.

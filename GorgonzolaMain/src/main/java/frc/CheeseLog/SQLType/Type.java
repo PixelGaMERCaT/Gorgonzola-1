@@ -4,7 +4,8 @@ package frc.CheeseLog.SQLType;
  * Type provides a method for typechecking values logged in the database.
  * An instance of Type is created for each column. That instance is responsible for assuring all values
  * inserted in to the column match the column's type in the database.
- */
+ * @author Jeff
+ */ 
 public interface Type {
 
     /**

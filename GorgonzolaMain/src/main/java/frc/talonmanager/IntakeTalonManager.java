@@ -1,7 +1,8 @@
 package frc.talonmanager;
 /**
  * Wraps and manages ball Intake talons
- */
+ * @author Jeff
+ */ 
 public class IntakeTalonManager extends TalonManager {
     public IntakeTalonManager(int idx){
         super(idx);

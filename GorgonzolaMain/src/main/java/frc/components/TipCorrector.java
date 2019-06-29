@@ -9,7 +9,8 @@ import frc.robot.Globals;
 /**
  * Corrects tipping robots in case of bad drivers; drive the robot backward if tipping backward and vice versa.
  * IMPORTANT: Defines Backwards tipping as positive pitch.
- */
+ * @author Jeff
+ */ 
 public class TipCorrector implements Component {
     private Drivetrain drivetrain;
     private Gyro gyro;

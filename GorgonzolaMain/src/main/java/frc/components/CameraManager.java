@@ -10,7 +10,8 @@ import jaci.pathfinder.Waypoint;
 
 /**
  * Manages camera data sent from Raspberry Pi over NetworkTables.
- */
+ * @author Jeff
+ */ 
 public class CameraManager implements Component {
     private NetworkInterface cameraDataTable, robotDataTable;
     private SandstormPath mpTestAuto;

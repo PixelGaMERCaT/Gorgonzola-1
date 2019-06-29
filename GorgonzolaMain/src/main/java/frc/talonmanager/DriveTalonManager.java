@@ -13,7 +13,8 @@ import frc.robot.Constants;
 
 /**
  * Wraps and sets up Talons and encoders for Drivetrain talons
- */
+ * @author Jeff
+ */ 
 public class DriveTalonManager extends TalonManager {
 
     public DriveTalonManager(int idx) {

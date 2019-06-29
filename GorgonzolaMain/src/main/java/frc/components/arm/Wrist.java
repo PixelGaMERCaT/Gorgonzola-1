@@ -16,7 +16,8 @@ import frc.talonmanager.WristTalonManager;
 
 /**
  * Controls the Wrist (joint on the end of the arm) based off the state of the Shoulder
- */
+ * @author Jeff
+ */ 
 public class Wrist implements Component {
     private WristTalonManager talon1, talon2;
     private LogInterface logger;
@@ -81,7 +82,8 @@ public class Wrist implements Component {
                 setAngle(-shoulder.getAngle()
                         + (shoulderPosition.getWristAngle() + 10.0 * inputManager.getWristManualPosition()) * Math.PI
                                 / 180.0);
-
+                break;
+                
             case NO_CHANGE:
             case NO_MOVEMENT:
                 talon1.set(ControlMode.PercentOutput, 0);

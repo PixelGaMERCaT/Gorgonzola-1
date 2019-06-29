@@ -13,7 +13,8 @@ import frc.CheeseLog.SQLType.Type;
 /**
  * Wraps Logger from Cheese Log, allows for SQL logging of relevant data during robot operation
  * 
- */
+ * @author Jeff
+ */ 
 public class LogInterface implements Component {
     //See Cheese Log package for more documentation:
     public Logger logger;

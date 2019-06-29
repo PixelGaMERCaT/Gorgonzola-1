@@ -6,7 +6,8 @@ package frc.CheeseLog;
  * connecting loggables and a table are in table.java.
  *
  * Usage of loggables is still encouraged for manual mode, but not required.
- */
+ * @author Jeff
+ */ 
 public interface Loggable {
     /**
      * Retrieves the value to log at any given time.

@@ -8,7 +8,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.sandstorm.SandstormPath;
 import frc.sandstorm.SandstormStart;
@@ -16,6 +15,7 @@ import frc.sandstorm.SandstormStart;
 /**
  * The main class, all code execution begins here. Depending on game phase, one of
  * Robot.java's methods is always being run on the robot.
+ * @author Jeff
  */
 public class Robot extends TimedRobot {
     public SandstormPath selectedMode; //Selected auto

@@ -13,7 +13,7 @@ public class Int implements Type {
         if(o instanceof Integer || o instanceof Short || o instanceof Byte || o instanceof Long)
             return true;
         try {
-            long i = Long.parseLong(toString().toLowerCase());
+            Long.parseLong(toString().toLowerCase());
         } catch (Exception e){
             return false;
         }

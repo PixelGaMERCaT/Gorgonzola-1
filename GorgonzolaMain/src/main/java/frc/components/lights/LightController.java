@@ -11,7 +11,8 @@ import com.mach.LightDrive.*;
 /**
  * A class meant to control the lights on the robot to indicate various
  * pieces of information to the drivers.
- */
+ * @author Jeff
+ */ 
 public class LightController implements Component {
     private LightDriveCAN lDriveCAN;
     private InputManager inputManager;

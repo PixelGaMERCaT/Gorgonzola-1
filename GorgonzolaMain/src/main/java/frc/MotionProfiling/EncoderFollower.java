@@ -11,7 +11,8 @@ import java.io.IOException;
  * Runs PID loop on tread position for motion profiling
  * "Stolen" from Jaci's Pathfinder.
  * Modified to log progress along the way and calculate time remaining.
- */
+ * @author Jeff
+ */ 
 public class EncoderFollower {
     private File logFile; //logfile to write to
     private BufferedWriter logWriter; //BufferedWriter to write with

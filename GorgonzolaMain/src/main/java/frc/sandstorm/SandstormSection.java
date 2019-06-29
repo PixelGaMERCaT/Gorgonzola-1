@@ -8,7 +8,9 @@
 package frc.sandstorm;
 
 /**
- * Add your docs here.
+ * A specific action to be completed during autonomous. Can be run for a certain
+ * amount of time or rely on a custom finishing criterion.
+ * @author Jeff
  */
 public abstract class SandstormSection {
     protected boolean finished = false;

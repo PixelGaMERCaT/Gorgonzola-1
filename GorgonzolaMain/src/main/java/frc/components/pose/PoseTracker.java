@@ -11,7 +11,7 @@ import frc.robot.Globals;
 * Keeps a log of poses from previous timestamps, can be thought of as a record of past robot positions.
 * acts as a stack (LIFO with self-overwriting).
 * @author Jeff
-*/
+ */ 
 public class PoseTracker implements Component {
     private Gyro gyro;
     private Drivetrain drivetrain;

@@ -4,6 +4,7 @@ import frc.robot.Constants;
 
 /**
  * Encompasses all the possible setpoints, positions, and states the Arm can be in.
+ * @author Jeff
  */
 public enum ArmPosition {
     //Setpoints (known height and wrist position):

@@ -5,7 +5,8 @@ package frc.CheeseLog;
  * This interface is intended to be used to determine if the criterion are met.
  * If shouldLog returns true, then the criteria table using it will log.
  * This does not affect automatic or manual logging tables
- */
+ * @author Jeff
+ */ 
 public interface LoggingCriteria {
     /**
      * Returns whether or not the associated table should log

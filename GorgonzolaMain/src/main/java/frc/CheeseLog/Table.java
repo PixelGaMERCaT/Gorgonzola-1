@@ -10,7 +10,8 @@ import frc.CheeseLog.SQLType.Type;
 
 /**
  * Code interface for a logging table.
- */
+ * @author Jeff
+ */ 
 public class Table {
 	OutputManager table;
 	String name;

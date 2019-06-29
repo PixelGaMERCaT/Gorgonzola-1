@@ -14,6 +14,7 @@ import frc.talonmanager.IntakeTalonManager;
  * This contains two mechanisms:
  * 1. A pneumatic intake that uses suction to grab, hold, and release large disks (hatches)
  * 2. A motor intake that uses a rolling wheel to pick up, hold, and release balls (cargo)
+ * @author Jeff
  */
 public class Intake implements Component {
     /**

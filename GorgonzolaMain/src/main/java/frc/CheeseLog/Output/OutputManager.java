@@ -13,7 +13,8 @@ import frc.CheeseLog.SQLType.Type;
  * A go-between between tables and outputs. It is initialized with one
  * OutputMethod, but more can be added. This class is used internally and does
  * not need any user interaction.
- */
+ * @author Jeff
+ */ 
 public class OutputManager {
 	Type[] dataTypes;
 	String[] columns;

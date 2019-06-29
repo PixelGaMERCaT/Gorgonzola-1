@@ -10,7 +10,8 @@ import edu.wpi.first.networktables.NetworkTableValue;
 /**
  * Allows interacting with Networktables more easily; wraps NetworkTable and sets up
  * an easy interface
- */
+ * @author Jeff
+ */ 
 public class NetworkInterface implements Component {
     private HashMap<String, NetworkTableEntry> tableValues; // A mapping of entry keys to table entries.
     private NetworkTable table; //The table this NetworkInterface interfaces with.

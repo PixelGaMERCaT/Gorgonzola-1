@@ -13,8 +13,10 @@ import frc.sandstorm.sections.MotionProfile;
 import jaci.pathfinder.Waypoint;
 
 /**
- * Add your docs here.
- */
+ * A container for all autos; decides which autos do what and initialize the 
+ * corresponding SandstormPaths.
+ * @author Jeff
+ */ 
 public class SandstormStart {
 
     private SandstormPath mpTestAuto;

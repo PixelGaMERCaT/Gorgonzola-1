@@ -11,7 +11,8 @@ import frc.robot.Globals;
 
 /**
  * A component that parses input from the driverstation (joysticks, controllers etc)
- */
+ * @author Jeff
+ */ 
 public class InputManager implements Component {
     private LogInterface logger;
     private Joystick left, right, aux;

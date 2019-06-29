@@ -3,8 +3,9 @@ package frc.motionprofiling;
 import frc.robot.Constants;
 /**
  * Holds constants important for motion profiling. All constants are for low gear.
+ * @author Jeff
  */
-class MPConstants {
+public class MPConstants {
 
     //Path/Config Constants:
     public static final double MAX_VELOCITY = 65; //Inches per second. See Github for issues with velocity recording.
