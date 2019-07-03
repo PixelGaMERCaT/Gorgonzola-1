@@ -60,9 +60,9 @@ public class Shoulder implements Component {
         wrist = Globals.wrist;
 
         logger.shoulder = LogInterface.createTable("Shoulder",
-                new String[] { "ShoulderVelocity", "ShoulderAngle", "ShoulderHeight", "Shoulderpercentout",
-                        "ShoulderError", "ShoulderEncuSetpoint", "ShoulderEncu", "ShoulderSaveTick",
-                        "ShouldShoulderSave", "ShoulderSaveOverride" },
+                new String[] { "ShoulderVelocity", "ShoulderAngle", "ShoulderHeight", "ShoulderPercentOut",
+                        "ShoulderError", "ShoulderEncuSetpoint", "ShoulderEncuPosition", "ShoulderSaveTick",
+                        "ShoulderSaveTriggered", "ShoulderSaveOverride" },
                 new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
                         new Decimal(), new Int(), new Bool(), new Bool() },
                 new Loggable[] { () -> talon1.getEncoderVelocity(), () -> getAngle(), () -> getHeight(),

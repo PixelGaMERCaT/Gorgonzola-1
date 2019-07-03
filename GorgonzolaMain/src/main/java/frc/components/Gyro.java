@@ -34,7 +34,7 @@ public class Gyro implements Component, PIDSource {
         robotDataTable = Globals.robotDataTable;
         logger = Globals.logger;
         try {
-            logger.gyro = LogInterface.createTable("Gyro", new String[] { "yaw", "pitch" },
+            logger.gyro = LogInterface.createTable("Gyro", new String[] { "Yaw", "Pitch" },
                     new Type[] { new Decimal(), new Decimal() },
                     new Loggable[] { () -> getNormalizedYaw(), () -> getNormalizedPitch() });
 

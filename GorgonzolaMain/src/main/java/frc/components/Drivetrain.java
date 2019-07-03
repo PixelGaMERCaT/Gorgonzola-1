@@ -16,7 +16,7 @@ import frc.talonmanager.DriveTalonManager;
 /**
  * Responsible for managing the drivebase (treads) of the robot, along with the drive sensors.
  * @author Jeff
- */ 
+ */
 public class Drivetrain implements Component {
     private DriveTalonManager frontLeft, frontRight, middleLeft, backLeft, backRight, middleRight;
     private InputManager inputManager;
@@ -65,8 +65,8 @@ public class Drivetrain implements Component {
         gyro = Globals.gyro;
         try {
             logger.drivetrain = LogInterface.createTable("Drivetrain",
-                    new String[] { "disLeft", "disRight", "leftPower", "rightPower", "velRight", "velLeft",
-                            "PercentLeft", "PercentRight" },
+                    new String[] { "LeftTreadDistance", "RightTreadDistance", "LeftTreadPower", "RightTreadPower",
+                            "RightTreadVelocity", "LeftTreadVelocity", "LeftTreadPercentOut", "RightTreadPercentOut" },
                     new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(),
                             new Decimal(), new Decimal(), new Decimal() },
                     new Loggable[] { () -> frontLeft.getEncoderPositionContextual(),
@@ -76,7 +76,7 @@ public class Drivetrain implements Component {
                             () -> frontRight.getMotorOutputPercent() });
 
             logger.turnController = LogInterface.createTable("Turn_Controller",
-                    new String[] { "angle", "output", "setpoint", "enabled" },
+                    new String[] { "TurnControllerOutput", "TurnControllerSetpoint", "TurnControllerEnabled" },
                     new Type[] { new Decimal(), new Decimal(), new Decimal(), new Bool() },
                     new Loggable[] { () -> gyro.getYaw(), () -> turnController.get(),
                             () -> turnController.getSetpoint(), () -> turnController.isEnabled() });

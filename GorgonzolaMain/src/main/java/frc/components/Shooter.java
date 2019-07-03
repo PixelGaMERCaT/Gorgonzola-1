@@ -29,7 +29,7 @@ public class Shooter implements Component {
 
     public void init() {
         inputManager = Globals.inputManager;
-        Globals.logger.shooter = LogInterface.createTable("shooter",
+        Globals.logger.shooter = LogInterface.createTable("Shooter",
                 new String[] { "RPS", "RawVelocity", "DesVel", "Revs", "RawPosition", "OutputPower" },
                 new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal() },
                 new Loggable[] { () -> this.getVelRPS(), () -> talon1.getSelectedSensorVelocity(0),

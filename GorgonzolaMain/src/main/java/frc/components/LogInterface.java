@@ -20,11 +20,10 @@ public class LogInterface implements Component {
     public Logger logger;
     private static DatabaseConnection sqlConnection;
 
-    public Table turnController, drivetrain, inputManager, motionProfiling, gyro, networkTables, shoulder, wrist,
-            shooter; //All SQL Tables that we might log to
+    public Table turnController, drivetrain, inputManager, gyro, shoulder, wrist, shooter; //All SQL Tables that we might log to
 
     /**
-    * Initializes a logInterface
+    * Initializes a LogInterface
     */
     public LogInterface() {
         try {

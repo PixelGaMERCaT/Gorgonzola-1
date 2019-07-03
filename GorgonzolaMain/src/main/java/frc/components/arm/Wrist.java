@@ -51,7 +51,7 @@ public class Wrist implements Component {
         logger = Globals.logger;
         shoulder = Globals.shoulder;
         logger.wrist = LogInterface.createTable("Wrist",
-                new String[] { "Velocity", "Angle", "PercentOut", "Difference", "Setpoint", "Encu" },
+                new String[] { "WristVelocity", "WristAngle", "WristPercentOut", "WristError", "WristSetpoint", "WristEncuPosition" },
                 new Type[] { new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal(), new Decimal() },
                 new Loggable[] { () -> talon1.getEncoderVelocity(), () -> getAngle(),
                         () -> talon1.getMotorOutputPercent(), () -> talon1.getClosedLoopError(),

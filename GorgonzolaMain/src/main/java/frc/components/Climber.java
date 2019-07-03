@@ -26,7 +26,7 @@ public class Climber implements Component {
     public void init() {
         robotDataTable = Globals.robotDataTable;
         inputManager = Globals.inputManager;
-        robotDataTable.setNumber("CamAngle", 0); //The angle of the cam, always 0 now :'(
+        robotDataTable.setNumber("CamAngle", 0); //The angle of the cam, always 0 now that it's gone :'(
 
     }
     

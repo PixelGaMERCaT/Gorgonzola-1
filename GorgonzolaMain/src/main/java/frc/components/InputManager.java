@@ -33,7 +33,7 @@ public class InputManager implements Component {
         logger = Globals.logger;
         try {
             logger.inputManager = LogInterface.createTable("Input_Manager",
-                    new String[] { "forward", "turn", "safetyButton", "shoulderjoy", "wristjoy" },
+                    new String[] { "PrimaryJoyY", "SecondaryJoyX", "DriveSafetyButton", "ShoulderManualJoy", "WristManualJoy" },
                     new Type[] { new Decimal(), new Decimal(), new Bool(), new Decimal(), new Decimal() },
                     new Loggable[] { () -> getPrimaryJoyY(), () -> getSecondaryJoyX(), () -> getDriveSafetyButton(),
                             () -> getShoulderManualPosition(), () -> getWristManualPosition() });
