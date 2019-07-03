@@ -12,7 +12,7 @@ import frc.robot.Globals;
 /**
  * A component that parses input from the driverstation (joysticks, controllers etc)
  * @author Jeff
- */ 
+ */
 public class InputManager implements Component {
     private LogInterface logger;
     private Joystick left, right, aux;
@@ -33,7 +33,8 @@ public class InputManager implements Component {
         logger = Globals.logger;
         try {
             logger.inputManager = LogInterface.createTable("Input_Manager",
-                    new String[] { "PrimaryJoyY", "SecondaryJoyX", "DriveSafetyButton", "ShoulderManualJoy", "WristManualJoy" },
+                    new String[] { "PrimaryJoyY", "SecondaryJoyX", "DriveSafetyButton", "ShoulderManualJoy",
+                            "WristManualJoy" },
                     new Type[] { new Decimal(), new Decimal(), new Bool(), new Decimal(), new Decimal() },
                     new Loggable[] { () -> getPrimaryJoyY(), () -> getSecondaryJoyX(), () -> getDriveSafetyButton(),
                             () -> getShoulderManualPosition(), () -> getWristManualPosition() });
@@ -303,18 +304,20 @@ public class InputManager implements Component {
     public boolean getArmSafetyButton() {
         return aux.getRawButton(ButtonMap.AUX_SAFETY);
     }
+
     /**
      * Determines whether the shoulder should be in manual mode
      * @return true if the shoulder should be manually controlled, false otherwise
      */
-    public boolean isShoulderManual(){
+    public boolean isShoulderManual() {
         return shoulderManual;
     }
+
     /**
      * Determines whether the wrist should be in manual mode
      * @return true if the wrist should be manually controlled, false otherwise
      */
-    public boolean isWristManual(){
+    public boolean isWristManual() {
         return wristManual;
     }
 

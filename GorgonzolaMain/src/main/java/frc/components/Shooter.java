@@ -20,11 +20,11 @@ public class Shooter implements Component {
         talon1.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
         talon2.follow(talon1);
         talon1.setSensorPhase(true);
-        talon1.configMotionAcceleration(5600); 
-        talon1.configMotionCruiseVelocity(25800); 
-        talon1.config_kF(0, .695*(1023.0 / 25800.0)); 
-        talon1.config_kP(0, (3.0*1023.0/4000.0));
-        talon1.config_kD(0, (190.0*1023.0/4000.0));
+        talon1.configMotionAcceleration(5600);
+        talon1.configMotionCruiseVelocity(25800);
+        talon1.config_kF(0, .695 * (1023.0 / 25800.0));
+        talon1.config_kP(0, (3.0 * 1023.0 / 4000.0));
+        talon1.config_kD(0, (190.0 * 1023.0 / 4000.0));
     }
 
     public void init() {
@@ -35,7 +35,7 @@ public class Shooter implements Component {
                 new Loggable[] { () -> this.getVelRPS(), () -> talon1.getSelectedSensorVelocity(0),
                         () -> talon1.getClosedLoopTarget(0), () -> getPos(), () -> talon1.getSelectedSensorPosition(0),
                         () -> talon1.getMotorOutputPercent() });
-        System.out.println(Globals.logger.shooter+ " awejfoiawjefoiajwefoijawoeifj;aoweifjaw;eojfio");
+        System.out.println(Globals.logger.shooter + " awejfoiawjefoiajwefoijawoeifj;aoweifjaw;eojfio");
     }
 
     private double maxVel = 0;

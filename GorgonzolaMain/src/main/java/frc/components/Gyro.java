@@ -15,7 +15,7 @@ import frc.robot.Globals;
  * Allows the robot to orient itself along all three rotational axes (roll, pitch, and yaw)
  * Implements PIDSource to allow the robot to turn to a given angle using PIDControllers
  * @author Jeff
- */ 
+ */
 public class Gyro implements Component, PIDSource {
     private AHRS navx;
     private LogInterface logger;

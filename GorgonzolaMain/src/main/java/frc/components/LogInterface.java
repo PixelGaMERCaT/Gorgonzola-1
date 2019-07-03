@@ -14,7 +14,7 @@ import frc.CheeseLog.SQLType.Type;
  * Wraps Logger from Cheese Log, allows for SQL logging of relevant data during robot operation
  * 
  * @author Jeff
- */ 
+ */
 public class LogInterface implements Component {
     //See Cheese Log package for more documentation:
     public Logger logger;
@@ -103,6 +103,7 @@ public class LogInterface implements Component {
         }
         return null;
     }
+
     /**
      * Creates and returns a manually-logged table from the specified information. The table will not 
      * log automatically, and table.log() MUST be called on it in order for it to save its data.
@@ -117,7 +118,7 @@ public class LogInterface implements Component {
      * @param loggables A list of lambdas. The nth loggable should return a value that matches the nth dataType. 
      * @return the resulting table.
      */
-    
+
     public static Table manualTable(String tableName, String[] columnNames, Type[] dataTypes, Loggable[] loggables) {
         try {
             Table t = new Table(sqlConnection, tableName, LoggingMode.AUTOMATIC, columnNames, dataTypes);
@@ -128,6 +129,7 @@ public class LogInterface implements Component {
         }
         return null;
     }
+
     /**
      * Returns the number of ticks the logger has gone through.
      * @return an int, 0 for the first tick, 1 for the second, and so on
