@@ -1,9 +1,15 @@
 # Gorgonzola
 Blue Cheese's 2019 FIRST Destination: Deep Space (Sponsored by the Boring Company) Robot Code
 
-##Table of Contents
+
+
+## Table of Contents
 
 [Installing, Editing, and Deploying](#installing-editing-and-deploying)
+[How to Control The Robot with this Code](#how-to-control-the-robot-with-this-code)
+
+
+
 
 ## Installing, Editing, and Deploying
 To begin, clone your desired branch. In order to edit and deploy the code, you will need the latest FRC software.
