@@ -6,6 +6,7 @@ Blue Cheese's 2019 FIRST Destination: Deep Space (Sponsored by the Boring Compan
 ## Table of Contents
 
 [Installing, Editing, and Deploying](#installing-editing-and-deploying)
+
 [How to Control The Robot with this Code](#how-to-control-the-robot-with-this-code)
 
 
