@@ -2,9 +2,10 @@
 Blue Cheese's 2019 FIRST Destination: Deep Space (Sponsored by the Boring Company) Robot Code
 
 ##Table of Contents
-[Installing, Editing and Deploying](#installing,-editing-and-deploying)
 
-## Installing, Editing and Deploying
+[Installing, Editing, and Deploying](#installing-editing-and-deploying)
+
+## Installing, Editing, and Deploying
 To begin, clone your desired branch. In order to edit and deploy the code, you will need the latest FRC software.
 
 ### Installation Instructions (FRC Software):
