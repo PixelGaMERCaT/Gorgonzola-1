@@ -1,6 +1,9 @@
 # Gorgonzola
 Blue Cheese's 2019 FIRST Destination: Deep Space (Sponsored by the Boring Company) Robot Code
 
+##Table of Contents
+[Installing, Editing and Deploying](#installing,-editing-and-deploying)
+
 ## Installing, Editing and Deploying
 To begin, clone your desired branch. In order to edit and deploy the code, you will need the latest FRC software.
 
@@ -27,4 +30,3 @@ https://dev.imjac.in/maven/jaci/pathfinder/PathfinderOLD-latest.json
 
 
 ## How to Control The Robot with this Code
-Include logo/demo screenshot etc.
