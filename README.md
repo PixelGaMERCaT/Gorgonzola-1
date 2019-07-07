@@ -7,6 +7,8 @@ Blue Cheese's 2019 FIRST Destination: Deep Space (Sponsored by the Boring Compan
 
 [Installing, Editing, and Deploying](#installing-editing-and-deploying)
 
+[How Gorgonzola Works](#how-gorgonzola-works)
+
 [How to Control The Robot with this Code](#how-to-control-the-robot-with-this-code)
 
 
@@ -35,6 +37,13 @@ https://pdocs.kauailabs.com/navx-mxp/software/roborio-libraries/java/
 
 #### Jaci Pathfinder 1 Library:
 https://dev.imjac.in/maven/jaci/pathfinder/PathfinderOLD-latest.json
+
+
+
+
+## How Gorgonzola Works
+
+
 
 
 ## How to Control The Robot with this Code
