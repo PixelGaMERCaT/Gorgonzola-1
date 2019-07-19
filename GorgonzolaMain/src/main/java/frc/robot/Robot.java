@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.unmanaged.UnmanagedJNI;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -83,6 +85,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    UnmanagedJNI.JNI_FeedEnable(100); // Enable Phoenix CAN Devices for 100 Milliseconds
+
     if (!sandstormMode.over) {
       Globals.gearShifter.tick();
       sandstormMode.tick();
@@ -97,6 +101,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    UnmanagedJNI.JNI_FeedEnable(100); // Enable Phoenix CAN Devices for 100 Milliseconds
     Globals.tick();
   }
 

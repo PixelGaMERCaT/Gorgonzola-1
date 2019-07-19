@@ -1,0 +1,163 @@
+{
+    "fileName": "Phoenix-vmx.json",
+    "name": "CTRE-Phoenix-vmx",
+    "version": "5.14.1",
+    "uuid": "ab676553-b602-441f-a38d-f1296eff6538",
+    "mavenUrls": [
+        "http://devsite.ctr-electronics.com/maven/release/",
+        "https://repo1.maven.org/maven2/"
+    ],
+    "jsonUrl": "http://kauailabs.com/dist/frc2019/Phoenix-vmx.json",
+    "javaDependencies": [
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "api-java",
+            "version": "5.14.1"
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "wpiapi-java",
+            "version": "5.14.1"
+        }
+    ],
+    "jniDependencies": [
+        {
+            "groupId": "com.kauailabs.vmx.first.phoenix",
+            "artifactId": "phoenix-cci-vmx",
+            "version": "2019.4.1-vmx",
+            "isJar": false,
+            "skipInvalidPlatforms": true,
+            "validPlatforms": [
+                "linuxraspbian"
+            ]
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "cci",
+            "version": "5.14.1",
+            "isJar": false,
+            "skipInvalidPlatforms": true,
+            "validPlatforms": [
+                "linuxathena",
+                "windowsx86-64",
+                "linuxx86-64"
+            ]
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "canutils",
+            "version": "5.14.1",
+            "isJar": false,
+            "skipInvalidPlatforms": true,
+            "validPlatforms": [
+                "windowsx86-64",
+                "linuxx86-64",
+                "linuxraspbian"
+            ]
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "platform-stub",
+            "version": "5.14.1",
+            "isJar": false,
+            "skipInvalidPlatforms": true,
+            "validPlatforms": [
+                "windowsx86-64",
+                "linuxx86-64"
+            ]
+        }
+    ],
+    "cppDependencies": [
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "wpiapi-cpp",
+            "version": "5.14.1",
+            "libName": "CTRE_Phoenix_WPI",
+            "headerClassifier": "headers",
+            "sharedLibrary": false,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "linuxathena",
+                "windowsx86-64",
+                "linuxx86-64",
+                "linuxraspbian"
+            ]
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "api-cpp",
+            "version": "5.14.1",
+            "libName": "CTRE_Phoenix",
+            "headerClassifier": "headers",
+            "sharedLibrary": false,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "linuxathena",
+                "windowsx86-64",
+                "linuxx86-64",
+                "linuxraspbian"
+            ]
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "cci",
+            "version": "5.14.1",
+            "libName": "CTRE_PhoenixCCI",
+            "headerClassifier": "headers",
+            "sharedLibrary": true,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "linuxathena",
+                "windowsx86-64",
+                "linuxx86-64",
+                "linuxraspbian"
+            ]
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "canutils",
+            "version": "5.14.1",
+            "libName": "CTRE_PhoenixCanutils",
+            "headerClassifier": "headers",
+            "sharedLibrary": true,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "windowsx86-64",
+                "linuxx86-64",
+                "linuxraspbian"
+            ]
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "platform-stub",
+            "version": "5.14.1",
+            "libName": "CTRE_PhoenixPlatform",
+            "headerClassifier": "headers",
+            "sharedLibrary": true,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "windowsx86-64",
+                "linuxx86-64"
+            ]
+        },
+        {
+            "groupId": "com.ctre.phoenix",
+            "artifactId": "core",
+            "version": "5.14.1",
+            "libName": "CTRE_PhoenixCore",
+            "headerClassifier": "headers"
+        },
+        {
+            "groupId": "com.kauailabs.vmx.first.hal",
+            "artifactId": "hal-cpp",
+            "version": "2019.4.1-vmxpi-beta-8",
+            "libName": "CTRE_PhoenixPlatform",
+            "headerClassifier": "headers",
+            "sharedLibrary": true,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "linuxraspbian"
+            ]
+        }
+    ]
+}

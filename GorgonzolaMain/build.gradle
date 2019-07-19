@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2019.4.1"
+    id "edu.wpi.first.GradleRIO" version "2019.4.1-VMX"
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
@@ -9,7 +9,7 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 // This is added by GradleRIO's backing project EmbeddedTools.
 deploy {
     targets {
-        roboRIO("roborio") {
+        vmxpi("roborio") {
             // Team number is loaded either from the .wpilib/wpilib_preferences.json
             // or from command line. If not found an exception will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
@@ -50,7 +50,7 @@ dependencies {
     compile wpi.deps.vendor.java()
     compile files('libs/postgresql-42.2.5.jar')
 
-    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.raspbian)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     testCompile 'junit:junit:4.12'
 }
